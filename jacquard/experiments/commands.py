@@ -35,7 +35,6 @@ class Launch(BaseCommand):
             store['experiments/%s' % options.experiment] = experiment_config
 
 
-
 class Conclude(BaseCommand):
     help = "finish an experiment"
 
