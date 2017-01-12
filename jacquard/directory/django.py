@@ -2,6 +2,7 @@ import sqlalchemy
 
 from .base import Directory, UserEntry
 
+
 class DjangoDirectory(Directory):
     query = """
     SELECT
