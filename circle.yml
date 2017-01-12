@@ -1,0 +1,11 @@
+machine:
+  python:
+    version: python-3.6
+
+dependencies:
+  pre:
+    - pip install pytest coverage
+
+test:
+  override:
+    - py.test --cov=jacquard jacquard
