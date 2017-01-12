@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 from jacquard.users import get_settings
 from jacquard.storage.dummy import DummyStore
 
@@ -56,3 +58,16 @@ def test_overrides_take_precedence_over_experiment_settings():
         'overrides/1': {'foo': 'bazz'},
     })
     assert get_settings(1, store) == {'foo': 'bazz'}
+
+
+def test_does_not_write_to_storage_engine():
+    store = DummyStore('')
+    store.begin = MagicMock()
+    store.rollback = MagicMock()
+    store.commit = MagicMock()
+
+    get_settings(1, store)
+
+    store.begin.assert_called_once()
+    store.rollback.assert_called_once()
+    store.commit.assert_not_called()
