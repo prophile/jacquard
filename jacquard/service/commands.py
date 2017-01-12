@@ -5,7 +5,7 @@ from jacquard.commands import BaseCommand
 from jacquard.service import get_wsgi_app
 
 
-class RunServer(object):
+class RunServer(BaseCommand):
     help = "run a (local, debug) server"
 
     def add_arguments(self, parser):
