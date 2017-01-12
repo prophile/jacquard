@@ -1,11 +1,26 @@
 import pathlib
+import threading
 import collections
 import configparser
 
 from jacquard.storage import open_engine
 
 
-Config = collections.namedtuple('Config', 'storage')
+class Config(object):
+    def __init__(self, config_file):
+        self.storage_engine = config_file.get('storage', 'engine')
+        self.storage_url = config_file.get('storage', 'url', fallback='')
+        self._thread_local = threading.local()
+
+    @property
+    def storage(self):
+        if not hasattr(self._thread_local, 'storage'):
+            self._thread_local.storage = open_engine(
+                self.storage_engine,
+                self.storage_url,
+            )
+
+        return self._thread_local.storage
 
 
 def load_config(source):
@@ -20,10 +35,4 @@ def _load_config_from_fp(f):
     parser = configparser.ConfigParser()
     parser.read_file(f)
 
-    # Construct storage engine
-    engine = open_engine(
-        parser.get('storage', 'engine'),
-        parser.get('storage', 'url', fallback=''),
-    )
-
-    return Config(storage=engine)
+    return Config(parser)
