@@ -1,3 +1,4 @@
+import functools
 import sqlalchemy
 import sqlalchemy.sql
 
@@ -29,6 +30,7 @@ class DjangoDirectory(Directory):
             tags=tuple(tags),
         )
 
+    @functools.lru_cache(maxsize=1024)
     def lookup(self, user_id):
         query = self.query + " WHERE id = :user"
 
