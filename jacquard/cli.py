@@ -2,6 +2,7 @@ import sys
 import pathlib
 import argparse
 import configparser
+import pkg_resources
 
 from jacquard.storage import open_engine
 from jacquard.users import get_settings
@@ -22,6 +23,25 @@ def argument_parser():
         type=pathlib.Path,
         default=pathlib.Path('config.cfg'),
     )
+    parser.set_defaults(func=None)
+
+    subparsers = parser.add_subparsers(metavar='subcommand')
+
+    for entry_point in pkg_resources.iter_entry_points('jacquard.commands'):
+        command = entry_point.load()()
+
+        command_help = getattr(entry_point, 'help', entry_point.name)
+
+        subparser = subparsers.add_parser(
+            entry_point.name,
+            help=command_help,
+            description=command_help,
+        )
+
+        subparser.set_defaults(func=command.handle)
+
+        command.add_arguments(subparser)
+
     return parser
 
 
@@ -37,32 +57,21 @@ def load_config(config_file):
         url=parser.get('storage', 'url'),
     )
 
-    return engine
+    return {
+        'storage': engine,
+    }
 
 
 def main(args=sys.argv[1:]):
-    options = argument_parser().parse_args(args)
+    parser = argument_parser()
+    options = parser.parse_args(args)
+
+    if options.func is None:
+        parser.print_usage()
+        return
 
     # Parse options
-    storage = load_config(options.config)
+    config = load_config(options.config)
 
-    user_id = 339639
-
-    print(get_settings(user_id, storage))
-
-    # Do some dumb storage tests
-    with storage.transaction() as store:
-        old_version = store.get('version', 0)
-        store['version'] = old_version + 1
-
-    with storage.transaction() as store:
-        old_version = store.get('version', 0)
-        store['version'] = old_version + 1
-
-    with storage.transaction() as store:
-        print(store['version'])
-
-    import random
-    if random.random() < 0.2:
-        with storage.transaction() as store:
-            del store['version']
+    # Run subcommand
+    options.func(config, options)
