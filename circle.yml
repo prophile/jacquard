@@ -10,4 +10,4 @@ dependencies:
 
 test:
   override:
-    - py.test --cov=jacquard jacquard
+    - py.test -v --cov=jacquard jacquard
