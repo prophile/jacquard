@@ -53,6 +53,7 @@ setup(
             'dummy = jacquard.storage.dummy:DummyStore',
             'redis = jacquard.storage.redis:RedisStore',
             'file = jacquard.storage.file:FileStore',
+            'etcd = jacquard.storage.etcd:EtcdStore',
         ),
         'jacquard.commands': (
             'storage-dump = jacquard.storage.commands:StorageDump',
