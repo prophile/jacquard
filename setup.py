@@ -34,6 +34,7 @@ setup(
     install_requires=(
         'redis',
         'werkzeug',
+        'python-dateutil',
     ),
 
     setup_requires=(
