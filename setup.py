@@ -58,6 +58,7 @@ setup(
             'runserver = jacquard.service.commands:RunServer',
             'launch = jacquard.experiments.commands:Launch',
             'conclude = jacquard.experiments.commands:Conclude',
+            'load-experiment = jacquard.experiments.commands:Load',
         ),
     },
 )
