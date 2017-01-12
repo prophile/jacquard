@@ -50,6 +50,8 @@ setup(
         ),
         'jacquard.commands': (
             'storage-dump = jacquard.storage.commands:StorageDump',
+            'storage-flush = jacquard.storage.commands:StorageFlush',
+            'storage-import = jacquard.storage.commands:StorageImport',
         ),
     },
 )
