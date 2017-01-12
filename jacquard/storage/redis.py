@@ -34,7 +34,10 @@ class RedisStore(KVStore):
         return self.redis.get(key)
 
     def keys(self):
-        return self.redis.keys('{}*'.format(self.prefix))
+        return [
+            x.decode('utf-8')
+            for x in self.redis.keys('{}*'.format(self.prefix))
+        ]
 
     def encode_key(self, key):
         if ':' in key:
