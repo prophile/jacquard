@@ -9,7 +9,7 @@ def on_root(config):
 
 
 def on_user(config, user):
-    settings = get_settings(user, config.storage)
+    settings = get_settings(user, config.storage, config.directory)
     return {**settings, 'user': user}
 
 

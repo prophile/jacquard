@@ -111,7 +111,11 @@ class Show(BaseCommand):
 
     def handle(self, config, options):
         if options.user:
-            settings = get_settings(options.user, config.storage)
+            settings = get_settings(
+                options.user,
+                config.storage,
+                config.directory,
+            )
         else:
             with config.storage.transaction() as store:
                 settings = store.get('defaults', {})
