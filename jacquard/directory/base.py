@@ -1,8 +1,8 @@
 import abc
-import namedtuple
+import collections
 
 
-UserEntry = namedtuple('UserEntry', 'id join_date tags')
+UserEntry = collections.namedtuple('UserEntry', 'id join_date tags')
 
 
 class Directory(metaclass=abc.ABCMeta):
