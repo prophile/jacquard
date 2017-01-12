@@ -1,4 +1,5 @@
 import sqlalchemy
+import sqlalchemy.sql
 
 from .base import Directory, UserEntry
 
@@ -29,11 +30,19 @@ class DjangoDirectory(Directory):
         )
 
     def lookup(self, user_id):
-        query = self.query + " WHERE id = ?"
+        query = self.query + " WHERE id = :user"
 
-        result = self.engine.execute(query, int(user_id))
+        result = self.engine.execute(
+            sqlalchemy.sql.text(query),
+            user=int(user_id),
+        )
 
-        return describe_user(next(iter(result)))
+        try:
+            row = next(iter(result))
+        except StopIteration:
+            return None
+
+        return self.describe_user(row)
 
     def all_users(self):
         query = self.query + " ORDER BY id ASC"
