@@ -55,6 +55,7 @@ setup(
             'set-default = jacquard.users.commands:SetDefault',
             'override = jacquard.users.commands:Override',
             'show = jacquard.users.commands:Show',
+            'runserver = jacquard.service.commands:RunServer',
         ),
     },
 )
