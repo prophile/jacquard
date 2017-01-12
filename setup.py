@@ -53,6 +53,8 @@ setup(
             'storage-flush = jacquard.storage.commands:StorageFlush',
             'storage-import = jacquard.storage.commands:StorageImport',
             'set-default = jacquard.users.commands:SetDefault',
+            'override = jacquard.users.commands:Override',
+            'show = jacquard.users.commands:Show',
         ),
     },
 )
