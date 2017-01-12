@@ -13,7 +13,7 @@ class RunServer(BaseCommand):
             '-p',
             '--port',
             type=int,
-            default=8888,
+            default=1212,
             help="port to bind to",
         )
         parser.add_argument(
