@@ -28,7 +28,7 @@ def argument_parser():
     for entry_point in pkg_resources.iter_entry_points('jacquard.commands'):
         command = entry_point.load()()
 
-        command_help = getattr(entry_point, 'help', entry_point.name)
+        command_help = getattr(command, 'help', entry_point.name)
 
         subparser = subparsers.add_parser(
             entry_point.name,
