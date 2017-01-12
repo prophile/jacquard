@@ -1,5 +1,6 @@
 from .base import Directory
 
+
 class DummyDirectory(Directory):
     def __init__(self, users=()):
         self.users = {x.id: x for x in users}
