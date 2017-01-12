@@ -1,10 +1,9 @@
 import sys
 import pathlib
 import argparse
-import configparser
 import pkg_resources
 
-from jacquard.storage import open_engine
+from jacquard.config import load_config
 
 
 def argument_parser():
@@ -42,23 +41,6 @@ def argument_parser():
         command.add_arguments(subparser)
 
     return parser
-
-
-def load_config(config_file):
-    parser = configparser.ConfigParser()
-
-    with config_file.open('r') as f:
-        parser.read_file(f)
-
-    # Get storage engine
-    engine = open_engine(
-        engine=parser.get('storage', 'engine'),
-        url=parser.get('storage', 'url'),
-    )
-
-    return {
-        'storage': engine,
-    }
 
 
 def main(args=sys.argv[1:]):

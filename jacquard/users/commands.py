@@ -25,7 +25,7 @@ class SetDefault(BaseCommand):
         )
 
     def handle(self, config, options):
-        with config['storage'].transaction() as store:
+        with config.storage.transaction() as store:
             defaults = dict(store.get('defaults', {}))
 
             if options.delete:
@@ -67,7 +67,7 @@ class Override(BaseCommand):
         )
 
     def handle(self, config, options):
-        with config['storage'].transaction() as store:
+        with config.storage.transaction() as store:
             key = 'overrides/%s' % options.user
 
             overrides = dict(store.get(key, {}))
@@ -106,6 +106,6 @@ class Show(BaseCommand):
         parser.add_argument('user', help="user to show settings for")
 
     def handle(self, config, options):
-        settings = get_settings(options.user, config['storage'])
+        settings = get_settings(options.user, config.storage)
 
         pprint.pprint(settings)
