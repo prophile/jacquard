@@ -1,5 +1,11 @@
 import hashlib
 import datetime
+import dateutil.tz
+
+
+FAR_FUTURE = datetime.datetime.max.astimezone(dateutil.tz.tzutc())
+DISTANT_PAST = datetime.datetime.min.astimezone(dateutil.tz.tzutc())
+
 
 
 def get_settings(user_id, storage, directory=None):
@@ -31,18 +37,17 @@ def get_settings(user_id, storage, directory=None):
                 if not constraints.get('anonymous', True):
                     continue
             else:
-                # Disabled until we can figure out timezone awareness
-                #if (
-                #    constraints.get('joined_before', datetime.datetime.max) >
-                #    user_entry.join_date
-                #):
-                #    continue
+                if (
+                    user_entry.join_date >
+                    constraints.get('joined_before', FAR_FUTURE)
+                ):
+                    continue
 
-                #if (
-                #    constraints.get('joined_after', datetime.datetime.min) >
-                #    user_entry.join_date
-                #):
-                #    continue
+                if (
+                    user_entry.join_date <
+                    constraints.get('joined_after', DISTANT_PAST)
+                ):
+                    continue
 
                 required_tags = constraints.get('required_tags', ())
 
