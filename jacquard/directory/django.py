@@ -1,6 +1,6 @@
 import sqlalchemy
 
-from .base import Directory, User
+from .base import Directory, UserEntry
 
 class DjangoDirectory(Directory):
     query = """
@@ -21,13 +21,13 @@ class DjangoDirectory(Directory):
         if row.is_superuser:
             tags.append('superuser')
 
-        return User(
+        return UserEntry(
             id=row.id,
             join_date=row.date_joined,
             tags=tuple(tags),
         )
 
-    def lookup_user(self, user_id):
+    def lookup(self, user_id):
         query = self.query + " WHERE id = ?"
 
         result = self.engine.execute(query, int(user_id))
@@ -35,7 +35,9 @@ class DjangoDirectory(Directory):
         return describe_user(next(iter(result)))
 
     def all_users(self):
-        result = self.engine.execute(self.query)
+        query = self.query + " ORDER BY id ASC"
+
+        result = self.engine.execute(query)
 
         for row in result:
             yield self.describe_user(row)
