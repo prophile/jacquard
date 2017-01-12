@@ -103,9 +103,17 @@ class Show(BaseCommand):
     help = "show settings for user"
 
     def add_arguments(self, parser):
-        parser.add_argument('user', help="user to show settings for")
+        parser.add_argument(
+            'user',
+            help="user to show settings for",
+            nargs='?',
+        )
 
     def handle(self, config, options):
-        settings = get_settings(options.user, config.storage)
+        if options.user:
+            settings = get_settings(options.user, config.storage)
+        else:
+            with config.storage.transaction() as store:
+                settings = store.get('defaults', {})
 
         pprint.pprint(settings)
