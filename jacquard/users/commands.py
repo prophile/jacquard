@@ -74,7 +74,12 @@ class Override(BaseCommand):
             if options.delete:
                 with contextlib.suppress(KeyError):
                     del overrides[options.setting]
-                store[key] = overrides
+
+                if overrides == {}:
+                    with contextlib.suppress(KeyError):
+                        del store[key]
+                else:
+                    store[key] = overrides
 
             elif options.value:
                 try:
