@@ -14,6 +14,8 @@ setup(
     author="Alistair Lynn",
     author_email="alistair@alynn.co.uk",
 
+    license='MIT',
+
     packages=find_packages(),
 
     classifiers=(
