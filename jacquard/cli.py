@@ -75,3 +75,7 @@ def main(args=sys.argv[1:]):
 
     # Run subcommand
     options.func(config, options)
+
+
+if '__name__' == '__main__':
+    main()
