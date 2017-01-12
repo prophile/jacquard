@@ -65,5 +65,9 @@ setup(
             'conclude = jacquard.experiments.commands:Conclude',
             'load-experiment = jacquard.experiments.commands:Load',
         ),
+        'jacquard.directory_engines': (
+            'dummy = jacquard.directory.dummy:DummyDirectory',
+            'django = jacquard.directory.django:DjangoDirectory',
+        ),
     },
 )
