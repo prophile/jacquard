@@ -37,7 +37,8 @@ class SetDefault(BaseCommand):
                     value = json.loads(options.value)
                 except ValueError:
                     print(
-                        "Could not decode %r: maybe you need quotes?" % options.value,
+                        "Could not decode %r: maybe you need quotes?" %
+                        options.value,
                     )
                     return
 
@@ -86,7 +87,8 @@ class Override(BaseCommand):
                     value = json.loads(options.value)
                 except ValueError:
                     print(
-                        "Could not decode %r: maybe you need quotes?" % options.value,
+                        "Could not decode %r: maybe you need quotes?" %
+                        options.value,
                     )
                     return
 

@@ -5,7 +5,6 @@ import configparser
 import pkg_resources
 
 from jacquard.storage import open_engine
-from jacquard.users import get_settings
 
 
 def argument_parser():

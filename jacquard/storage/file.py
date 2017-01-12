@@ -1,6 +1,6 @@
 import sqlite3
 
-from .base import KVStore, Retry
+from .base import KVStore
 
 
 class FileStore(KVStore):
