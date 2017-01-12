@@ -6,7 +6,7 @@ class DummyDirectory(Directory):
         self.users = {x.id: x for x in users}
 
     def lookup(self, user_id):
-        return self.users[user_id]
+        return self.users.get(user_id)
 
     def all_users(self):
         return self.users.values()
