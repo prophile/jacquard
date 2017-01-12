@@ -48,7 +48,7 @@ def main(args=sys.argv[1:]):
     options = parser.parse_args(args)
 
     if options.func is None:
-        parser.print_usage()
+        parser.print_help()
         return
 
     # Parse options
