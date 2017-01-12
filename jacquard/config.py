@@ -1,6 +1,5 @@
 import pathlib
 import threading
-import collections
 import configparser
 
 from jacquard.storage import open_engine
