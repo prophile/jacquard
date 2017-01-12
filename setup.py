@@ -48,5 +48,8 @@ setup(
             'redis = jacquard.storage.redis:RedisStore',
             'file = jacquard.storage.file:FileStore',
         ),
+        'jacquard.commands': (
+            'storage-dump = jacquard.storage.commands:StorageDump',
+        ),
     },
 )
