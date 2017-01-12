@@ -18,10 +18,22 @@ def on_user(config, user):
 def on_experiments(config):
     with config.storage.transaction() as store:
         active_experiments = store.get('active-experiments', ())
+        experiments = []
+
+        for key in store:
+            if not key.startswith('experiments/'):
+                continue
+            definition = store[key]
+            experiments.append(definition)
 
     return [
-        {'id': experiment, 'url': '/experiment/%s' % experiment}
-        for experiment in active_experiments
+        {
+            'id': experiment['id'],
+            'url': '/experiment/%s' % experiment['id'],
+            'state': 'active' if experiment['id'] in active_experiments else 'inactive',
+            'name': experiment.get('name', experiment['id']),
+        }
+        for experiment in experiments
     ]
 
 
