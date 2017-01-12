@@ -6,7 +6,7 @@ with open('README.rst', 'r', encoding='utf-8') as f:
 
 setup(
     name='jacquard-split',
-    version='0.1.1',
+    version='0.1.2',
     url='https://github.com/prophile/jacquard',
     description="Split testing server",
     long_description=long_description,
@@ -21,7 +21,7 @@ setup(
     classifiers=(
         'Development Status :: 2 - Pre-Alpha',
         'Environment :: Console',
-        'License :: Open Source :: MIT',
+        'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Operating System :: POSIX',
         'Programming Language :: Python',
