@@ -6,7 +6,7 @@ with open('README.rst', 'r', encoding='utf-8') as f:
 
 setup(
     name='jacquard',
-    version='0.1.0',
+    version='0.1.1',
     url='https://github.com/prophile/jacquard',
     description="Split testing server",
     long_description=long_description,
