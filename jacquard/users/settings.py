@@ -1,7 +1,7 @@
 import hashlib
 
 
-def get_settings(user_id, storage):
+def get_settings(user_id, storage, directory=None):
     with storage.transaction() as store:
         defaults = store.get('defaults', {})
         live_experiments = store.get('active-experiments', [])
