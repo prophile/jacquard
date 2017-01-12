@@ -3,8 +3,8 @@ import datetime
 import dateutil.tz
 
 
-FAR_FUTURE = datetime.datetime.max.astimezone(dateutil.tz.tzutc())
-DISTANT_PAST = datetime.datetime.min.astimezone(dateutil.tz.tzutc())
+FAR_FUTURE = datetime.datetime.max.replace(tzinfo=dateutil.tz.tzutc())
+DISTANT_PAST = datetime.datetime.min.replace(tzinfo=dateutil.tz.tzutc())
 
 
 def meets_constraints(constraints, user_entry):
