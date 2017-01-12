@@ -3,10 +3,11 @@ import werkzeug.routing
 import werkzeug.exceptions
 
 from jacquard.users import get_settings
+from jacquard.users.settings import meets_constraints, branch_hash
 
 
 def on_root(config):
-    return {'user': '/users/<user>'}
+    return {'user': '/users/<user>', 'experiments': '/experiment'}
 
 
 def on_user(config, user):
