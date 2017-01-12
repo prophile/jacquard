@@ -56,6 +56,8 @@ setup(
             'override = jacquard.users.commands:Override',
             'show = jacquard.users.commands:Show',
             'runserver = jacquard.service.commands:RunServer',
+            'launch = jacquard.experiments.commands:Launch',
+            'conclude = jacquard.experiments.commands:Conclude',
         ),
     },
 )
