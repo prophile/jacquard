@@ -11,15 +11,17 @@ class Config(object):
         self.storage_url = config_file.get('storage', 'url', fallback='')
         self._thread_local = threading.local()
 
+    def _thread_local_property(self, name, generator):
+        if not hasattr(self._thread_local, name):
+            setattr(self._thread_local, name, generator())
+        return getattr(self._thread_local, name)
+
+    def _open_storage(self):
+        return open_engine(self.storage_engine, self.storage_url)
+
     @property
     def storage(self):
-        if not hasattr(self._thread_local, 'storage'):
-            self._thread_local.storage = open_engine(
-                self.storage_engine,
-                self.storage_url,
-            )
-
-        return self._thread_local.storage
+        return self._thread_local_property('storage', self._open_storage)
 
 
 def load_config(source):
