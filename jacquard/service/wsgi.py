@@ -124,10 +124,10 @@ def get_wsgi_app(config):
             response = endpoint(config, **kwargs)
 
             encoded_response = json.dumps(response).encode('utf-8')
-            start_response('200 OK', (
+            start_response('200 OK', [
                 ('Content-Type', 'application/json'),
                 ('Content-Length', str(len(encoded_response))),
-            ))
+            ])
             return [encoded_response]
         except werkzeug.exceptions.HTTPException as e:
             return e(environ, start_response)

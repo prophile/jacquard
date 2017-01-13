@@ -64,7 +64,7 @@ def argument_parser():
     return parser
 
 
-def main(args=sys.argv[1:]):
+def main(args=sys.argv[1:], config=None):
     """
     Run as if from the command line, with the given arguments.
 
@@ -72,6 +72,8 @@ def main(args=sys.argv[1:]):
 
     Note that this function is permitted to raise SystemExit; users who do not
     want exciting exiting behaviour should be prepared to catch this.
+
+    If `config` is given, it is used in place of loading a configuration file.
     """
     parser = argument_parser()
     options = parser.parse_args(args)
@@ -81,7 +83,8 @@ def main(args=sys.argv[1:]):
         return
 
     # Parse options
-    config = load_config(options.config)
+    if config is None:
+        config = load_config(options.config)
 
     # Run subcommand
     options.func(config, options)
