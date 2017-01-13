@@ -1,3 +1,5 @@
+"""Base class for storage engine implementations."""
+
 import abc
 import contextlib
 
