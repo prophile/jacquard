@@ -45,3 +45,16 @@ def test_run_basic_command():
 
         """
     ).strip()
+
+
+def test_run_write_command():
+    config = unittest.mock.Mock()
+    config.storage = DummyStore('', data={})
+
+    output = io.StringIO()
+    with contextlib.redirect_stdout(output):
+        main(['set-default', 'foo', '"bar"'], config=config)
+
+    assert output.getvalue() == ''
+
+    assert config.storage.data == {'defaults': '{"foo": "bar"}'}
