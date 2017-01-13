@@ -11,6 +11,7 @@ fpm -s python \
     --deb-suggests python3-sqlalchemy \
     --deb-suggests python3-psycopg2 \
     -d python3 \
+    -d python3-pkg-resources \
     --force \
     jacquard-split
 
