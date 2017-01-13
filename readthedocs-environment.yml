@@ -1,6 +1,6 @@
 name: py35
 dependencies:
-- python==3.5*
+- python=3.5
 - pip
 - pip:
   - sphinx-argparse
