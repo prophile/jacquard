@@ -1,3 +1,5 @@
+"""`jacquard` command-line tool handling."""
+
 import sys
 import pathlib
 import argparse
@@ -7,6 +9,13 @@ from jacquard.config import load_config
 
 
 def argument_parser():
+    """
+    Generate an argparse `ArgumentParser` for the CLI.
+
+    This will look through all defined `jacquard.commands` entry points for
+    subcommands; these are subclasses of `jacquard.commands.BaseCommand`.
+    Using this mechanism, plugins can add their own subcommands.
+    """
     parser = argparse.ArgumentParser(description="Split testing server")
     parser.add_argument(
         '-v',
@@ -44,6 +53,14 @@ def argument_parser():
 
 
 def main(args=sys.argv[1:]):
+    """
+    Run as if from the command line, with the given arguments.
+
+    If the arguments in `args` are not given they default to using `sys.argv`.
+
+    Note that this function is permitted to raise SystemExit; users who do not
+    want exciting exiting behaviour should be prepared to catch this.
+    """
     parser = argument_parser()
     options = parser.parse_args(args)
 
