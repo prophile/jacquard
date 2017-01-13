@@ -30,7 +30,10 @@ def on_experiments(config):
         {
             'id': experiment['id'],
             'url': '/experiment/%s' % experiment['id'],
-            'state': 'active' if experiment['id'] in active_experiments else 'inactive',
+            'state':
+                'active'
+                if experiment['id'] in active_experiments
+                else 'inactive',
             'name': experiment.get('name', experiment['id']),
         }
         for experiment in experiments
