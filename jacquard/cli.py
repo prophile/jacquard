@@ -30,6 +30,13 @@ def argument_parser():
         type=pathlib.Path,
         default=pathlib.Path('config.cfg'),
     )
+    parser.add_argument(
+        '-V',
+        '--version',
+        help="show version and exit",
+        action='version',
+        version=str(pkg_resources.working_set.by_key['jacquard-split']),
+    )
     parser.set_defaults(func=None)
 
     subparsers = parser.add_subparsers(metavar='subcommand')
