@@ -1,9 +1,9 @@
 import sqlite3
 
-from .base import KVStore
+from .base import StorageEngine
 
 
-class FileStore(KVStore):
+class FileStore(StorageEngine):
     def __init__(self, connection_string):
         self.db = sqlite3.connect(
             connection_string,

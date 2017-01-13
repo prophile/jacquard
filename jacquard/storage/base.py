@@ -6,7 +6,7 @@ import contextlib
 from .utils import TransactionMap
 
 
-class KVStore(metaclass=abc.ABCMeta):
+class StorageEngine(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def __init__(self, connection_string):
         pass

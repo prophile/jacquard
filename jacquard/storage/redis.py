@@ -1,8 +1,8 @@
-from .base import KVStore
+from .base import StorageEngine
 from .exceptions import Retry
 
 
-class RedisStore(KVStore):
+class RedisStore(StorageEngine):
     def __init__(self, connection_string):
         # Lazily import Redis
         import redis

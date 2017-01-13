@@ -1,9 +1,9 @@
 import json
 
-from .base import KVStore
+from .base import StorageEngine
 
 
-class DummyStore(KVStore):
+class DummyStore(StorageEngine):
     def __init__(self, connection_string, *, data=None):
         if data is not None:
             self.data = {

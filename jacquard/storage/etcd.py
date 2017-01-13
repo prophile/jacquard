@@ -2,7 +2,7 @@ import json
 import threading
 import urllib.parse
 
-from .base import KVStore
+from .base import StorageEngine
 from .exceptions import Retry
 
 _CONNECTION_POOL = {}
@@ -82,7 +82,7 @@ def _get_connection(connection_string):
         return connection
 
 
-class EtcdStore(KVStore):
+class EtcdStore(StorageEngine):
     def __init__(self, connection_string):
         self.connection = _get_connection(connection_string)
 
