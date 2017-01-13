@@ -1,8 +1,7 @@
 import pprint
 
 from jacquard.commands import BaseCommand
-from jacquard.storage import open_engine
-from jacquard.storage.utils import copy_data
+from .utils import copy_data, open_engine
 
 
 class StorageDump(BaseCommand):
