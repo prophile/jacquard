@@ -37,6 +37,17 @@ The defaults can be controlled through the `jacquard set-default` command.
 Experiments
 -----------
 
+An experiment is an actual test to be run on users. Each experiment is defined
+by a unique `id` (it is recommended to use slugs such as `"cta_colour_test_3"`)
+and specifies a number of branches.
+
+A branch has its own `id` (unique within the experiment but not globally
+unique) and specifies the `settings` which take precedence over the defaults
+for users on that branch.
+
+By convention, the first branch is used as a control group and takes the `id`
+`"control"`.
+
 Overrides
 ---------
 
