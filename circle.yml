@@ -6,6 +6,7 @@ dependencies:
   pre:
     - pip install pytest pytest-cov
     - pip install flake8 flake8-docstrings
+    - sudo apt-get update ; sudo apt-get install python3
     - gem install fpm
   override:
     - pip install .
