@@ -1,4 +1,20 @@
 Concepts
 ========
 
-pony
+Settings
+--------
+
+Defaults
+--------
+
+Experiments
+-----------
+
+Overrides
+---------
+
+Storage
+-------
+
+User directories
+----------------
