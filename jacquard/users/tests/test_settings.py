@@ -68,6 +68,6 @@ def test_does_not_write_to_storage_engine():
 
     get_settings(1, store)
 
-    store.begin.assert_called_once()
-    store.rollback.assert_called_once()
+    store.begin.assert_called_once_with()
+    store.rollback.assert_called_once_with()
     store.commit.assert_not_called()
