@@ -1,7 +1,16 @@
+import datetime
+import dateutil.tz
+
 from unittest.mock import MagicMock
 
 from jacquard.users import get_settings
 from jacquard.storage.dummy import DummyStore
+from jacquard.directory.base import UserEntry
+from jacquard.directory.dummy import DummyDirectory
+
+
+def _example_time():
+    return datetime.datetime.now(dateutil.tz.tzutc())
 
 
 def test_empty_dict_with_no_configuration():
@@ -92,3 +101,43 @@ def test_fails_on_constraints_without_directory():
         pass
     else:
         raise AssertionError("Expected ValueError")
+
+
+def test_allows_users_meeting_constraints():
+    store = DummyStore('', data={
+        'experiments/foo': {
+            'branches': [
+                {'id': 'control', 'settings': {'bazz': 1}},
+            ],
+            'constraints': {
+                'excluded_tags': ['bar'],
+            },
+        },
+        'active-experiments': ['foo'],
+    })
+
+    directory = DummyDirectory(users=(
+        UserEntry(id=1, join_date=_example_time(), tags=('foo',)),
+    ))
+
+    assert get_settings(1, store, directory) == {'bazz': 1}
+
+
+def test_excludes_users_not_meeting_constraints():
+    store = DummyStore('', data={
+        'experiments/foo': {
+            'branches': [
+                {'id': 'control', 'settings': {'bazz': 1}},
+            ],
+            'constraints': {
+                'excluded_tags': ['bar'],
+            },
+        },
+        'active-experiments': ['foo'],
+    })
+
+    directory = DummyDirectory(users=(
+        UserEntry(id=1, join_date=_example_time(), tags=('bar',)),
+    ))
+
+    assert get_settings(1, store, directory) == {}
