@@ -6,6 +6,8 @@ jacquard: split testing for humans?
    :caption: Contents:
 
    intro
+   concepts
+   http-api
    cli
 
 
