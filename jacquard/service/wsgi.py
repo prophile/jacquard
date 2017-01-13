@@ -1,3 +1,5 @@
+"""Main WSGI application."""
+
 import json
 import werkzeug.routing
 import werkzeug.exceptions
@@ -8,15 +10,38 @@ from jacquard.experiments.constraints import meets_constraints
 
 
 def on_root(config):
+    """
+    The / endpoint.
+
+    Returns a small number of URLs to the rest of the system. Probably not
+    hugely useful for production, provided primarily to make the API more
+    discoverable without probing into the source.
+
+    If you're here probing into the source anyway, this goal has evidently
+    failed. Please accept my apologies.
+    """
     return {'user': '/users/<user>', 'experiments': '/experiment'}
 
 
 def on_user(config, user):
+    """
+    The settings-for-user endpoint.
+
+    This is the primary endpoint for normal interactive use. It just looks up
+    the current settings for a given user ID and returns them.
+    """
     settings = get_settings(user, config.storage, config.directory)
     return {**settings, 'user': user}
 
 
 def on_experiments(config):
+    """
+    The experiments index endpoint.
+
+    This is for use in reporting tooling: it provides a brief summary of all
+    experiments known to the system, as well as whether or not they are
+    active.
+    """
     with config.storage.transaction() as store:
         active_experiments = store.get('active-experiments', ())
         experiments = []
@@ -42,6 +67,16 @@ def on_experiments(config):
 
 
 def on_experiment(config, experiment):
+    """
+    The experiment lookup endpoint.
+
+    This provides detailed data on a specific experiment, including lists
+    of all user IDs in each of its branches.
+
+    As a result this is quite expensive to hit.
+
+    Provided for reporting tooling which runs statistics.
+    """
     with config.storage.transaction() as store:
         experiment_config = store['experiments/%s' % experiment]
 
@@ -79,7 +114,9 @@ url_map = werkzeug.routing.Map((
 
 
 def get_wsgi_app(config):
+    """Get the main WSGI handler, by config."""
     def application(environ, start_response):
+        """WSGI callable."""
         try:
             urls = url_map.bind_to_environ(environ)
             endpoint, kwargs = urls.match()

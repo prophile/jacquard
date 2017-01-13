@@ -1,3 +1,5 @@
+"""Command-line utilities for HTTP service subsystem."""
+
 import werkzeug.debug
 import werkzeug.serving
 
@@ -6,9 +8,20 @@ from jacquard.service import get_wsgi_app
 
 
 class RunServer(BaseCommand):
+    """
+    Run a debug server.
+
+    **This is for debug, local use only, not production.**
+
+    This command is named to mirror its equivalent in Django. It configures
+    the WSGI app and serves it through Werkzeug's simple serving mechanism,
+    with a debugger attached, and auto-reloading.
+    """
+
     help = "run a (local, debug) server"
 
     def add_arguments(self, parser):
+        """Add argparse arguments."""
         parser.add_argument(
             '-p',
             '--port',
@@ -25,6 +38,7 @@ class RunServer(BaseCommand):
         )
 
     def handle(self, config, options):
+        """Run command."""
         app = get_wsgi_app(config)
 
         werkzeug.serving.run_simple(
