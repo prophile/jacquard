@@ -4,6 +4,7 @@ fpm -s python \
     -t deb \
     --python-bin /usr/bin/python3 \
     --python-package-name-prefix python3 \
+    --python-install-lib /usr/lib/python3/dist-packages \
     -a all \
     -m "Alistair Lynn <alistair@thread.com>" \
     --deb-compression xz \
