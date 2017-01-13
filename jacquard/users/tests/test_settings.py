@@ -71,3 +71,24 @@ def test_does_not_write_to_storage_engine():
     store.begin.assert_called_once_with()
     store.rollback.assert_called_once_with()
     store.commit.assert_not_called()
+
+
+def test_fails_on_constraints_without_directory():
+    store = DummyStore('', data={
+        'experiments/foo': {
+            'branches': [
+                {'id': 'control', 'settings': {}},
+            ],
+            'constraints': {
+                'exclude_tags': ['bar'],
+            },
+        },
+        'active-experiments': ['foo'],
+    })
+
+    try:
+        get_settings(1, store)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Expected ValueError")
