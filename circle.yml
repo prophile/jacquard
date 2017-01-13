@@ -12,4 +12,5 @@ test:
   pre:
     - find . -name '__pycache__' | xargs rm -rf
   override:
-    - py.test -v --cov=jacquard jacquard
+    - mkdir -p $CIRCLE_TEST_REPORTS/pytest
+    - py.test -v --cov=jacquard --junit-xml=$CIRCLE_TEST_REPORTS/pytest/junit.xml jacquard
