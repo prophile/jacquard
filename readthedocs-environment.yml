@@ -4,4 +4,4 @@ dependencies:
 - pip
 - pip:
   - sphinx-argparse
-  - .
+  - ..
