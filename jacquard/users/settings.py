@@ -1,9 +1,20 @@
+"""Per-user settings lookup."""
+
 import hashlib
 
 from jacquard.experiments.constraints import meets_constraints
 
 
 def get_settings(user_id, storage, directory=None):
+    """
+    Look up the current settings dict for a given user ID.
+
+    This takes, in order of preference:
+
+    1. The global defaults,
+    2. Any experiment settings for experiments the user is in,
+    3. User-specific overrides.
+    """
     with storage.transaction() as store:
         defaults = store.get('defaults', {})
         live_experiments = store.get('active-experiments', [])
@@ -41,6 +52,7 @@ def get_settings(user_id, storage, directory=None):
 
 
 def branch_hash(experiment_id, user_id):
+    """Get the numeric branch hash for a given experiment ID/user ID pair."""
     sha = hashlib.sha256()
     sha.update(("%s::%s" % (experiment_id, user_id)).encode('utf-8'))
     return int.from_bytes(sha.digest(), 'big', signed=False)
