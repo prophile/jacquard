@@ -60,3 +60,4 @@ target/
 
 jacquard.db
 config.cfg
+doc/_build
