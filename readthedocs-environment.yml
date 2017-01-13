@@ -4,4 +4,4 @@ dependencies:
 - pip
 - pip:
   - sphinx-argparse
-  - ..
+  - /home/docs/checkouts/readthedocs.org/user_builds/jacquard-split/checkouts/latest
