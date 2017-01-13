@@ -1,12 +1,6 @@
-import datetime
 import hashlib
 
-import dateutil.tz
-
 from jacquard.experiments.constraints import meets_constraints
-
-FAR_FUTURE = datetime.datetime.max.replace(tzinfo=dateutil.tz.tzutc())
-DISTANT_PAST = datetime.datetime.min.replace(tzinfo=dateutil.tz.tzutc())
 
 
 def get_settings(user_id, storage, directory=None):
