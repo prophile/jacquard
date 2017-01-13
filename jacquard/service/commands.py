@@ -18,6 +18,7 @@ class RunServer(BaseCommand):
     with a debugger attached, and auto-reloading.
     """
 
+    plumbing = True
     help = "run a (local, debug) server"
 
     def add_arguments(self, parser):
