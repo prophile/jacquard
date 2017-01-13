@@ -1,3 +1,5 @@
+"""etcd storage engine."""
+
 import json
 import threading
 import urllib.parse
@@ -83,18 +85,35 @@ def _get_connection(connection_string):
 
 
 class EtcdStore(StorageEngine):
+    """etcd storage engine."""
+
     def __init__(self, connection_string):
+        """
+        Initialise connection.
+
+        The connection string is given as a URL. The etcd store only uses a
+        single key in etcd, and the key is given in the path. The netloc and
+        scheme are used to determine the connection.
+
+        For instance, to connect unencrypted to a local etcd instance and use
+        the path /jacquard/faces, the URL would be:
+
+        `http://localhost:2379/jacquard/faces`
+        """
         self.connection = _get_connection(connection_string)
 
     def begin(self):
+        """Begin transaction."""
         data, self.index = self.connection.get()
         self.data = json.loads(data)
 
     def rollback(self):
+        """Roll back transaction."""
         del self.data
         del self.index
 
     def commit(self, changes, deletions):
+        """Commit transaction."""
         self.data.update(changes)
 
         for key in deletions:
@@ -112,7 +131,9 @@ class EtcdStore(StorageEngine):
             raise Retry()
 
     def get(self, key):
+        """Get value."""
         return self.data.get(key)
 
     def keys(self):
+        """All keys."""
         return self.data.keys()

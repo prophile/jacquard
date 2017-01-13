@@ -1,10 +1,21 @@
+"""SQLite3-based file storage engine."""
+
 import sqlite3
 
 from .base import StorageEngine
 
 
 class FileStore(StorageEngine):
+    """Flat(ish)-file SQLite3-based storage engine."""
+
     def __init__(self, connection_string):
+        """
+        Open up connection.
+
+        The connection string is given as a file: URL for the path to the
+        database file. It needn't be absolute, and will be created if it
+        does not already exist.
+        """
         self.db = sqlite3.connect(
             connection_string,
             isolation_level=None,  # Explicit BEGIN
@@ -18,6 +29,7 @@ class FileStore(StorageEngine):
         """)
 
     def begin(self):
+        """Begin transaction."""
         self.db.execute('BEGIN')
         self._transaction_keys = [
             row[0]
@@ -27,6 +39,7 @@ class FileStore(StorageEngine):
         ]
 
     def commit(self, changes, deletions):
+        """Commit transaction."""
         # Insertions
         insertions = [
             (key, value)
@@ -55,10 +68,12 @@ class FileStore(StorageEngine):
         del self._transaction_keys
 
     def rollback(self):
+        """Roll back transaction."""
         self.db.rollback()
         del self._transaction_keys
 
     def get(self, key):
+        """Get value."""
         rows = list(self.db.execute("""
             SELECT "value" FROM "configuration" WHERE "key" = ?
         """, (key,)))
@@ -71,4 +86,5 @@ class FileStore(StorageEngine):
             return rows[0][0]
 
     def keys(self):
+        """All keys."""
         return self._transaction_keys
