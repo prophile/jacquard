@@ -2,6 +2,7 @@ import pprint
 
 from jacquard.commands import BaseCommand
 from jacquard.storage import open_engine
+from jacquard.storage.utils import copy_data
 
 
 class StorageDump(BaseCommand):
@@ -26,10 +27,7 @@ class StorageImport(BaseCommand):
 
     def handle(self, config, option):
         src = open_engine(option.engine, option.url)
-        with config.storage.transaction() as dst_store:
-            with src.transaction() as src_store:
-                for key, value in src_store.items():
-                    dst_store[key] = value
+        copy_data(src, config.storage)
 
 
 class StorageFlush(BaseCommand):
