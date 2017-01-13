@@ -6,6 +6,7 @@ dependencies:
   pre:
     - pip install pytest pytest-cov
     - pip install flake8 flake8-docstrings
+    - gem install fpm
   override:
     - pip install .
 
@@ -16,3 +17,6 @@ test:
     - mkdir -p $CIRCLE_TEST_REPORTS/pytest
     - py.test -v --cov=jacquard --junit-xml=$CIRCLE_TEST_REPORTS/pytest/junit.xml jacquard
     - flake8 --exclude=tests jacquard
+  post:
+    - ./hax_debian.sh
+    - mv *.deb $CIRCLE_ARTIFACTS/
