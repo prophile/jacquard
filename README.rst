@@ -11,3 +11,19 @@ jacquard
     :target: http://jacquard-split.readthedocs.io/en/latest/
 
 Split-testing server.
+
+Installation
+------------
+
+Jacquard can be installed through `pip`:
+
+.. code:: bash
+
+    pip install jacquard-split
+
+Alternatively it can be built from `GitHub <https://github.com/prophile/jacquard>`_.
+
+Documentation
+-------------
+
+Full documentation is available in `ReadTheDocs <http://jacquard-split.readthedocs.io/en/latest/>`_.
