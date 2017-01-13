@@ -1,3 +1,5 @@
+"""Command-line utilities for experiments subsystem."""
+
 import json
 import pathlib
 import datetime
@@ -6,12 +8,22 @@ from jacquard.commands import BaseCommand
 
 
 class Launch(BaseCommand):
+    """
+    Launch a given experiment.
+
+    This is one of the main user commands. It promotes an experiment to being
+    live, which effectively locks it out from being changed and starts putting
+    users on its branches.
+    """
+
     help = "start an experiment running"
 
     def add_arguments(self, parser):
+        """Add argparse arguments."""
         parser.add_argument('experiment', help="experiment to launch")
 
     def handle(self, config, options):
+        """Run command."""
         with config.storage.transaction() as store:
             try:
                 experiment_config = store[
@@ -36,9 +48,19 @@ class Launch(BaseCommand):
 
 
 class Conclude(BaseCommand):
+    """
+    Conclude a given experiment.
+
+    This is one of the main user commands. It demotes an experiment to no
+    longer being live, records a conclusion date, and (optionally but
+    strongly advised) promotes the settings from one of its branches into
+    the defaults.
+    """
+
     help = "finish an experiment"
 
     def add_arguments(self, parser):
+        """Add argparse arguments."""
         parser.add_argument('experiment', help="experiment to conclude")
         mutex_group = parser.add_mutually_exclusive_group(required=True)
         mutex_group.add_argument(
@@ -54,6 +76,7 @@ class Conclude(BaseCommand):
         )
 
     def handle(self, config, options):
+        """Run command."""
         with config.storage.transaction() as store:
             try:
                 experiment_config = store[
@@ -92,9 +115,22 @@ class Conclude(BaseCommand):
 
 
 class Load(BaseCommand):
+    """
+    Load an experiment definition from a file.
+
+    This is obviously a pretty awful interface which will only do for this
+    MVP state of the project, but currently this is the mechanism for loading
+    an experiment definition. There are some basic checks on having nonzero
+    branches and not altering live experiments but otherwise this is not
+    particularly robust code and needs replacing.
+
+    At least loading from YAML might be a good start...
+    """
+
     help = "load an experiment definition from a file"
 
     def add_arguments(self, parser):
+        """Add argparse arguments."""
         parser.add_argument(
             'file',
             type=pathlib.Path,
@@ -102,6 +138,7 @@ class Load(BaseCommand):
         )
 
     def handle(self, config, options):
+        """Run command."""
         with options.file.open('r') as f:
             definition = json.load(f)
 
