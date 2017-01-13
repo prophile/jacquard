@@ -1,5 +1,6 @@
 name: py35
 dependencies:
+- sphinx
 - pip:
   - sphinx-argparse
   - .
