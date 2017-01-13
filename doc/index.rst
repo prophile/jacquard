@@ -5,6 +5,8 @@ jacquard: split testing for humans?
    :maxdepth: 2
    :caption: Contents:
 
+   intro
+   cli
 
 
 Indices and tables
