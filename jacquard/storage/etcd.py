@@ -2,8 +2,8 @@ import json
 import threading
 import urllib.parse
 
-from .base import KVStore, Retry
-
+from .base import KVStore
+from .exceptions import Retry
 
 _CONNECTION_POOL = {}
 _CONNECTION_POOL_LOCK = threading.Lock()

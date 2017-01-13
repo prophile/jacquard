@@ -1,4 +1,5 @@
-from .base import KVStore, Retry
+from .base import KVStore
+from .exceptions import Retry
 
 
 class RedisStore(KVStore):

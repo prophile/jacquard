@@ -1,11 +1,7 @@
 import abc
-import json
-import contextlib
 import collections.abc
-
-
-class Retry(Exception):
-    pass
+import contextlib
+import json
 
 
 class KVStore(metaclass=abc.ABCMeta):
