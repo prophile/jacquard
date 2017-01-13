@@ -39,7 +39,7 @@ def argument_parser():
     )
     parser.set_defaults(func=None)
 
-    subparsers = parser.add_subparsers(metavar='subcommand')
+    subparsers = parser.add_subparsers(metavar='command', title='subcommands')
 
     for entry_point in pkg_resources.iter_entry_points('jacquard.commands'):
         command = entry_point.load()()
