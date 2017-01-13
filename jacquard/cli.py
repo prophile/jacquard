@@ -46,14 +46,19 @@ def argument_parser():
 
         command_help = getattr(command, 'help', entry_point.name)
 
+        plumbing = getattr(command, 'plumbing', False)
+
+        if plumbing:
+            kwargs = {'description': command_help}
+        else:
+            kwargs = {'description': command_help, 'help': command_help}
+
         subparser = subparsers.add_parser(
             entry_point.name,
-            help=command_help,
-            description=command_help,
+            **kwargs
         )
 
         subparser.set_defaults(func=command.handle)
-
         command.add_arguments(subparser)
 
     return parser

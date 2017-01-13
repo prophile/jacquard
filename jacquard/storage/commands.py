@@ -5,6 +5,7 @@ from jacquard.storage import open_engine
 
 
 class StorageDump(BaseCommand):
+    plumbing = True
     help = "dump all objects in storage"
 
     def handle(self, config, options):

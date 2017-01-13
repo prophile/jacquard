@@ -2,6 +2,7 @@ from jacquard.commands import BaseCommand
 
 
 class ListUsers(BaseCommand):
+    plumbing = True
     help = "list all users"
 
     def handle(self, config, options):
