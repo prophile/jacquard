@@ -59,6 +59,7 @@ setup(
             'storage-dump = jacquard.storage.commands:StorageDump',
             'storage-flush = jacquard.storage.commands:StorageFlush',
             'storage-import = jacquard.storage.commands:StorageImport',
+            'storage-export = jacquard.storage.commands:StorageExport',
             'set-default = jacquard.users.commands:SetDefault',
             'override = jacquard.users.commands:Override',
             'show = jacquard.users.commands:Show',

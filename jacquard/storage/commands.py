@@ -30,6 +30,18 @@ class StorageImport(BaseCommand):
         copy_data(src, config.storage)
 
 
+class StorageExport(BaseCommand):
+    help = "export stored data to another storage engine"
+
+    def add_arguments(self, parser):
+        parser.add_argument('engine', help="storage engine to save to")
+        parser.add_argument('url', help="storage URL to save to")
+
+    def handle(self, config, option):
+        dst = open_engine(option.engine, option.url)
+        copy_data(config.storage, dst)
+
+
 class StorageFlush(BaseCommand):
     help = "clear everything in storage"
 
