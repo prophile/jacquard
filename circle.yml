@@ -9,5 +9,7 @@ dependencies:
     - pip install .
 
 test:
+  pre:
+    - find . -name '__pycache__' | xargs rm -rf
   override:
     - py.test -v --cov=jacquard jacquard
