@@ -2,7 +2,7 @@
 set -e
 fpm -s python \
     -t deb \
-    --python-bin python3 \
+    --python-bin /usr/bin/python3 \
     --python-package-name-prefix python3 \
     -a all \
     -m "Alistair Lynn <alistair@thread.com>" \
