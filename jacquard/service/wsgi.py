@@ -3,7 +3,8 @@ import werkzeug.routing
 import werkzeug.exceptions
 
 from jacquard.users import get_settings
-from jacquard.users.settings import meets_constraints, branch_hash
+from jacquard.users.settings import branch_hash
+from jacquard.experiments.constraints import meets_constraints
 
 
 def on_root(config):

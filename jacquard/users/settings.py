@@ -1,42 +1,12 @@
-import hashlib
 import datetime
+import hashlib
+
 import dateutil.tz
 
+from jacquard.experiments.constraints import meets_constraints
 
 FAR_FUTURE = datetime.datetime.max.replace(tzinfo=dateutil.tz.tzutc())
 DISTANT_PAST = datetime.datetime.min.replace(tzinfo=dateutil.tz.tzutc())
-
-
-def meets_constraints(constraints, user_entry):
-    if user_entry is None:
-        return constraints.get('anonymous', True)
-
-    if (
-        user_entry.join_date >
-        constraints.get('joined_before', FAR_FUTURE)
-    ):
-        return False
-
-    if (
-        user_entry.join_date <
-        constraints.get('joined_after', DISTANT_PAST)
-    ):
-        return False
-
-    required_tags = constraints.get('required_tags', ())
-
-    if (
-        required_tags and
-        any(x not in user_entry.tags for x in required_tags)
-    ):
-        return False
-
-    excluded_tags = constraints.get('excluded_tags', ())
-
-    if any(x in excluded_tags for x in user_entry.tags):
-        return False
-
-    return True
 
 
 def get_settings(user_id, storage, directory=None):
