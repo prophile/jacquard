@@ -1,7 +1,8 @@
 """General user settings commands."""
 
+import sys
 import json
-import pprint
+import yaml
 import contextlib
 
 from jacquard.commands import BaseCommand
@@ -152,4 +153,4 @@ class Show(BaseCommand):
             with config.storage.transaction() as store:
                 settings = store.get('defaults', {})
 
-        pprint.pprint(settings)
+        yaml.dump(settings, sys.stdout, default_flow_style=False)
