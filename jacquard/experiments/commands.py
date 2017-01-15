@@ -1,6 +1,6 @@
 """Command-line utilities for experiments subsystem."""
 
-import json
+import yaml
 import pathlib
 import datetime
 
@@ -140,7 +140,7 @@ class Load(BaseCommand):
     def handle(self, config, options):
         """Run command."""
         with options.file.open('r') as f:
-            definition = json.load(f)
+            definition = yaml.load(f)
 
         if not definition.get('branches'):
             print("No branches specified.")

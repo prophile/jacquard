@@ -35,6 +35,7 @@ setup(
         'redis',
         'werkzeug',
         'python-dateutil',
+        'pyyaml',
     ),
 
     setup_requires=(
