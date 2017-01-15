@@ -3,7 +3,7 @@
 import collections.abc
 import json
 
-from jacquard.utils import plug
+from jacquard.plugin import plug
 
 
 def copy_data(from_engine, to_engine):
