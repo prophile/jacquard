@@ -18,6 +18,15 @@ def plug_all(group, config=None):
     for entry_point in pkg_resources.iter_entry_points(entry_points_group):
         yield entry_point.name, entry_point.resolve
 
+    if config is not None:
+        config_section = config.get('plugins:%s' % group, {})
+
+        for key, value in config_section.items():
+            entry_point_line = '%s = %s' % (key, value)
+
+            entry_point = pkg_resources.EntryPoint.parse(entry_point_line)
+            yield entry_point.name, entry_point.resolve
+
 
 def plug(group, name, config=None):
     """
