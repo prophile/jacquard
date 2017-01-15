@@ -7,7 +7,7 @@ class Experiment(object):
         self.id = experiment_id
         self.branches = branches
         self.constraints = constraints or {}
-        self.name = name or self.experiment_id
+        self.name = name or self.id
         self.launched = launched
         self.concluded = concluded
 
@@ -30,8 +30,12 @@ class Experiment(object):
         return cls(obj['id'], obj['branches'], **kwargs)
 
     @classmethod
-    def from_store(cls, store, id):
-        return cls.from_json(store['experiments/%s'] % id)
+    def from_store(cls, store, experiment_id):
+        json_repr = dict(store['experiments/%s' % experiment_id])
+        # Be resilient to missing ID
+        if 'id' not in json_repr:
+            json_repr['id'] = experiment_id
+        return cls.from_json(json_repr)
 
     def to_json(self):
         representation = {
