@@ -3,7 +3,7 @@
 import pkg_resources
 
 
-def plug_all(group):
+def plug_all(group, config=None):
     """
     Load all plugins within a given group.
 
@@ -19,7 +19,7 @@ def plug_all(group):
         yield entry_point.name, entry_point.resolve
 
 
-def plug(group, name):
+def plug(group, name, config=None):
     """
     Load a specific named plugin from the given group.
 
@@ -33,7 +33,7 @@ def plug(group, name):
     """
     candidate = None
 
-    for point_name, resolver in plug_all(group):
+    for point_name, resolver in plug_all(group, config=config):
         if point_name != name:
             continue
 

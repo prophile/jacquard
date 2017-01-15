@@ -30,7 +30,7 @@ class Config(object):
         return getattr(self._thread_local, name)
 
     def _open_storage(self):
-        return open_engine(self.storage_engine, self.storage_url)
+        return open_engine(self, self.storage_engine, self.storage_url)
 
     @property
     def storage(self):
@@ -49,6 +49,7 @@ class Config(object):
             if key != 'engine'
         }
         return open_directory(
+            self,
             self.directory_settings['engine'],
             kwargs,
         )

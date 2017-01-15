@@ -87,7 +87,7 @@ class TransactionMap(collections.abc.MutableMapping):
         self.deletions.add(encoded_key)
 
 
-def open_engine(engine, url):
+def open_engine(config, engine, url):
     """
     Open and connect to a given engine and URL.
 
@@ -95,5 +95,5 @@ def open_engine(engine, url):
     pluggable by adding `StorageEngine` subclasses to the entry points
     group `jacquard.storage_engines`.
     """
-    cls = plug('storage_engines', engine)()
+    cls = plug('storage_engines', engine, config=config)()
     return cls(url)

@@ -47,7 +47,7 @@ class StorageImport(BaseCommand):
 
     def handle(self, config, option):
         """Run command."""
-        src = open_engine(option.engine, option.url)
+        src = open_engine(config, option.engine, option.url)
         copy_data(src, config.storage)
 
 
@@ -68,7 +68,7 @@ class StorageExport(BaseCommand):
 
     def handle(self, config, option):
         """Run command."""
-        dst = open_engine(option.engine, option.url)
+        dst = open_engine(config, option.engine, option.url)
         copy_data(config.storage, dst)
 
 
