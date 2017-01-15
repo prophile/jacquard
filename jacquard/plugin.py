@@ -13,7 +13,6 @@ def plug_all(group):
     Returns an iterable of `(name, plugin)` pairs. Plugins are callables
     which, when called, load the actual plugin and return it.
     """
-
     entry_points_group = 'jacquard.%s' % group
 
     for entry_point in pkg_resources.iter_entry_points(entry_points_group):
