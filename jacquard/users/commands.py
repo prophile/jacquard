@@ -1,7 +1,6 @@
 """General user settings commands."""
 
 import sys
-import json
 import yaml
 import contextlib
 
