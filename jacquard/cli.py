@@ -6,6 +6,7 @@ import argparse
 import pkg_resources
 
 from jacquard.config import load_config
+from jacquard.plugin import plug_all
 
 
 def argument_parser():
@@ -41,11 +42,10 @@ def argument_parser():
 
     subparsers = parser.add_subparsers(metavar='command', title='subcommands')
 
-    for entry_point in pkg_resources.iter_entry_points('jacquard.commands'):
-        command = entry_point.load()()
+    for name, plugin in plug_all('commands'):
+        command = plugin()()
 
-        command_help = getattr(command, 'help', entry_point.name)
-
+        command_help = getattr(command, 'help', name)
         plumbing = getattr(command, 'plumbing', False)
 
         if plumbing:
@@ -53,10 +53,7 @@ def argument_parser():
         else:
             kwargs = {'description': command_help, 'help': command_help}
 
-        subparser = subparsers.add_parser(
-            entry_point.name,
-            **kwargs
-        )
+        subparser = subparsers.add_parser(name, **kwargs)
 
         subparser.set_defaults(func=command.handle)
         command.add_arguments(subparser)
