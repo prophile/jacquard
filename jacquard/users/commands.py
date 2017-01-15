@@ -112,7 +112,7 @@ class Override(BaseCommand):
                 store[key] = overrides
 
             else:
-                pprint.pprint(overrides)
+                yaml.dump(overrides, sys.stdout, default_flow_style=False)
 
 
 class Show(BaseCommand):
