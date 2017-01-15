@@ -1,5 +1,6 @@
 """Configuration loading and objects."""
 
+import sys
 import pathlib
 import threading
 import configparser
@@ -24,7 +25,13 @@ class Config(collections.abc.Mapping):
         self.directory_settings = config_file['directory']
         self.config_file = config_file
 
+        self._load_path()
+
         self._thread_local = threading.local()
+
+    def _load_path(self):
+        for path in self.get('paths', {}).values():
+            sys.path.append(path.strip())
 
     def __getitem__(self, key):
         """Look up config section by name."""
