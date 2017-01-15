@@ -46,12 +46,9 @@ class SetDefault(BaseCommand):
 
             else:
                 try:
-                    value = json.loads(options.value)
+                    value = yaml.load(options.value)
                 except ValueError:
-                    print(
-                        "Could not decode %r: maybe you need quotes?" %
-                        options.value,
-                    )
+                    print("Could not decode %r" % options.value)
                     return
 
                 defaults[options.setting] = value
@@ -107,12 +104,9 @@ class Override(BaseCommand):
 
             elif options.value:
                 try:
-                    value = json.loads(options.value)
+                    value = yaml.load(options.value)
                 except ValueError:
-                    print(
-                        "Could not decode %r: maybe you need quotes?" %
-                        options.value,
-                    )
+                    print("Could not decode %r" % options.value)
                     return
 
                 overrides[options.setting] = value
