@@ -84,7 +84,11 @@ def main(args=sys.argv[1:], config=None):
 
     # Parse options
     if config is None:
-        config = load_config(options.config)
+        try:
+            config = load_config(options.config)
+        except FileNotFoundError:
+            print("Could not read config file '%s'" % options.config)
+            return
 
     # Run subcommand
     options.func(config, options)
