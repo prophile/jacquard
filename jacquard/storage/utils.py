@@ -3,7 +3,7 @@
 import collections.abc
 import json
 
-import pkg_resources
+from jacquard.utils import plug
 
 
 def copy_data(from_engine, to_engine):
@@ -95,16 +95,5 @@ def open_engine(engine, url):
     pluggable by adding `StorageEngine` subclasses to the entry points
     group `jacquard.storage_engines`.
     """
-    entry_point = None
-
-    for candidate_entry_point in pkg_resources.iter_entry_points(
-        'jacquard.storage_engines',
-        name=engine,
-    ):
-        entry_point = candidate_entry_point
-
-    if entry_point is None:
-        raise RuntimeError("Cannot find storage engine '%s'" % engine)
-
-    cls = entry_point.load()
+    cls = plug('storage_engines', engine)()
     return cls(url)

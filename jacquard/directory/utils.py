@@ -1,6 +1,6 @@
 """User directory miscellaneous utilities."""
 
-import pkg_resources
+from jacquard.plugin import plug
 
 
 def open_directory(engine, kwargs):
@@ -10,16 +10,5 @@ def open_directory(engine, kwargs):
     Looks up the directory through the `jacquard.directory_engines` entry
     point group and instantiates the given class with `**kwargs`.
     """
-    entry_point = None
-
-    for candidate_entry_point in pkg_resources.iter_entry_points(
-        'jacquard.directory_engines',
-        name=engine,
-    ):
-        entry_point = candidate_entry_point
-
-    if entry_point is None:
-        raise RuntimeError("Cannot find directory engine '%s'" % engine)
-
-    cls = entry_point.load()
+    cls = plug('directory_engines', engine)()
     return cls(**kwargs)
