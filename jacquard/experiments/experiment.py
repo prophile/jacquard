@@ -3,7 +3,16 @@ import dateutil.parser
 
 
 class Experiment(object):
-    def __init__(self, experiment_id, branches, *, constraints=None, name=None, launched=None, concluded=None):
+    def __init__(
+        self,
+        experiment_id,
+        branches,
+        *,
+        constraints=None,
+        name=None,
+        launched=None,
+        concluded=None,
+    ):
         self.id = experiment_id
         self.branches = branches
         self.constraints = constraints or {}
