@@ -1,14 +1,16 @@
 """Configuration loading and objects."""
 
+import sys
 import pathlib
 import threading
 import configparser
+import collections.abc
 
 from jacquard.storage import open_engine
 from jacquard.directory import open_directory
 
 
-class Config(object):
+class Config(collections.abc.Mapping):
     """
     System configuration.
 
@@ -21,8 +23,31 @@ class Config(object):
         self.storage_engine = config_file.get('storage', 'engine')
         self.storage_url = config_file.get('storage', 'url', fallback='')
         self.directory_settings = config_file['directory']
+        self.config_file = config_file
+
+        self._load_path()
 
         self._thread_local = threading.local()
+
+    def _load_path(self):
+        for path in self.get('paths', {}).values():
+            sys.path.append(path.strip())
+
+    def __getitem__(self, key):
+        """Look up config section by name."""
+        return self.config_file[key]
+
+    def __len__(self):
+        """Total number of config sections."""
+        return len(self.config_file)
+
+    def __iter__(self):
+        """Iterator over names of config sections."""
+        return iter(self.config_file)
+
+    def __contains__(self, key):
+        """Existence of config section."""
+        return key in self.config_file
 
     def _thread_local_property(self, name, generator):
         if not hasattr(self._thread_local, name):
@@ -30,7 +55,7 @@ class Config(object):
         return getattr(self._thread_local, name)
 
     def _open_storage(self):
-        return open_engine(self.storage_engine, self.storage_url)
+        return open_engine(self, self.storage_engine, self.storage_url)
 
     @property
     def storage(self):
@@ -49,6 +74,7 @@ class Config(object):
             if key != 'engine'
         }
         return open_directory(
+            self,
             self.directory_settings['engine'],
             kwargs,
         )
