@@ -1,8 +1,17 @@
+"""Experiment definition abstraction class."""
+
 import contextlib
 import dateutil.parser
 
 
 class Experiment(object):
+    """
+    The definition of an experiment.
+
+    This is essentially a plain-old-data class with utility methods for
+    canonical serialisation and deserialisation of various flavours.
+    """
+
     def __init__(
         self,
         experiment_id,
@@ -13,6 +22,7 @@ class Experiment(object):
         launched=None,
         concluded=None,
     ):
+        """Base constructor. Takes all the arguments."""
         self.id = experiment_id
         self.branches = branches
         self.constraints = constraints or {}
@@ -22,6 +32,13 @@ class Experiment(object):
 
     @classmethod
     def from_json(cls, obj):
+        """
+        Create instance from a JSON-esque definition.
+
+        Required keys: id, branches
+
+        Optional keys: name, constraints, launched, concluded
+        """
         kwargs = {}
 
         with contextlib.suppress(KeyError):
@@ -40,6 +57,7 @@ class Experiment(object):
 
     @classmethod
     def from_store(cls, store, experiment_id):
+        """Create instance from a store lookup by ID."""
         json_repr = dict(store['experiments/%s' % experiment_id])
         # Be resilient to missing ID
         if 'id' not in json_repr:
@@ -47,6 +65,7 @@ class Experiment(object):
         return cls.from_json(json_repr)
 
     def to_json(self):
+        """Serialise as canonical JSON."""
         representation = {
             'id': self.id,
             'branches': self.branches,
@@ -71,9 +90,18 @@ class Experiment(object):
         return representation
 
     def save(self, store):
+        """Save into the given store using the ID as the key."""
         store['experiments/%s' % self.id] = self.to_json()
 
     def branch(self, branch_id):
+        """
+        Get the branch with a given ID.
+
+        In case of multiple branches with the same ID (which should Never Ever
+        Happen), behaviour is undefined.
+
+        If there is no such branch, LookupErrors will materialise.
+        """
         for branch in self.branches:
             if branch['id'] == branch_id:
                 return branch
