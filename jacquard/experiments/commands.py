@@ -137,7 +137,7 @@ class Load(BaseCommand):
 
             if experiment.id in live_experiments:
                 print(
-                    "Experiment %r is live, refusing to edit" % experiment_id,
+                    "Experiment %r is live, refusing to edit" % experiment.id,
                 )
                 return
 
