@@ -38,7 +38,7 @@ def get_settings(user_id, storage, directory=None):
 
             user_entry = directory.lookup(user_id)
 
-            if not experiment.meets_constraints(user_entry):
+            if not experiment.includes_user(user_entry):
                 continue
 
         branch = experiment.branches[branch_hash(

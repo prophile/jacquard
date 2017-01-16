@@ -125,5 +125,5 @@ class Experiment(object):
                 return branch
         raise LookupError("No such branch: %r" % branch_id)
 
-    def meets_constraints(self, user_entry):
+    def includes_user(self, user_entry):
         return meets_constraints(self.constraints, user_entry)

@@ -78,7 +78,7 @@ def on_experiment(config, experiment):
     branches = {x: [] for x in branch_ids}
 
     for user_entry in config.directory.all_users():
-        if not experiment_config.meets_constraints(user_entry):
+        if not experiment_config.includes_user(user_entry):
             continue
 
         branch_id = branch_ids[
