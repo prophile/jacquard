@@ -1,5 +1,6 @@
 """`jacquard` command-line tool handling."""
 
+import os
 import sys
 import pathlib
 import argparse
@@ -7,6 +8,12 @@ import pkg_resources
 
 from jacquard.config import load_config
 from jacquard.plugin import plug_all
+
+
+DEFAULT_CONFIG_FILE_PATH = pathlib.Path(os.environ.get(
+    'JACQUARD_CONFIG',
+    '/etc/jacquard/config.cfg',
+))
 
 
 def argument_parser():
@@ -29,7 +36,7 @@ def argument_parser():
         '--config',
         help="config file",
         type=pathlib.Path,
-        default=pathlib.Path('config.cfg'),
+        default=DEFAULT_CONFIG_FILE_PATH,
     )
     parser.add_argument(
         '-V',
