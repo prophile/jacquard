@@ -6,7 +6,6 @@ import werkzeug.exceptions
 
 from jacquard.users import get_settings
 from jacquard.users.settings import branch_hash
-from jacquard.experiments.constraints import meets_constraints
 from jacquard.experiments.experiment import Experiment
 
 
@@ -79,7 +78,7 @@ def on_experiment(config, experiment):
     branches = {x: [] for x in branch_ids}
 
     for user_entry in config.directory.all_users():
-        if not meets_constraints(experiment_config.constraints, user_entry):
+        if not experiment_config.meets_constraints(user_entry):
             continue
 
         branch_id = branch_ids[

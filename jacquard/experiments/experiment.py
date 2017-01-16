@@ -3,6 +3,8 @@
 import contextlib
 import dateutil.parser
 
+from .constraints import meets_constraints
+
 
 class Experiment(object):
     """
@@ -122,3 +124,6 @@ class Experiment(object):
             if branch['id'] == branch_id:
                 return branch
         raise LookupError("No such branch: %r" % branch_id)
+
+    def meets_constraints(self, user_entry):
+        return meets_constraints(self.constraints, user_entry)
