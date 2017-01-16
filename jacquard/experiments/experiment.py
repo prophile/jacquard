@@ -135,6 +135,11 @@ class Experiment(object):
           A boolean, representing whether anonymous users (users for whom we
           have no information from the directory) are permitted.
 
+        era
+          Whether to include users who joined only after the launch of the
+          experiment, only before it, or both (by default). Takes a string
+          value, one of "new", "old", or "both".
+
         required_tags
           A list: if specified, only users with all the given tags are
           permitted.
@@ -150,6 +155,14 @@ class Experiment(object):
         """
         if user_entry is None:
             return self.constraints.get('anonymous', True)
+
+        era = self.constraints.get('era', 'both')
+
+        if era == 'old' and user_entry.join_date >= self.launched:
+            return False
+
+        if era == 'new' and user_entry.join_date < self.launched:
+            return False
 
         required_tags = self.constraints.get('required_tags', ())
 
