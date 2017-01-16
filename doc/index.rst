@@ -9,6 +9,7 @@ jacquard: split testing for humans?
    concepts
    http-api
    cli
+   plugins
    innards
 
 
