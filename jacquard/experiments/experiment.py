@@ -71,8 +71,8 @@ class Experiment(object):
             'branches': self.branches,
             'constraints': self.constraints,
             'name': self.name,
-            'launched': self.launched,
-            'concluded': self.concluded,
+            'launched': str(self.launched),
+            'concluded': str(self.concluded),
         }
 
         if not representation['constraints']:
@@ -81,10 +81,10 @@ class Experiment(object):
         if representation['name'] == self.id:
             del representation['name']
 
-        if representation['launched'] is None:
+        if representation['launched'] == 'None':
             del representation['launched']
 
-        if representation['concluded'] is None:
+        if representation['concluded'] == 'None':
             del representation['concluded']
 
         return representation
