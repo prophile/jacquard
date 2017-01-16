@@ -9,6 +9,7 @@ jacquard: split testing for humans?
    concepts
    http-api
    cli
+   innards
 
 
 Indices and tables
