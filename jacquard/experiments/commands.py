@@ -142,3 +142,32 @@ class Load(BaseCommand):
                 return
 
             experiment.save(store)
+
+
+class ListExperiments(BaseCommand):
+    """
+    List all experiments.
+
+    Mostly useful in practice when one cannot remember the ID of an experiment.
+    """
+
+    def handle(self, config, options):
+        """Run command."""
+        with config.storage.transaction() as store:
+            for experiment in Experiment.enumerate(store):
+                if experiment.name == experiment.id:
+                    title = experiment.id
+                else:
+                    title = '%s: %s' % (experiment.id, experiment.name)
+                print(title)
+                print('=' * len(title))
+                print()
+                if experiment.launched:
+                    print('Launched: %s' % experiment.launched)
+                    if experiment.concluded:
+                        print('Concluded: %s' % experiment.concluded)
+                    else:
+                        print('In progress')
+                else:
+                    print('Not yet launched')
+                print()
