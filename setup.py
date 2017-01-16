@@ -15,7 +15,7 @@ if sys.argv[1] == 'install' and os.environ.get('JACQUARD_DEBIAN_HACK'):
         (config_dir / 'plugins').mkdir(parents=True, exist_ok=True)
 
         with (config_dir / 'config.cfg').open('wb') as f_out:
-            with open('example.cfg', 'rb') as f_in:
+            with open('debian.cfg', 'rb') as f_in:
                 config_file = f_in.read()
                 f_out.write(config_file)
 
