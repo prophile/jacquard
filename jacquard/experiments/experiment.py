@@ -20,7 +20,7 @@ class Experiment(object):
         constraints=None,
         name=None,
         launched=None,
-        concluded=None,
+        concluded=None
     ):
         """Base constructor. Takes all the arguments."""
         self.id = experiment_id
