@@ -19,6 +19,8 @@ if sys.argv[1] == 'install' and os.environ.get('JACQUARD_DEBIAN_HACK'):
                 config_file = f_in.read()
                 f_out.write(config_file)
 
+        (root_path / 'var' / 'jacquard').mkdir(parents=True, exist_ok=True)
+
     debian_etc_hack(sys.argv[3])
     del debian_etc_hack
 
