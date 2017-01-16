@@ -11,15 +11,24 @@ if sys.argv[1] == 'install' and os.environ.get('JACQUARD_DEBIAN_HACK'):
         root_path = pathlib.Path(root)
         config_dir = root_path / 'etc' / 'jacquard'
 
-        config_dir.mkdir(parents=True, exist_ok=True)
-        (config_dir / 'plugins').mkdir(parents=True, exist_ok=True)
+        try:
+            config_dir.mkdir(parents=True)
+        except FileExistsError:
+            pass
+        try:
+            (config_dir / 'plugins').mkdir()
+        except FileExistsError:
+            pass
 
         with (config_dir / 'config.cfg').open('wb') as f_out:
             with open('debian.cfg', 'rb') as f_in:
                 config_file = f_in.read()
                 f_out.write(config_file)
 
-        (root_path / 'var' / 'jacquard').mkdir(parents=True, exist_ok=True)
+        try:
+            (root_path / 'var' / 'jacquard').mkdir(parents=True)
+        except FileExistsError:
+            pass
 
     debian_etc_hack(sys.argv[3])
     del debian_etc_hack
