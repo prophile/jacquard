@@ -15,6 +15,4 @@ from jacquard.config import load_config
 
 from .cli import DEFAULT_CONFIG_FILE_PATH
 
-app = get_wsgi_app(
-    load_config(DEFAULT_CONFIG_FILE_PATH),
-)
+app = get_wsgi_app(load_config(DEFAULT_CONFIG_FILE_PATH))
