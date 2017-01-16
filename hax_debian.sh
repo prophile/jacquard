@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+export JACQUARD_DEBIAN_HACK=1
 fpm -s python \
     -t deb \
     --name jacquard \
@@ -19,6 +20,7 @@ fpm -s python \
     -d python3-dateutil \
     -d python3-yaml \
     -d python3-waitress \
+    --config-files /etc/jacquard \
     --no-auto-depends \
     --force \
     .

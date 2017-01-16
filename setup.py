@@ -1,5 +1,28 @@
 from setuptools import setup, find_packages
 
+import os
+import sys
+
+# This monstrous hack is to support /etc generation for the Debian package
+# with fpm.
+if sys.argv[1] == 'install' and os.environ.get('JACQUARD_DEBIAN_HACK'):
+    def debian_etc_hack(root):
+        import pathlib
+        root_path = pathlib.Path(root)
+        config_dir = root_path / 'etc' / 'jacquard'
+
+        config_dir.mkdir(parents=True, exist_ok=True)
+        (config_dir / 'plugins').mkdir(parents=True, exist_ok=True)
+
+        with (config_dir / 'config.cfg').open('wb') as f_out:
+            with open('example.cfg', 'rb') as f_in:
+                config_file = f_in.read()
+                f_out.write(config_file)
+
+    debian_etc_hack(sys.argv[3])
+    del debian_etc_hack
+
+
 with open('README.rst', 'r', encoding='utf-8') as f:
     long_description = f.read()
 
