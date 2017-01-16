@@ -19,14 +19,8 @@ Configuration
 
 Example configuration:
 
-.. code:: cfg
-
-    [storage]
-    engine = file
-    url = file:jacquard.db
-
-    [directory]
-    engine = dummy
+.. literalinclude:: ../example.cfg
+    :language: cfg
 
 Running the service
 -------------------
