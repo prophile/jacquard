@@ -1,0 +1,9 @@
+[Unit]
+description=Jacquard service
+
+[Service]
+User=www-data
+ExecStart=/usr/bin/waitress-serve-python3 --port=1212 jacquard.wsgi:app
+
+[Install]
+WantedBy=multi-user.target

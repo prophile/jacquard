@@ -21,6 +21,7 @@ fpm -s python \
     -d python3-yaml \
     -d python3-waitress \
     --config-files /etc/jacquard \
+    --deb-systemd jacquard.service \
     --no-auto-depends \
     --force \
     .
