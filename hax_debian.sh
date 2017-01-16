@@ -21,5 +21,5 @@ fpm -s python \
     -d python3-waitress \
     --no-auto-depends \
     --force \
-    jacquard-split
+    .
 
