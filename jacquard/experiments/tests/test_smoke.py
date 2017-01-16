@@ -58,4 +58,4 @@ def test_conclude_updates_defaults():
 
     assert 'concluded' in config.storage['experiments/foo']
     assert 'foo' not in config.storage['active-experiments']
-    assert config.storage['defaults'] == {'pony': 'gravity'}
+    assert config.storage['defaults'] == BRANCH_SETTINGS
