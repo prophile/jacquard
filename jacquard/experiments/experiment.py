@@ -154,8 +154,8 @@ class Experiment(object):
         required_tags = self.constraints.get('required_tags', ())
 
         if (
-                    required_tags and
-                    any(x not in user_entry.tags for x in required_tags)
+            required_tags and
+            any(x not in user_entry.tags for x in required_tags)
         ):
             return False
 
