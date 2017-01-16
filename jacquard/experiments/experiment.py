@@ -137,12 +137,6 @@ class Experiment(object):
           A boolean, representing whether anonymous users (users for whom we have no
           information from the directory) are permitted.
 
-        joined_before
-          A (string) date: only users who joined before this date are permitted.
-
-        joined_after
-          A (string) date: only users who joined after this date are permitted.
-
         required_tags
           A list: if specified, only users with all the given tags are permitted.
 
@@ -156,18 +150,6 @@ class Experiment(object):
         """
         if user_entry is None:
             return self.constraints.get('anonymous', True)
-
-        if (
-                    user_entry.join_date >
-                    self.constraints.get('joined_before', FAR_FUTURE)
-        ):
-            return False
-
-        if (
-                    user_entry.join_date <
-                    self.constraints.get('joined_after', DISTANT_PAST)
-        ):
-            return False
 
         required_tags = self.constraints.get('required_tags', ())
 
