@@ -13,7 +13,7 @@ from jacquard.directory.dummy import DummyDirectory
 import werkzeug.test
 
 
-def get(path):
+def get_status(path):
     config = Mock()
     config.storage = DummyStore('', data={
         'defaults': {'pony': 'gravity'},
@@ -38,8 +38,13 @@ def get(path):
     test_client = werkzeug.test.Client(wsgi)
 
     data, status, headers = test_client.get(path)
-    assert status == '200 OK'
     all_data = b''.join(data)
+    return status, all_data
+
+
+def get(path):
+    status, all_data = get_status(path)
+    assert status == '200 OK'
     return json.loads(all_data)
 
 
@@ -81,3 +86,7 @@ def test_experiment_get_smoke():
 
 def test_experiment_get_membership():
     assert get('/experiment/foo')['branches']['bar'] == [3]
+
+
+def test_missing_paths_get_404():
+    assert get_status('/missing')[0] == '404 NOT FOUND'
