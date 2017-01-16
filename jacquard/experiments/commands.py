@@ -151,6 +151,8 @@ class ListExperiments(BaseCommand):
     Mostly useful in practice when one cannot remember the ID of an experiment.
     """
 
+    help = "list all experiments"
+
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction() as store:
