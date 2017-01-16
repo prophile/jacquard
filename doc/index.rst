@@ -8,6 +8,7 @@ jacquard: split testing for humans?
    intro
    concepts
    http-api
+   experiment-files
    cli
    plugins
    innards
