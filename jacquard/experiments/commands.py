@@ -27,7 +27,7 @@ class Launch(BaseCommand):
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction() as store:
-            experiment = Experiment.from_config(store, options.experiment)
+            experiment = Experiment.from_store(store, options.experiment)
 
             current_experiments = store.get('active-experiments', [])
 
