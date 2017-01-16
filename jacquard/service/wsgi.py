@@ -7,6 +7,7 @@ import werkzeug.exceptions
 from jacquard.users import get_settings
 from jacquard.users.settings import branch_hash
 from jacquard.experiments.constraints import meets_constraints
+from jacquard.experiments.experiment import Experiment
 
 
 def on_root(config):
@@ -44,23 +45,17 @@ def on_experiments(config):
     """
     with config.storage.transaction() as store:
         active_experiments = store.get('active-experiments', ())
-        experiments = []
-
-        for key in store:
-            if not key.startswith('experiments/'):
-                continue
-            definition = store[key]
-            experiments.append(definition)
+        experiments = list(Experiment.enumerate(store))
 
     return [
         {
-            'id': experiment['id'],
-            'url': '/experiment/%s' % experiment['id'],
+            'id': experiment.id,
+            'url': '/experiment/%s' % experiment.id,
             'state':
                 'active'
-                if experiment['id'] in active_experiments
+                if experiment.id in active_experiments
                 else 'inactive',
-            'name': experiment.get('name', experiment['id']),
+            'name': experiment.name,
         }
         for experiment in experiments
     ]
@@ -78,15 +73,13 @@ def on_experiment(config, experiment):
     Provided for reporting tooling which runs statistics.
     """
     with config.storage.transaction() as store:
-        experiment_config = store['experiments/%s' % experiment]
+        experiment_config = Experiment.from_store(store, experiment)
 
-    branch_ids = [branch['id'] for branch in experiment_config['branches']]
+    branch_ids = [branch['id'] for branch in experiment_config.branches]
     branches = {x: [] for x in branch_ids}
 
-    constraints = experiment_config.get('constraints', {})
-
     for user_entry in config.directory.all_users():
-        if not meets_constraints(constraints, user_entry):
+        if not meets_constraints(experiment_config.constraints, user_entry):
             continue
 
         branch_id = branch_ids[
@@ -97,10 +90,10 @@ def on_experiment(config, experiment):
         branches[branch_id].append(user_entry.id)
 
     return {
-        'id': experiment_config['id'],
-        'name': experiment_config.get('name', experiment_config['id']),
-        'launched': experiment_config.get('launched'),
-        'concluded': experiment_config.get('concluded'),
+        'id': experiment_config.id,
+        'name': experiment_config.name,
+        'launched': experiment_config.launched,
+        'concluded': experiment_config.concluded,
         'branches': branches,
     }
 

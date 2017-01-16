@@ -68,6 +68,7 @@ setup(
             'launch = jacquard.experiments.commands:Launch',
             'conclude = jacquard.experiments.commands:Conclude',
             'load-experiment = jacquard.experiments.commands:Load',
+            'list = jacquard.experiments.commands:ListExperiments',
             'list-users = jacquard.directory.commands:ListUsers',
         ),
         'jacquard.directory_engines': (

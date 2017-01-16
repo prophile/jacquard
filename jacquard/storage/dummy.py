@@ -24,6 +24,10 @@ class DummyStore(StorageEngine):
         else:
             self.data = {}
 
+    def __getitem__(self, key):
+        """Direct item access. This is for test usage."""
+        return json.loads(self.data.get(key, 'null'))
+
     def begin(self):
         """Begin transaction."""
         pass

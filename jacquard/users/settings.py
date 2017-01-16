@@ -2,6 +2,7 @@
 
 import hashlib
 
+from jacquard.experiments.experiment import Experiment
 from jacquard.experiments.constraints import meets_constraints
 
 
@@ -20,32 +21,30 @@ def get_settings(user_id, storage, directory=None):
         live_experiments = store.get('active-experiments', [])
 
         experiment_definitions = [
-            {**store['experiments/%s' % x], 'id': x}
+            Experiment.from_store(store, x)
             for x in live_experiments
         ]
         overrides = store.get('overrides/%s' % user_id, {})
 
     experiment_settings = {}
 
-    for experiment_def in experiment_definitions:
-        constraints = experiment_def.get('constraints', {})
-
-        if constraints:
+    for experiment in experiment_definitions:
+        if experiment.constraints:
             if directory is None:
                 raise ValueError(
                     "Cannot evaluate constraints on experiment %r "
-                    "with no directory" % experiment_def['id'],
+                    "with no directory" % experiment.id,
                 )
 
             user_entry = directory.lookup(user_id)
 
-            if not meets_constraints(constraints, user_entry):
+            if not meets_constraints(experiment.constraints, user_entry):
                 continue
 
-        branch = experiment_def['branches'][branch_hash(
-            experiment_def['id'],
+        branch = experiment.branches[branch_hash(
+            experiment.id,
             user_id,
-        ) % len(experiment_def['branches'])]
+        ) % len(experiment.branches)]
         experiment_settings.update(branch['settings'])
 
     return {**defaults, **experiment_settings, **overrides}

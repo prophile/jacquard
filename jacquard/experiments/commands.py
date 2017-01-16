@@ -3,8 +3,10 @@
 import yaml
 import pathlib
 import datetime
+import dateutil.tz
 
 from jacquard.commands import BaseCommand
+from .experiment import Experiment
 
 
 class Launch(BaseCommand):
@@ -25,26 +27,20 @@ class Launch(BaseCommand):
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction() as store:
-            try:
-                experiment_config = store[
-                    'experiments/%s' % options.experiment
-                ]
-            except KeyError:
-                print("Experiment %r not configured" % options.experiment)
-                return
+            experiment = Experiment.from_store(store, options.experiment)
 
             current_experiments = store.get('active-experiments', [])
 
-            if options.experiment in current_experiments:
-                print("Experiment %r already launched!" % options.experiment)
+            if experiment.id in current_experiments:
+                print("Experiment %r already launched!" % experiment.id)
                 return
 
             store['active-experiments'] = (
                 current_experiments + [options.experiment]
             )
 
-            experiment_config['launched'] = str(datetime.datetime.utcnow())
-            store['experiments/%s' % options.experiment] = experiment_config
+            experiment.launched = datetime.datetime.now(dateutil.tz.tzutc())
+            experiment.save(store)
 
 
 class Conclude(BaseCommand):
@@ -78,13 +74,7 @@ class Conclude(BaseCommand):
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction() as store:
-            try:
-                experiment_config = store[
-                    'experiments/%s' % options.experiment
-                ]
-            except KeyError:
-                print("Experiment %r not configured" % options.experiment)
-                return
+            experiment = Experiment.from_store(store, options.experiment)
 
             current_experiments = store.get('active-experiments', [])
 
@@ -98,18 +88,12 @@ class Conclude(BaseCommand):
                 defaults = store.get('defaults', {})
 
                 # Find branch matching ID
-                for branch in experiment_config['branches']:
-                    if branch['id'] == options.branch:
-                        defaults.update(branch['settings'])
-                        break
-                else:
-                    print("Cannot find branch %r" % options.branch)
-                    return
+                defaults.update(experiment.branch(options.branch)['settings'])
 
                 store['defaults'] = defaults
 
-            experiment_config['concluded'] = str(datetime.datetime.utcnow())
-            store['experiments/%s' % options.experiment] = experiment_config
+            experiment.concluded = datetime.datetime.now(dateutil.tz.tzutc())
+            experiment.save(store)
 
             store['active-experiments'] = current_experiments
 
@@ -146,15 +130,46 @@ class Load(BaseCommand):
             print("No branches specified.")
             return
 
-        experiment_id = definition['id']
+        experiment = Experiment.from_json(definition)
 
         with config.storage.transaction() as store:
             live_experiments = store.get('active-experiments', ())
 
-            if experiment_id in live_experiments:
+            if experiment.id in live_experiments:
                 print(
-                    "Experiment %r is live, refusing to edit" % experiment_id,
+                    "Experiment %r is live, refusing to edit" % experiment.id,
                 )
                 return
 
-            store['experiments/%s' % experiment_id] = definition
+            experiment.save(store)
+
+
+class ListExperiments(BaseCommand):
+    """
+    List all experiments.
+
+    Mostly useful in practice when one cannot remember the ID of an experiment.
+    """
+
+    help = "list all experiments"
+
+    def handle(self, config, options):
+        """Run command."""
+        with config.storage.transaction() as store:
+            for experiment in Experiment.enumerate(store):
+                if experiment.name == experiment.id:
+                    title = experiment.id
+                else:
+                    title = '%s: %s' % (experiment.id, experiment.name)
+                print(title)
+                print('=' * len(title))
+                print()
+                if experiment.launched:
+                    print('Launched: %s' % experiment.launched)
+                    if experiment.concluded:
+                        print('Concluded: %s' % experiment.concluded)
+                    else:
+                        print('In progress')
+                else:
+                    print('Not yet launched')
+                print()
