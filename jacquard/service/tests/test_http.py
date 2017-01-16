@@ -45,7 +45,7 @@ def get_status(path):
 def get(path):
     status, all_data = get_status(path)
     assert status == '200 OK'
-    return json.loads(all_data)
+    return json.loads(all_data.decode('utf-8'))
 
 
 def test_root():
