@@ -64,6 +64,22 @@ class Experiment(object):
             json_repr['id'] = experiment_id
         return cls.from_json(json_repr)
 
+    @classmethod
+    def enumerate(cls, store):
+        """
+        Iterator over all named experiments in a store.
+
+        Includes inactive experiments.
+        """
+        prefix = 'experiments/'
+
+        for key in store:
+            if not key.startswith(prefix):
+                continue
+
+            experiment_id = key[len(prefix):]
+            yield cls.from_store(store, experiment_id)
+
     def to_json(self):
         """Serialise as canonical JSON."""
         representation = {

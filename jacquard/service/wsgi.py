@@ -45,14 +45,7 @@ def on_experiments(config):
     """
     with config.storage.transaction() as store:
         active_experiments = store.get('active-experiments', ())
-        experiments = []
-
-        for key in store:
-            if not key.startswith('experiments/'):
-                continue
-            experiment_id = key[len('experiments/'):]
-            definition = Experiment.from_store(store, experiment_id)
-            experiments.append(definition)
+        experiments = list(Experiment.enumerate(store))
 
     return [
         {
