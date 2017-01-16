@@ -1,6 +1,10 @@
 """Plugin-loading subsystem."""
 
+import sys
 import pkg_resources
+
+
+DEFAULT_PLUGIN_DIRECTORY = '/etc/jacquard/plugins'
 
 
 def plug_all(group, config=None):
@@ -13,6 +17,11 @@ def plug_all(group, config=None):
     Returns an iterable of `(name, plugin)` pairs. Plugins are callables
     which, when called, load the actual plugin and return it.
     """
+    # Add /etc/jacquard/plugins to the search path if not already there
+    if DEFAULT_PLUGIN_DIRECTORY not in sys.path:
+        sys.path.append(DEFAULT_PLUGIN_DIRECTORY)
+        pkg_resources.working_set.add_entry(DEFAULT_PLUGIN_DIRECTORY)
+
     entry_points_group = 'jacquard.%s' % group
 
     for entry_point in pkg_resources.iter_entry_points(entry_points_group):
