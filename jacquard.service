@@ -3,7 +3,15 @@ description=Jacquard service
 
 [Service]
 User=www-data
+WorkingDirectory=/var/jacquard
 ExecStart=/usr/bin/waitress-serve-python3 --port=1212 jacquard.wsgi:app
+PrivateTmp=on
+PrivateDevices=on
+ProtectSystem=strict
+ProtectKernelTunables=on
+ProtectControlGroups=on
+RestrictRealtime=on
+ReadWritePaths=/var/jacquard
 
 [Install]
 WantedBy=multi-user.target
