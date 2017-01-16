@@ -50,18 +50,19 @@ def on_experiments(config):
         for key in store:
             if not key.startswith('experiments/'):
                 continue
-            definition = store[key]
+            experiment_id = key[len('experiments/'):]
+            definition = Experiment.from_store(store, experiment_id)
             experiments.append(definition)
 
     return [
         {
-            'id': experiment['id'],
-            'url': '/experiment/%s' % experiment['id'],
+            'id': experiment.id,
+            'url': '/experiment/%s' % experiment.id,
             'state':
                 'active'
-                if experiment['id'] in active_experiments
+                if experiment.id in active_experiments
                 else 'inactive',
-            'name': experiment.get('name', experiment['id']),
+            'name': experiment.name,
         }
         for experiment in experiments
     ]
