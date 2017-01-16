@@ -24,11 +24,49 @@ class Experiment(object):
     ):
         """Base constructor. Takes all the arguments."""
         self.id = experiment_id
+
+        if not branches:
+            raise ValueError("No branches given")
+
+        branch_ids = set()
+        for branch in branches:
+            if 'id' not in branch:
+                raise ValueError("Branch without ID")
+            branch_id = branch['id']
+            if branch_id in branch_ids:
+                raise ValueError("Duplicate branch ID: %r" % branch_id)
+            branch_ids.add(branch_id)
+            if 'settings' not in branch:
+                raise ValueError("No settings given")
+
         self.branches = branches
+
+        known_constraint_types = (
+            'anonymous',
+            'era',
+            'required_tags',
+            'excluded_tags',
+        )
+
         self.constraints = constraints or {}
+
+        for constraint_name in self.constraints:
+            if constraint_name not in known_constraint_types:
+                raise ValueError("Unknown constraint: %r" % constraint_name)
+
         self.name = name or self.id
+
+        if not self.name:
+            raise ValueError("Blank name")
+
         self.launched = launched
         self.concluded = concluded
+
+        if self.concluded and not self.launched:
+            raise ValueError("Experiment concluded but not launched")
+
+        if self.concluded and self.launched and self.launched > self.concluded:
+            raise ValueError("Experiment concluded before launch")
 
     @classmethod
     def from_json(cls, obj):
