@@ -3,7 +3,6 @@
 import hashlib
 
 from jacquard.experiments.experiment import Experiment
-from jacquard.experiments.constraints import meets_constraints
 
 
 def get_settings(user_id, storage, directory=None):
