@@ -3,8 +3,6 @@
 import contextlib
 import dateutil.parser
 
-from .constraints import FAR_FUTURE, DISTANT_PAST
-
 
 class Experiment(object):
     """
