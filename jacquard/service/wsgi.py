@@ -115,7 +115,7 @@ def get_wsgi_app(config):
 
             response = endpoint(config, **kwargs)
 
-            encoded_response = json.dumps(response).encode('utf-8')
+            encoded_response = (json.dumps(response) + '\n').encode('utf-8')
             start_response('200 OK', [
                 ('Content-Type', 'application/json'),
                 ('Content-Length', str(len(encoded_response))),
