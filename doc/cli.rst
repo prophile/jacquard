@@ -66,6 +66,15 @@ override
 Experiments
 -----------
 
+list
+~~~~
+
+.. argparse::
+   :module: jacquard.cli
+   :func: argument_parser
+   :prog: jacquard
+   :path: list
+
 load-experiment
 ~~~~~~~~~~~~~~~
 
