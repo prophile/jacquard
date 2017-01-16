@@ -12,13 +12,13 @@ fpm -s python \
     --deb-suggests python3-etcd \
     --deb-suggests python3-sqlalchemy \
     --deb-suggests python3-psycopg2 \
-    --deb-suggests python3-waitress \
     -d "python3 (>= 3.5)" \
     -d python3-pkg-resources \
     -d python3-redis \
     -d python3-werkzeug \
     -d python3-dateutil \
     -d python3-yaml \
+    -d python3-waitress \
     --no-auto-depends \
     --force \
     jacquard-split
