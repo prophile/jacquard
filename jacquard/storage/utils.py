@@ -63,6 +63,10 @@ class TransactionMap(collections.abc.MutableMapping):
             self._cache[key] = None
             raise KeyError(key)
 
+        # UTF-8 decoding
+        if isinstance(result, bytes):
+            result = result.decode('utf-8')
+
         result = json.loads(result)
 
         self._cache[key] = result
