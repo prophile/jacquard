@@ -77,7 +77,7 @@ deployment pattern is to run a Jacquard instance on the same machine as
 anything which uses it.
 
 To that end Jacquard is packed with two alternate storage engines, one backed
-by Redis and one backed by etcd.
+by Redis and one backed by etcd [#note1]_.
 
 There are command-line tools for migrating between different storage engines,
 so choosing one should not be considered a large commitment.
@@ -100,3 +100,7 @@ superusers by pulling data from the `auth_user` table of a connected database.
 
 For more complicated use it will probably be useful to write a custom user
 directory by creating a subclass of `Directory`.
+
+.. rubric:: Footnotes
+
+.. [#note1] There is also the experimental `redis-cloned` backend, technically.
