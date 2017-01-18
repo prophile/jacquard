@@ -4,7 +4,7 @@ machine:
 
 dependencies:
   pre:
-    - pip install pytest pytest-cov
+    - pip install pytest pytest-cov fakeredis
     - pip install flake8 flake8-docstrings
     - sudo apt-get update ; sudo apt-get install python3 python3-setuptools
     - gem install fpm
