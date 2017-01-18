@@ -1,5 +1,7 @@
 """Redis storage engine."""
 
+import redis
+
 from .base import StorageEngine
 from .exceptions import Retry
 
@@ -23,8 +25,6 @@ class RedisStore(StorageEngine):
         This is backed by `python-redis`, and the URL follows the format
         of `redis.StrictRedis.from_url`.
         """
-        # Lazily import Redis
-        import redis
         self.redis = redis.StrictRedis.from_url(connection_string)
         self.prefix = 'jacquard:'
 
