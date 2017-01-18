@@ -88,6 +88,7 @@ setup(
         'jacquard.storage_engines': (
             'dummy = jacquard.storage.dummy:DummyStore',
             'redis = jacquard.storage.redis:RedisStore',
+            'redis-cloned = jacquard.storage.cloned_redis:ClonedRedisStore',
             'file = jacquard.storage.file:FileStore',
             'etcd = jacquard.storage.etcd:EtcdStore',
         ),
