@@ -78,6 +78,7 @@ setup(
 
     tests_require=(
         'pytest',
+        'fakeredis',
     ),
 
     entry_points={
