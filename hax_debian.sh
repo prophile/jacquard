@@ -18,6 +18,7 @@ fpm -s python \
     -d python3-redis \
     -d python3-werkzeug \
     -d python3-dateutil \
+    -d python3-sqlalchemy \
     -d python3-yaml \
     -d python3-waitress \
     --config-files /etc/jacquard \

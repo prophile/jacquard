@@ -70,6 +70,7 @@ setup(
         'werkzeug',
         'python-dateutil',
         'pyyaml',
+        'sqlalchemy',
     ),
 
     setup_requires=(
