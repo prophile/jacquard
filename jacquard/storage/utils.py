@@ -2,8 +2,23 @@
 
 import collections.abc
 import json
+import functools
 
 from jacquard.plugin import plug
+
+from .exceptions import Retry
+
+
+def retry_reissue(fn):
+    """Decorator: reissues the function if it raises Retry."""
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        while True:
+            try:
+                return fn(*args, **kwargs)
+            except Retry:
+                pass
+    return wrapper
 
 
 def copy_data(from_engine, to_engine):
