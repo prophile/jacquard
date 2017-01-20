@@ -7,6 +7,7 @@ import dateutil.tz
 
 from jacquard.commands import BaseCommand
 from .experiment import Experiment
+from jacquard.storage.utils import retry_reissue
 
 
 class Launch(BaseCommand):
@@ -24,6 +25,7 @@ class Launch(BaseCommand):
         """Add argparse arguments."""
         parser.add_argument('experiment', help="experiment to launch")
 
+    @retry_reissue
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction() as store:
@@ -71,6 +73,7 @@ class Conclude(BaseCommand):
             dest='promote_branch',
         )
 
+    @retry_reissue
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction() as store:
@@ -121,6 +124,7 @@ class Load(BaseCommand):
             help="experiment definition",
         )
 
+    @retry_reissue
     def handle(self, config, options):
         """Run command."""
         with options.file.open('r') as f:
