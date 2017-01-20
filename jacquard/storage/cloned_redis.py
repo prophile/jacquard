@@ -83,6 +83,9 @@ class _RedisDataPool(object):
                 # Wait and retry
                 time.sleep(10)
 
+                # Forcibly resync
+                self.sync_update()
+
     def poll_thread(self):
         while True:
             time.sleep(30)
