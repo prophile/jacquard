@@ -1,10 +1,13 @@
 """Plugin-loading subsystem."""
 
 import sys
+import logging
+import functools
 import pkg_resources
 
 
 DEFAULT_PLUGIN_DIRECTORY = '/etc/jacquard/plugins'
+LOGGER = logging.getLogger('jacquard.plugin')
 
 
 def plug_all(group, config=None):
@@ -17,6 +20,8 @@ def plug_all(group, config=None):
     Returns an iterable of `(name, plugin)` pairs. Plugins are callables
     which, when called, load the actual plugin and return it.
     """
+    LOGGER.debug("Enumerating plugins in group %s", group)
+
     # Add /etc/jacquard/plugins to the search path if not already there
     if DEFAULT_PLUGIN_DIRECTORY not in sys.path:
         sys.path.append(DEFAULT_PLUGIN_DIRECTORY)
@@ -60,4 +65,9 @@ def plug(group, name, config=None):
     if candidate is None:
         raise RuntimeError("Could not find plugin for '%s'" % name)
 
-    return candidate
+    @functools.wraps(candidate)
+    def wrapped_loader(*args, **kwargs):
+        LOGGER.info("Loaded %s plugin %r", group, name)
+        return candidate(*args, **kwargs)
+
+    return wrapped_loader
