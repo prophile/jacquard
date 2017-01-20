@@ -64,11 +64,11 @@ class _RedisDataPool(object):
 
         while True:
             try:
-                # Do this even on subsequent passes to resync
-                self.sync_update()
-
                 subscriber = self.connection.pubsub()
                 subscriber.subscribe('jacquard-store:state-key')
+
+                # Do this even on subsequent passes to resync
+                self.sync_update()
 
                 if not released_semaphore:
                     self.pubsub_semaphore.release()
