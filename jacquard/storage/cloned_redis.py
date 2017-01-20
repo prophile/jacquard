@@ -26,6 +26,7 @@ class _RedisDataPool(object):
             target=self.pubsub_thread,
             daemon=True,
         )
+        # PubSub thread also does the initial sync
         pubsub_thread.start()
 
         poll_thread = threading.Thread(
@@ -35,8 +36,6 @@ class _RedisDataPool(object):
         poll_thread.start()
 
         self.pubsub_semaphore.acquire()
-
-        self.sync_update()
 
     def sync_update(self):
         with self.lock:
@@ -65,6 +64,9 @@ class _RedisDataPool(object):
 
         while True:
             try:
+                # Do this even on subsequent passes to resync
+                self.sync_update()
+
                 subscriber = self.connection.pubsub()
                 subscriber.subscribe('jacquard-store:state-key')
 
@@ -82,9 +84,6 @@ class _RedisDataPool(object):
             except redis.exceptions.ConnectionError:
                 # Wait and retry
                 time.sleep(10)
-
-                # Forcibly resync
-                self.sync_update()
 
     def poll_thread(self):
         while True:
