@@ -117,12 +117,14 @@ class _RedisDataPool(object):
                     b'jacquard-store:state-key',
                 )
 
-                with self.lock:
-                    if current_state != self.state_key:
-                        self.state_key = current_state
-                        self.load_state()
-
-                self.sync_update()
+                if current_state != self.state_key:
+                    LOGGER.info(
+                        "Poll noticed state delta on %s: %s",
+                        self.connection_string,
+                        current_state,
+                    )
+                    # Use sync_update to recheck the key with the lock taken
+                    self.sync_update()
             except redis.exceptions.ConnectionError:
                 # Silently ignore, wait for reconnection
                 LOGGER.warning(
