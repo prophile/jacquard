@@ -20,8 +20,7 @@ class _RedisDataPool(object):
         self.connection_string = connection_string
         self.connection = redis.StrictRedis.from_url(connection_string)
         self.lock = threading.Lock()
-
-        self.sync_update()
+        self.pubsub_semaphore = threading.Semaphore(0)
 
         pubsub_thread = threading.Thread(
             target=self.pubsub_thread,
@@ -34,6 +33,10 @@ class _RedisDataPool(object):
             daemon=True,
         )
         poll_thread.start()
+
+        self.pubsub_semaphore.acquire()
+
+        self.sync_update()
 
     def sync_update(self):
         with self.lock:
@@ -58,10 +61,16 @@ class _RedisDataPool(object):
             self.current_data = {}
 
     def pubsub_thread(self):
+        released_semaphore = False
+
         while True:
             try:
                 subscriber = self.connection.pubsub()
                 subscriber.subscribe('jacquard-store:state-key')
+
+                if not released_semaphore:
+                    self.pubsub_semaphore.release()
+                    released_semaphore = True
 
                 for message in subscriber.listen():
                     if message['type'] != 'message':
