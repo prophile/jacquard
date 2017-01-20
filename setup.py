@@ -73,6 +73,12 @@ setup(
         'sqlalchemy',
     ),
 
+    extras_require={
+        'etcd': (
+            'python-etcd',
+        ),
+    },
+
     setup_requires=(
         'pytest-runner',
     ),
@@ -91,7 +97,7 @@ setup(
             'redis = jacquard.storage.redis:RedisStore',
             'redis-cloned = jacquard.storage.cloned_redis:ClonedRedisStore',
             'file = jacquard.storage.file:FileStore',
-            'etcd = jacquard.storage.etcd:EtcdStore',
+            'etcd = jacquard.storage.etcd:EtcdStore [etcd]',
         ),
         'jacquard.commands': (
             'storage-dump = jacquard.storage.commands:StorageDump',
