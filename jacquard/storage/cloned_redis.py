@@ -89,6 +89,15 @@ class _RedisDataPool(object):
         while True:
             time.sleep(30)
             try:
+                current_state = self.connection.get(
+                    b'jacquard-store:state-key',
+                )
+
+                with self.lock:
+                    if current_state != self.state_key:
+                        self.state_key = current_state
+                        self.load_state()
+
                 self.sync_update()
             except redis.exceptions.ConnectionError:
                 # Silently ignore, wait for reconnection
