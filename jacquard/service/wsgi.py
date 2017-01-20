@@ -8,9 +8,9 @@ import werkzeug.exceptions
 from jacquard.plugin import plug_all
 
 
-def _get_endpoints():
+def _get_endpoints(config):
     return {
-        name: cls()()
+        name: cls()(config)
         for name, cls in plug_all('http_endpoints')
     }
 
@@ -25,7 +25,7 @@ def _get_url_map(endpoints):
 
 def get_wsgi_app(config):
     """Get the main WSGI handler, by config."""
-    endpoints = _get_endpoints()
+    endpoints = _get_endpoints(config)
     url_map = _get_url_map(endpoints)
 
     def application(environ, start_response):
@@ -43,7 +43,6 @@ def get_wsgi_app(config):
             endpoint, kwargs = urls.match()
 
             endpoint = endpoint.bind(
-                config=config,
                 reverse=reverse,
                 request=request,
             )

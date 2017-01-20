@@ -16,9 +16,13 @@ class Endpoint(metaclass=abc.ABCMeta):
     Instances have two states: bound and unbound. When the endpoint is loaded
     it is instantiated in an unbound state. Before it's actually *dispatched*,
     the dispatcher calls `bind` which copies the endpoint to produce a bound
-    version. Bound endpoints have context available in attributes: `config`,
-    `reverse`, and `request`.
+    version. Bound endpoints have context available in attributes: `reverse`
+    and `request`.
     """
+
+    def __init__(self, config):
+        """Constructor from system config."""
+        self.config = config
 
     @abc.abstractproperty
     def url(self):
@@ -66,29 +70,17 @@ class Endpoint(metaclass=abc.ABCMeta):
             endpoint=self,
         )
 
-    def bind(self, config, request, reverse):
+    def bind(self, request, reverse):
         """
         Create bound version of this endpoint.
 
-        Clones with `copy.copy` and assigns `instance.config`,
-        `instance.request` and `instance.reverse`.
+        Clones with `copy.copy` and assigns `instance.request` and
+        `instance.reverse`.
         """
         instance = copy.copy(self)
-        instance._config = config
         instance._request = request
         instance._reverse = reverse
         return instance
-
-    @property
-    def config(self):
-        """System config for this endpoint."""
-        try:
-            return self._config
-        except AttributeError:
-            raise AttributeError(
-                "Unbound endpoint: `config` is only available on bound "
-                "endpoints",
-            )
 
     @property
     def request(self):
