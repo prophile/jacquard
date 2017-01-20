@@ -55,7 +55,7 @@ class Endpoint(metaclass=abc.ABCMeta):
 
     def reverse(self, name, **kwargs):
         try:
-            reverse = self.reverse
+            reverse = self._reverse
         except AttributeError:
             raise AttributeError(
                 "Unbound endpoint: `reverse` is only available on bound "
