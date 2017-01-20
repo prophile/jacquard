@@ -5,6 +5,7 @@ import sys
 import logging
 import pathlib
 import argparse
+import contextlib
 import pkg_resources
 
 from jacquard.config import load_config
@@ -108,7 +109,8 @@ def main(args=sys.argv[1:], config=None):
             return
 
     # Run subcommand
-    options.func(config, options)
+    with contextlib.suppress(KeyboardInterrupt):
+        options.func(config, options)
 
 
 if '__name__' == '__main__':
