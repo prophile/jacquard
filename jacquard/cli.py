@@ -2,6 +2,7 @@
 
 import os
 import sys
+import logging
 import pathlib
 import argparse
 import pkg_resources
@@ -29,7 +30,17 @@ def argument_parser():
         '-v',
         '--verbose',
         help="enable verbose output",
-        action='store_true',
+        action='store_const',
+        dest='log_level',
+        const=logging.INFO,
+        default=logging.ERROR,
+    )
+    parser.add_argument(
+        '--debug',
+        help="enable debug output (implies -v)",
+        action='store_const',
+        dest='log_level',
+        const=logging.DEBUG,
     )
     parser.add_argument(
         '-c',
@@ -81,6 +92,8 @@ def main(args=sys.argv[1:], config=None):
     """
     parser = argument_parser()
     options = parser.parse_args(args)
+
+    logging.basicConfig(level=options.log_level)
 
     if options.func is None:
         parser.print_help()
