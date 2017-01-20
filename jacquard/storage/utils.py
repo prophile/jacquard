@@ -9,7 +9,7 @@ from jacquard.plugin import plug
 from .exceptions import Retry
 
 
-def retry_reissue(fn):
+def retrying(fn):
     """Decorator: reissues the function if it raises Retry."""
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
