@@ -65,9 +65,9 @@ def argument_parser():
         command = plugin()()
 
         command_help = getattr(command, 'help', name)
-        plumbing = getattr(command, 'plumbing', False)
+        is_plumbing = getattr(command, 'plumbing', False)
 
-        if plumbing:
+        if is_plumbing:
             kwargs = {'description': command_help}
         else:
             kwargs = {'description': command_help, 'help': command_help}
