@@ -1,3 +1,5 @@
+"""Built-in, core HTTP endpoints."""
+
 from .base import Endpoint
 
 from jacquard.users import get_settings
@@ -6,9 +8,16 @@ from jacquard.experiments import Experiment
 
 
 class Root(Endpoint):
+    """
+    API root.
+
+    Essentially a directory of the main endpoints available.
+    """
+
     url = '/'
 
     def handle(self):
+        """Dispatch request."""
         return {
             'users': self.reverse('user', user=':user'),
             'experiments': self.reverse('experiments-overview'),
@@ -16,9 +25,17 @@ class Root(Endpoint):
 
 
 class User(Endpoint):
+    """
+    User settings lookup.
+
+    Gets the JSON representation of the current experiment settings for a
+    given user ID.
+    """
+
     url = '/users/<user>'
 
     def handle(self, user):
+        """Dispatch request."""
         settings = get_settings(
             user,
             self.config.storage,
@@ -29,9 +46,16 @@ class User(Endpoint):
 
 
 class ExperimentsOverview(Endpoint):
+    """
+    Experiment status overview.
+
+    Gives basic details on all experiments in the system, regardless of state.
+    """
+
     url = '/experiments'
 
     def handle(self):
+        """Dispatch request."""
         with self.config.storage.transaction() as store:
             active_experiments = store.get('active-experiments', ())
             experiments = list(Experiment.enumerate(store))
@@ -51,9 +75,16 @@ class ExperimentsOverview(Endpoint):
 
 
 class ExperimentDetail(Endpoint):
+    """
+    Full experiment details.
+
+    Includes all users in each branch.
+    """
+
     url = '/experiments/<experiment>'
 
     def handle(self, experiment):
+        """Dispatch request."""
         with self.config.storage.transaction() as store:
             experiment_config = Experiment.from_store(store, experiment)
 
