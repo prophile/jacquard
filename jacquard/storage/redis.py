@@ -1,9 +1,13 @@
 """Redis storage engine."""
 
 import redis
+import logging
 
 from .base import StorageEngine
 from .exceptions import Retry
+
+
+LOGGER = logging.getLogger('jacquard.storage.redis')
 
 
 class RedisStore(StorageEngine):
@@ -50,6 +54,7 @@ class RedisStore(StorageEngine):
         try:
             pipe.execute()
         except Exception:  # TODO: specify
+            LOGGER.exception("Redis key conflict")
             raise Retry()
 
     def get(self, key):

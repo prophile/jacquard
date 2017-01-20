@@ -11,11 +11,15 @@ Potentially useful for small Django projects, or as a superclass for a more
 intricate Django user directory.
 """
 
+import logging
 import functools
 import sqlalchemy
 import sqlalchemy.sql
 
 from .base import Directory, UserEntry
+
+
+LOGGER = logging.getLogger('jacquard.directory.django')
 
 
 class DjangoDirectory(Directory):
@@ -32,7 +36,9 @@ class DjangoDirectory(Directory):
 
     def __init__(self, url):
         """Initialise with SQLAlchemy connection URL."""
+        LOGGER.debug("Opening SQL connection to: %r", url)
         self.engine = sqlalchemy.create_engine(url)
+        LOGGER.debug("(opened)")
 
     def describe_user(self, row):
         """
@@ -63,6 +69,7 @@ class DjangoDirectory(Directory):
         """
         query = self.query + " WHERE id = :user"
 
+        LOGGER.debug("Lookup user %s", user_id)
         result = self.engine.execute(
             sqlalchemy.sql.text(query),
             user=int(user_id),
@@ -71,8 +78,10 @@ class DjangoDirectory(Directory):
         try:
             row = next(iter(result))
         except StopIteration:
+            LOGGER.debug("not found")
             return None
 
+        LOGGER.debug("Got row: %s", row)
         return self.describe_user(row)
 
     def all_users(self):
