@@ -7,8 +7,12 @@ import time
 import uuid
 import redis
 import pickle
+import logging
 import warnings
 import threading
+
+
+LOGGER = logging.getLogger('jacquard.storage.cloned_redis')
 
 
 _REDIS_POOL = {}
@@ -27,15 +31,19 @@ class _RedisDataPool(object):
             daemon=True,
         )
         # PubSub thread also does the initial sync
+        LOGGER.debug("Launching pubsub thread for %s", connection_string)
         pubsub_thread.start()
 
         poll_thread = threading.Thread(
             target=self.poll_thread,
             daemon=True,
         )
+        LOGGER.debug("Launching poll thread for %s", connection_string)
         poll_thread.start()
 
+        LOGGER.debug("Waiting for pubsub semaphore...")
         self.pubsub_semaphore.acquire()
+        LOGGER.debug("Done with connection init on %s", connection_string)
 
     def sync_update(self):
         with self.lock:
@@ -66,12 +74,19 @@ class _RedisDataPool(object):
             try:
                 subscriber = self.connection.pubsub()
                 subscriber.subscribe('jacquard-store:state-key')
+                LOGGER.debug(
+                    "Subscribed to state changes for %s",
+                    self.connection_string,
+                )
 
                 # Do this even on subsequent passes to resync
+                LOGGER.debug("Doing resync...")
                 self.sync_update()
+                LOGGER.debug("Resync finished.")
 
                 if not released_semaphore:
                     self.pubsub_semaphore.release()
+                    LOGGER.debug("Released pubsub semaphore.")
                     released_semaphore = True
 
                 for message in subscriber.listen():
@@ -79,9 +94,18 @@ class _RedisDataPool(object):
                         continue
 
                     with self.lock:
+                        LOGGER.debug(
+                            "Received state delta push: %s",
+                            message['data'],
+                        )
                         self.state_key = message['data']
                         self.load_state()
             except redis.exceptions.ConnectionError:
+                LOGGER.warning(
+                    "Disconnected from pub/sub on %s, "
+                    "attempting reconnect in 10s",
+                    self.connect_string,
+                )
                 # Wait and retry
                 time.sleep(10)
 
@@ -101,6 +125,10 @@ class _RedisDataPool(object):
                 self.sync_update()
             except redis.exceptions.ConnectionError:
                 # Silently ignore, wait for reconnection
+                LOGGER.warning(
+                    "Connection failure in poll thread for %s, skipping check",
+                    self.connection_string,
+                )
                 pass
 
     def get_state(self):
@@ -120,6 +148,7 @@ def _get_shared_data(connection_string):
         except KeyError:
             pass
 
+        LOGGER.info("Opening new Redis data pool for: %s", connection_string)
         new_pool = _RedisDataPool(connection_string)
         _REDIS_POOL[connection_string] = new_pool
         return new_pool
@@ -173,6 +202,11 @@ class ClonedRedisStore(StorageEngine):
         cur_state_key = connection.get(b'jacquard-store:state-key')
 
         if cur_state_key != self.state_key:
+            LOGGER.info(
+                "Storage conflict: state has moved from %s to %s",
+                self.state_key,
+                cur_state_key,
+            )
             connection.unwatch()
             self.pool.sync_update()
             del self.transaction_data
