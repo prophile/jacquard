@@ -67,7 +67,7 @@ class ExperimentDetail(Endpoint):
             branch_id = branch_ids[
                 branch_hash(experiment, user_entry.id) %
                 len(branch_ids)
-                ]
+            ]
 
             branches[branch_id].append(user_entry.id)
 
