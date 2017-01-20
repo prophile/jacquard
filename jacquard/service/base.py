@@ -44,6 +44,8 @@ class Endpoint(metaclass=abc.ABCMeta):
         Any URL parameters are passed in as keyword arguments. This is only
         called on bound instances, so you can rely on `self.request` and
         friends existing.
+
+        Return JSON structures.
         """
         pass
 
