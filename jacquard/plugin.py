@@ -30,7 +30,7 @@ def plug_all(group, config=None):
     entry_points_group = 'jacquard.%s' % group
 
     for entry_point in pkg_resources.iter_entry_points(entry_points_group):
-        yield entry_point.name, entry_point.resolve
+        yield entry_point.name, entry_point.load
 
     if config is not None:
         config_section = config.get('plugins:%s' % group, {})

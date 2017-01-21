@@ -2,8 +2,28 @@
 
 import collections.abc
 import json
+import logging
+import functools
 
 from jacquard.plugin import plug
+
+from .exceptions import Retry
+
+
+def retrying(fn):
+    """Decorator: reissues the function if it raises Retry."""
+    logger = logging.getLogger('jacquard.storage.retrying')
+
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        while True:
+            try:
+                return fn(*args, **kwargs)
+            except Retry:
+                callable_name = getattr(fn, '__name__', 'anonymous function')
+                logger.debug("Retry issued from %s, reissuing", callable_name)
+
+    return wrapper
 
 
 def copy_data(from_engine, to_engine):

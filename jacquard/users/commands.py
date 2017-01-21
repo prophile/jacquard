@@ -6,6 +6,7 @@ import contextlib
 
 from jacquard.commands import BaseCommand
 from jacquard.users import get_settings
+from jacquard.storage.utils import retrying
 
 
 class SetDefault(BaseCommand):
@@ -34,6 +35,7 @@ class SetDefault(BaseCommand):
             action='store_true',
         )
 
+    @retrying
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction() as store:
@@ -84,6 +86,7 @@ class Override(BaseCommand):
             action='store_true',
         )
 
+    @retrying
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction() as store:

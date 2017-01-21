@@ -4,7 +4,7 @@ import pprint
 
 from jacquard.commands import BaseCommand
 
-from .utils import copy_data, open_engine
+from .utils import copy_data, open_engine, retrying
 
 
 class StorageDump(BaseCommand):
@@ -45,6 +45,7 @@ class StorageImport(BaseCommand):
         parser.add_argument('engine', help="storage engine to load from")
         parser.add_argument('url', help="storage URL to load from")
 
+    @retrying
     def handle(self, config, option):
         """Run command."""
         src = open_engine(config, option.engine, option.url)
@@ -66,6 +67,7 @@ class StorageExport(BaseCommand):
         parser.add_argument('engine', help="storage engine to save to")
         parser.add_argument('url', help="storage URL to save to")
 
+    @retrying
     def handle(self, config, option):
         """Run command."""
         dst = open_engine(config, option.engine, option.url)
@@ -88,6 +90,7 @@ class StorageFlush(BaseCommand):
 
     help = "clear everything in storage"
 
+    @retrying
     def handle(self, config, option):
         """Run command."""
         with config.storage.transaction() as store:

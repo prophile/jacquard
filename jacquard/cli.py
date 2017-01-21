@@ -5,6 +5,7 @@ import sys
 import logging
 import pathlib
 import argparse
+import contextlib
 import pkg_resources
 
 from jacquard.config import load_config
@@ -64,9 +65,9 @@ def argument_parser():
         command = plugin()()
 
         command_help = getattr(command, 'help', name)
-        plumbing = getattr(command, 'plumbing', False)
+        is_plumbing = getattr(command, 'plumbing', False)
 
-        if plumbing:
+        if is_plumbing:
             kwargs = {'description': command_help}
         else:
             kwargs = {'description': command_help, 'help': command_help}
@@ -108,7 +109,8 @@ def main(args=sys.argv[1:], config=None):
             return
 
     # Run subcommand
-    options.func(config, options)
+    with contextlib.suppress(KeyboardInterrupt):
+        options.func(config, options)
 
 
 if '__name__' == '__main__':
