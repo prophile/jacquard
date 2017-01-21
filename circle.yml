@@ -10,7 +10,7 @@ dependencies:
     - gem install fpm
   override:
     - rm -rf jacquard_split.egg-info
-    - pip install .
+    - pip install -e .
 
 test:
   pre:

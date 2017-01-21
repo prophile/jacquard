@@ -21,12 +21,12 @@ class StorageEngine(metaclass=abc.ABCMeta):
         It is typical for the connection string to be a URL: even for files it
         should generally take the form of a file: scheme URL.
         """
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def begin(self):
         """Enter a new transaction. Used even for reads."""
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def commit(self, changes, deletions):
@@ -41,7 +41,7 @@ class StorageEngine(metaclass=abc.ABCMeta):
         raise the `Retry` exception to request that the entire transaction be
         repeated.
         """
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def rollback(self):
@@ -51,7 +51,7 @@ class StorageEngine(metaclass=abc.ABCMeta):
         This is used not only in exceptions but also when no writes were
         necessary after a transaction, so should ideally be fairly fast.
         """
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def keys(self):
@@ -60,7 +60,7 @@ class StorageEngine(metaclass=abc.ABCMeta):
 
         This is only ever called in transactions.
         """
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def get(self, key):
@@ -71,7 +71,7 @@ class StorageEngine(metaclass=abc.ABCMeta):
 
         Only ever called in a transaction.
         """
-        pass
+        raise NotImplementedError
 
     def encode_key(self, key):
         """

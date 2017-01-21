@@ -76,8 +76,8 @@ to having Jacquard running on multiple machines – and the recommended
 deployment pattern is to run a Jacquard instance on the same machine as
 anything which uses it.
 
-To that end Jacquard is packed with two alternate storage engines, one backed
-by Redis and one backed by etcd [#note1]_.
+To that end Jacquard is packed with an alternate storage engine,  backed by
+Redis [#note1]_.
 
 There are command-line tools for migrating between different storage engines,
 so choosing one should not be considered a large commitment.
