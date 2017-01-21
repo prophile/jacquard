@@ -48,8 +48,8 @@ def get(path):
 
 def test_root():
     assert get('/') == {
-        'experiments': '/experiment',
-        'user': '/users/<user>',
+        'experiments': '/experiments',
+        'users': '/users/:user',
     }
 
 
@@ -69,9 +69,9 @@ def test_user_lookup_with_non_numeric_id():
 
 def test_experiments_list():
     # Verify no exceptions
-    assert get('/experiment') == [{
+    assert get('/experiments') == [{
         'id': 'foo',
-        'url': '/experiment/foo',
+        'url': '/experiments/foo',
         'state': 'active',
         'name': 'foo',
     }]
@@ -79,11 +79,11 @@ def test_experiments_list():
 
 def test_experiment_get_smoke():
     # Verify no exceptions
-    assert get('/experiment/foo')['name'] == 'foo'
+    assert get('/experiments/foo')['name'] == 'foo'
 
 
 def test_experiment_get_membership():
-    assert get('/experiment/foo')['branches']['bar'] == [3]
+    assert get('/experiments/foo')['branches']['bar'] == [3]
 
 
 def test_missing_paths_get_404():
