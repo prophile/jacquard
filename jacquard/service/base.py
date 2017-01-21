@@ -38,7 +38,7 @@ class Endpoint(metaclass=abc.ABCMeta):
 
         Full documentation can be found in Werkzeug's `werkzeug.routing` docs.
         """
-        pass
+        raise NotImplementedError
 
     @abc.abstractclassmethod
     def handle(self, **kwargs):
@@ -51,7 +51,7 @@ class Endpoint(metaclass=abc.ABCMeta):
 
         Return JSON structures.
         """
-        pass
+        raise NotImplementedError
 
     def __call__(self, **kwargs):
         """Convenience alias for `handle`."""

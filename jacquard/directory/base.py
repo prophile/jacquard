@@ -31,6 +31,7 @@ class Directory(metaclass=abc.ABCMeta):
         files, and appear as strings. Useful for specifying connection URLs
         etc.
         """
+        raise NotImplementedError
 
     @abc.abstractmethod
     def lookup(self, user_id):
@@ -40,7 +41,7 @@ class Directory(metaclass=abc.ABCMeta):
         For missing users this must return None, otherwise it must return a
         corresponding `UserEntry`.
         """
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def all_users(self):
@@ -49,4 +50,4 @@ class Directory(metaclass=abc.ABCMeta):
 
         Represented as `UserEntry` instances.
         """
-        pass
+        raise NotImplementedError

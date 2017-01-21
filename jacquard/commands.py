@@ -25,4 +25,4 @@ class BaseCommand(metaclass=abc.ABCMeta):
         generally defined from `add_arguments` with a few standard options
         such as `verbose` thrown in for good measure.
         """
-        pass
+        raise NotImplementedError
