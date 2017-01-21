@@ -87,3 +87,16 @@ API
 
 .. autoclass:: jacquard.commands.BaseCommand
     :members:
+
+HTTP endpoints
+--------------
+
+HTTP endpoint plugins add new URL handlers for the HTTP API.
+
+Declared in the `http_endpoints` plugin group.
+
+API
+~~~
+
+.. autoclass:: jacquard.service.base.Endpoint
+    :members:

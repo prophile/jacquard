@@ -118,5 +118,11 @@ setup(
             'dummy = jacquard.directory.dummy:DummyDirectory',
             'django = jacquard.directory.django:DjangoDirectory',
         ),
+        'jacquard.http_endpoints': (
+            'root = jacquard.service.endpoints:Root',
+            'user = jacquard.service.endpoints:User',
+            'experiments-overview = jacquard.service.endpoints:ExperimentsOverview',
+            'experiment = jacquard.service.endpoints:ExperimentDetail',
+        ),
     },
 )
