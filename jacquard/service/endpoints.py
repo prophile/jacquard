@@ -1,10 +1,10 @@
 """Built-in, core HTTP endpoints."""
 
-from .base import Endpoint
-
 from jacquard.users import get_settings
-from jacquard.users.settings import branch_hash
 from jacquard.experiments import Experiment
+from jacquard.users.settings import branch_hash
+
+from .base import Endpoint
 
 
 class Root(Endpoint):
