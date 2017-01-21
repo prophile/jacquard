@@ -6,11 +6,11 @@ import logging
 import pathlib
 import argparse
 import contextlib
+
 import pkg_resources
 
 from jacquard.config import load_config
 from jacquard.plugin import plug_all
-
 
 DEFAULT_CONFIG_FILE_PATH = pathlib.Path(os.environ.get(
     'JACQUARD_CONFIG',

@@ -1,3 +1,8 @@
+import functools
+import unittest.mock
+
+import pytest
+
 from jacquard.storage.redis import RedisStore
 
 try:
@@ -5,9 +10,6 @@ try:
 except ImportError:
     fakeredis = None
 
-import pytest
-import functools
-import unittest.mock
 
 
 def redis_test(fn):

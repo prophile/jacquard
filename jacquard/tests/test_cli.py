@@ -1,10 +1,11 @@
 import io
-import unittest.mock
-import contextlib
 import textwrap
+import contextlib
+import unittest.mock
 
 from jacquard.cli import main
 from jacquard.storage.dummy import DummyStore
+
 
 def test_smoke_cli_help():
     try:

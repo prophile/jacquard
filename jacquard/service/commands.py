@@ -3,8 +3,8 @@
 import werkzeug.debug
 import werkzeug.serving
 
-from jacquard.commands import BaseCommand
 from jacquard.service import get_wsgi_app
+from jacquard.commands import BaseCommand
 
 
 class RunServer(BaseCommand):

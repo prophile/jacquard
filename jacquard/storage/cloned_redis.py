@@ -1,16 +1,16 @@
 """Cloned-Redis storage engine."""
 
-from .base import StorageEngine
-from .exceptions import Retry
-
 import time
 import uuid
-import redis
 import pickle
 import logging
 import warnings
 import threading
 
+import redis
+
+from .base import StorageEngine
+from .exceptions import Retry
 
 LOGGER = logging.getLogger('jacquard.storage.cloned_redis')
 

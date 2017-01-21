@@ -1,7 +1,7 @@
 import datetime
-import dateutil.tz
-
 from unittest.mock import MagicMock
+
+import dateutil.tz
 
 from jacquard.users import get_settings
 from jacquard.storage.dummy import DummyStore

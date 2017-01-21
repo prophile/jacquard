@@ -3,7 +3,6 @@
 import abc
 import collections
 
-
 UserEntry = collections.namedtuple('UserEntry', 'id join_date tags')
 
 UserEntry.__doc__ = """

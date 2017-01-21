@@ -1,16 +1,14 @@
 import json
-
 import datetime
-import dateutil.tz
-
 from unittest.mock import Mock
+
+import dateutil.tz
+import werkzeug.test
 
 from jacquard.service import get_wsgi_app
 from jacquard.storage.dummy import DummyStore
 from jacquard.directory.base import UserEntry
 from jacquard.directory.dummy import DummyDirectory
-
-import werkzeug.test
 
 
 def get_status(path):

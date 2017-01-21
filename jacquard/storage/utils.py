@@ -1,9 +1,9 @@
 """General storage engine utilities."""
 
-import collections.abc
 import json
 import logging
 import functools
+import collections.abc
 
 from jacquard.plugin import plug
 

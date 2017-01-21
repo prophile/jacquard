@@ -10,8 +10,8 @@ variable `JACQUARD_CONFIG`; if left unspecified, the file 'config.cfg' in the
 current working directory is assumed.
 """
 
-from jacquard.service import get_wsgi_app
 from jacquard.config import load_config
+from jacquard.service import get_wsgi_app
 
 from .cli import DEFAULT_CONFIG_FILE_PATH
 

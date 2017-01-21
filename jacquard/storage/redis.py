@@ -1,11 +1,11 @@
 """Redis storage engine."""
 
-import redis
 import logging
+
+import redis
 
 from .base import StorageEngine
 from .exceptions import Retry
-
 
 LOGGER = logging.getLogger('jacquard.storage.redis')
 

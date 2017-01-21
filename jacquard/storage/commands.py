@@ -4,7 +4,7 @@ import pprint
 
 from jacquard.commands import BaseCommand
 
-from .utils import copy_data, open_engine, retrying
+from .utils import retrying, copy_data, open_engine
 
 
 class StorageDump(BaseCommand):
