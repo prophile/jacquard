@@ -1,0 +1,9 @@
+id: hello
+name: Hello!
+branches:
+  - id: control
+    settings:
+      cta: blue
+  - id: test
+    settings:
+      cta: red

@@ -1,0 +1,21 @@
+- command: override 30 foo bar
+- command: storage-dump
+  expect: |
+    overrides/30
+    ============
+    {'foo': 'bar'}
+
+- command: override 30 bazz quux
+- command: show 30
+  expect: |
+    bazz: quux
+    foo: bar
+
+- command: override 30 -d foo
+- command: show 30
+  expect: |
+    bazz: quux
+
+- command: override 30 -d bazz
+- command: storage-dump
+  expect: ""

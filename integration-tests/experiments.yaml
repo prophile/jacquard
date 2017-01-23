@@ -1,0 +1,14 @@
+- command: load-experiment test-data/experiment.yaml
+
+- command: list
+  expect: |
+    hello: Hello!
+    =============
+
+    Not yet launched
+
+- command: launch hello
+- command: conclude hello test
+- command: show
+  expect: |
+    cta: red

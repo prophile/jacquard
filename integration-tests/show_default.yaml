@@ -1,0 +1,13 @@
+- command: set-default foo bar
+- get: /users/1
+  expect: |
+    {"foo": "bar", "user": "1"}
+
+- command: show
+  expect: |
+    foo: bar
+
+- command: set-default -d foo
+- get: /users/2
+  expect: |
+    {"user": "2"}
