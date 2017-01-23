@@ -4,6 +4,8 @@ import contextlib
 
 import dateutil.parser
 
+from .constraints import Constraints, ConstraintContext
+
 
 class Experiment(object):
     """
@@ -42,18 +44,10 @@ class Experiment(object):
 
         self.branches = branches
 
-        known_constraint_types = (
-            'anonymous',
-            'era',
-            'required_tags',
-            'excluded_tags',
-        )
-
-        self.constraints = constraints or {}
-
-        for constraint_name in self.constraints:
-            if constraint_name not in known_constraint_types:
-                raise ValueError("Unknown constraint: %r" % constraint_name)
+        if constraints is not None:
+            self.constraints = constraints
+        else:
+            self.constraints = Constraints()
 
         self.name = name or self.id
 
@@ -84,7 +78,7 @@ class Experiment(object):
             kwargs['name'] = obj['name']
 
         with contextlib.suppress(KeyError):
-            kwargs['constraints'] = obj['constraints']
+            kwargs['constraints'] = Constraints.from_json(obj['constraints'])
 
         with contextlib.suppress(KeyError):
             kwargs['launched'] = dateutil.parser.parse(obj['launched'])
@@ -124,7 +118,7 @@ class Experiment(object):
         representation = {
             'id': self.id,
             'branches': self.branches,
-            'constraints': self.constraints,
+            'constraints': self.constraints.to_json(),
             'name': self.name,
             'launched': str(self.launched),
             'concluded': str(self.concluded),
@@ -164,56 +158,10 @@ class Experiment(object):
 
     def includes_user(self, user_entry):
         """
-        Check whether a user meets the experiment's constraints dict.
+        Check whether a user meets the experiment's constraints.
 
         A (hopefully constant time) predicate.
-
-        The keys which are currently supported are:
-
-        anonymous
-          A boolean, representing whether anonymous users (users for whom we
-          have no information from the directory) are permitted.
-
-        era
-          Whether to include users who joined only after the launch of the
-          experiment, only before it, or both (by default). Takes a string
-          value, one of "new", "old", or "both".
-
-        required_tags
-          A list: if specified, only users with all the given tags are
-          permitted.
-
-        excluded_tags
-          A list: if specified, only users without any of the given tags are
-          permitted.
-
-        All these constraints are optional.
-
-        NB: If `anonymous` is True, which is the default, all anonymous users
-        are permitted, *regardless of other constraints*.
         """
-        if user_entry is None:
-            return self.constraints.get('anonymous', True)
-
-        era = self.constraints.get('era', 'both')
-
-        if era == 'old' and user_entry.join_date >= self.launched:
-            return False
-
-        if era == 'new' and user_entry.join_date < self.launched:
-            return False
-
-        required_tags = self.constraints.get('required_tags', ())
-
-        if (
-            required_tags and
-            any(x not in user_entry.tags for x in required_tags)
-        ):
-            return False
-
-        excluded_tags = self.constraints.get('excluded_tags', ())
-
-        if any(x in excluded_tags for x in user_entry.tags):
-            return False
-
-        return True
+        return self.constraints.matches_user(user_entry, ConstraintContext(
+            era_start_date=self.launched,
+        ))
