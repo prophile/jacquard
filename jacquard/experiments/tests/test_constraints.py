@@ -1,6 +1,7 @@
 import datetime
 
 import dateutil.tz
+import pytest
 
 from jacquard.directory.base import UserEntry
 from jacquard.experiments.constraints import Constraints, ConstraintContext
@@ -104,7 +105,7 @@ def test_constraints_forbid_users_without_required_tags():
 
 
 def test_constraints_allow_anonymous_users_with_required_tags():
-    assert constraint_match({'require_tags': ('foo',)}, None)
+    assert constraint_match({'required_tags': ('foo',)}, None)
 
 
 def test_constraints_require_all_tags_to_be_matched():
@@ -129,3 +130,8 @@ def test_constraints_allow_anonymous_users_with_excluded_tags():
 
 def test_constraints_exclude_with_any_tags():
     assert not constraint_match({'excluded_tags': ('foo', 'bar')}, tagged_user('foo'))
+
+
+def test_constraints_raise_valueerror_for_unknown_keys():
+    with pytest.raises(ValueError):
+        Constraints.from_json({'foo': 'bar'})
