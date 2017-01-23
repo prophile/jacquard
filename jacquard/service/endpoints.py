@@ -88,7 +88,9 @@ class ExperimentDetail(Endpoint):
         with self.config.storage.transaction() as store:
             experiment_config = Experiment.from_store(store, experiment)
 
-            branch_ids = [branch['id'] for branch in experiment_config.branches]
+            branch_ids = [
+                branch['id'] for branch in experiment_config.branches
+            ]
             branches = {x: [] for x in branch_ids}
 
             relevant_settings = set()
