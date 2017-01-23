@@ -1,14 +1,16 @@
-from jacquard.storage.cloned_redis import ClonedRedisStore, destroy_shared_data
+import functools
+import unittest.mock
+
+import pytest
+
 from jacquard.storage.exceptions import Retry
+from jacquard.storage.cloned_redis import ClonedRedisStore, destroy_shared_data
 
 try:
     import fakeredis
 except ImportError:
     fakeredis = None
 
-import pytest
-import functools
-import unittest.mock
 
 
 def cloned_redis_test(fn):

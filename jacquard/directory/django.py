@@ -13,11 +13,11 @@ intricate Django user directory.
 
 import logging
 import functools
+
 import sqlalchemy
 import sqlalchemy.sql
 
 from .base import Directory, UserEntry
-
 
 LOGGER = logging.getLogger('jacquard.directory.django')
 

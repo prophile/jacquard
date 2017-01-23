@@ -1,8 +1,9 @@
-from jacquard.storage.utils import retrying
-from jacquard.storage.exceptions import Retry
+import unittest.mock
 
 import pytest
-import unittest.mock
+
+from jacquard.storage.utils import retrying
+from jacquard.storage.exceptions import Retry
 
 
 def test_does_not_reissue_if_successful_exit():

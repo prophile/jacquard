@@ -1,11 +1,10 @@
 import datetime
-import dateutil.tz
-
 from unittest.mock import Mock
+
+import dateutil.tz
 
 from jacquard.cli import main
 from jacquard.storage.dummy import DummyStore
-
 
 BRANCH_SETTINGS = {'pony': 'gravity'}
 

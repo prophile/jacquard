@@ -3,8 +3,8 @@
 import sys
 import logging
 import functools
-import pkg_resources
 
+import pkg_resources
 
 DEFAULT_PLUGIN_DIRECTORY = '/etc/jacquard/plugins'
 LOGGER = logging.getLogger('jacquard.plugin')

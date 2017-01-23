@@ -1,8 +1,9 @@
-from jacquard.directory.base import UserEntry
-from jacquard.directory.django import DjangoDirectory
+import unittest.mock
 
 import pytest
-import unittest.mock
+
+from jacquard.directory.base import UserEntry
+from jacquard.directory.django import DjangoDirectory
 
 try:
     import sqlalchemy

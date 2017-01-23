@@ -1,11 +1,12 @@
 """General user settings commands."""
 
 import sys
-import yaml
 import contextlib
 
-from jacquard.commands import BaseCommand
+import yaml
+
 from jacquard.users import get_settings
+from jacquard.commands import BaseCommand
 from jacquard.storage.utils import retrying
 
 
