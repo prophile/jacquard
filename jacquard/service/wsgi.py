@@ -35,7 +35,6 @@ def get_wsgi_app(config):
             urls = url_map.bind_to_environ(environ)
 
             def reverse(name, **kwargs):
-                print(endpoints.keys())
                 endpoint = endpoints[name]
                 return urls.build(endpoint, values=kwargs)
 
