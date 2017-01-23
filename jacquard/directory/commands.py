@@ -18,4 +18,8 @@ class ListUsers(BaseCommand):
     def handle(self, config, options):
         """Run command."""
         for user in config.directory.all_users():
-            print(user.id, str(user.join_date), ' '.join(user.tags))
+            print(('%s %s %s' % (
+                user.id,
+                str(user.join_date),
+                ' '.join(user.tags)
+            )).strip())
