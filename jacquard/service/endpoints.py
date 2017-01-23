@@ -88,19 +88,29 @@ class ExperimentDetail(Endpoint):
         with self.config.storage.transaction() as store:
             experiment_config = Experiment.from_store(store, experiment)
 
-        branch_ids = [branch['id'] for branch in experiment_config.branches]
-        branches = {x: [] for x in branch_ids}
+            branch_ids = [branch['id'] for branch in experiment_config.branches]
+            branches = {x: [] for x in branch_ids}
 
-        for user_entry in self.config.directory.all_users():
-            if not experiment_config.includes_user(user_entry):
-                continue
+            relevant_settings = set()
 
-            branch_id = branch_ids[
-                branch_hash(experiment, user_entry.id) %
-                len(branch_ids)
-            ]
+            for branch_config in experiment_config.branches:
+                relevant_settings.update(branch_config['settings'].keys())
 
-            branches[branch_id].append(user_entry.id)
+            for user_entry in self.config.directory.all_users():
+                if not experiment_config.includes_user(user_entry):
+                    continue
+
+                user_overrides = store.get('overrides/%s' % user_entry.id, {})
+
+                if any(x in relevant_settings for x in user_overrides.keys()):
+                    continue
+
+                branch_id = branch_ids[
+                    branch_hash(experiment, user_entry.id) %
+                    len(branch_ids)
+                ]
+
+                branches[branch_id].append(user_entry.id)
 
         return {
             'id': experiment_config.id,
