@@ -1,3 +1,5 @@
+"""Utility functions for bucket subsystem."""
+
 import random
 import hashlib
 
@@ -6,6 +8,11 @@ from .constants import NUM_BUCKETS
 
 
 def user_bucket(user_id):
+    """
+    Bucket ID for a given user ID.
+
+    Based on a hash of the user ID.
+    """
     user_id = str(user_id)
 
     hasher = hashlib.sha256()
@@ -17,6 +24,17 @@ def user_bucket(user_id):
 
 
 def release(store, name, constraints, branches):
+    """
+    Release a given configuration.
+
+    This is the main utility for launching experiments. `store` is the storage
+    transaction mapping. `name` is a free-form name (generally an experiment
+    ID), `constraints` is the constraints covering this release, and `branches`
+    is an iterable of (branch ID, num buckets, settings) triples.
+
+    The utility will select buckets which are not already covering the given
+    settings, which allows for partial rollout before running a test.
+    """
     # Branches is a list of (name, n_buckets, settings) tuples
     all_buckets = [
         Bucket.from_json(store.get('buckets/%s' % x, ()))
@@ -55,6 +73,16 @@ def release(store, name, constraints, branches):
 
 
 def close(store, name, constraints, branches):
+    """
+    Close a given configuration.
+
+    This is the main utility for ending experiments. `store` is the storage
+    transaction mapping. `name` is a free-form name (generally an experiment
+    ID), `constraints` is the constraints covering this release, and `branches`
+    is an iterable of (branch ID, num buckets, settings) triples.
+
+    Deliberately looks like `release` and works to counteract its effects.
+    """
     keys = [
         [name, x[0]]
         for x in branches

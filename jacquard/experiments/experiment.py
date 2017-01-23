@@ -157,6 +157,12 @@ class Experiment(object):
         raise LookupError("No such branch: %r" % branch_id)
 
     def branch_launch_configuration(self):
+        """
+        Launch configuration for the branches of this experiment.
+
+        This is the format expected for the `branches` argument of `release`
+        and `close`, to actually decide which buckets see this experiment.
+        """
         return [
             (x['id'], 150, x['settings'])
             for x in self.branches
