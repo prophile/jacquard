@@ -1,6 +1,7 @@
+import pytest
+
 from jacquard.buckets.constants import NUM_BUCKETS
 
-import pytest
 
 @pytest.mark.parametrize('divisor', (
     2,

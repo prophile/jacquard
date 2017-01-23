@@ -13,6 +13,7 @@ current working directory is assumed.
 import os
 import logging
 
+from jacquard.utils import check_keys
 from jacquard.config import load_config
 from jacquard.service import get_wsgi_app
 
@@ -24,8 +25,6 @@ KNOWN_LOG_LEVELS = {
     'info': logging.INFO,
     'errors': logging.ERROR,
 }
-
-from jacquard.utils import check_keys
 
 check_keys((LOG_LEVEL,), KNOWN_LOG_LEVELS, RuntimeError)
 

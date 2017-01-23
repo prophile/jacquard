@@ -1,9 +1,9 @@
 import yaml
 
 from jacquard.commands import BaseCommand
-from jacquard.experiments.constraints import Constraints
-from jacquard.buckets.utils import release, close
+from jacquard.buckets.utils import close, release
 from jacquard.buckets.constants import NUM_BUCKETS
+from jacquard.experiments.constraints import Constraints
 
 
 class Rollout(BaseCommand):

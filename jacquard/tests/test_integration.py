@@ -1,14 +1,14 @@
 import io
-import yaml
-import textwrap
 import shlex
-import pytest
 import pathlib
-import contextlib
 import datetime
-import dateutil.tz
+import textwrap
+import contextlib
 import unittest.mock
 
+import yaml
+import pytest
+import dateutil.tz
 import werkzeug.test
 
 from jacquard.cli import main
