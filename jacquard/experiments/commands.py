@@ -7,6 +7,7 @@ import yaml
 import dateutil.tz
 
 from jacquard.commands import BaseCommand
+from jacquard.buckets.utils import close, release
 from jacquard.storage.utils import retrying
 
 from .experiment import Experiment
@@ -38,6 +39,13 @@ class Launch(BaseCommand):
             if experiment.id in current_experiments:
                 print("Experiment %r already launched!" % experiment.id)
                 return
+
+            release(
+                store,
+                experiment.id,
+                experiment.constraints,
+                experiment.branch_launch_configuration(),
+            )
 
             store['active-experiments'] = (
                 current_experiments + [options.experiment]
@@ -88,6 +96,13 @@ class Conclude(BaseCommand):
                 return
 
             current_experiments.remove(options.experiment)
+
+            close(
+                store,
+                experiment.id,
+                experiment.constraints,
+                experiment.branch_launch_configuration(),
+            )
 
             if options.promote_branch:
                 defaults = store.get('defaults', {})

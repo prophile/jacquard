@@ -102,6 +102,10 @@ class TransactionMap(collections.abc.MutableMapping):
 
     def __delitem__(self, key):
         """Delete key."""
+        old_value = self.get(key)
+        if old_value is None:
+            raise KeyError(key)
+
         self._cache[key] = None
         encoded_key = self.store.encode_key(key)
         try:

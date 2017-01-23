@@ -33,8 +33,22 @@ class Bucket(object):
         settings = {}
 
         for entry in self.entries:
-            if entry.constraints.matches_user(user_entry):
+            if (
+                not entry.constraints or
+                entry.constraints.matches_user(user_entry)
+            ):
                 settings.update(entry.settings)
+
+        return settings
+
+    def affected_settings(self):
+        return frozenset(
+            x.settings.keys()
+            for x in self.entries
+        )
+
+    def needs_constraints(self):
+        return any(x.constraints for x in self.entries)
 
     def add(self, key, settings, constraints):
         self.entries.append(_Entry(
@@ -50,3 +64,9 @@ class Bucket(object):
             for x in self.entries
             if x.key != key
         ]
+
+    def covers(self, key):
+        return any(
+            x.key == key
+            for x in self.entries
+        )

@@ -156,6 +156,12 @@ class Experiment(object):
                 return branch
         raise LookupError("No such branch: %r" % branch_id)
 
+    def branch_launch_configuration(self):
+        return [
+            (x['id'], 150, x['settings'])
+            for x in self.branches
+        ]
+
     def includes_user(self, user_entry):
         """
         Check whether a user meets the experiment's constraints.
