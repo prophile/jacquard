@@ -5,6 +5,7 @@ import contextlib
 import dateutil.parser
 
 from .constraints import Constraints, ConstraintContext
+from jacquard.utils import check_keys
 
 
 class Experiment(object):
@@ -151,10 +152,10 @@ class Experiment(object):
 
         If there is no such branch, LookupErrors will materialise.
         """
-        for branch in self.branches:
-            if branch['id'] == branch_id:
-                return branch
-        raise LookupError("No such branch: %r" % branch_id)
+        branches_by_id = {x['id']: x for x in self.branches}
+
+        check_keys((branch_id,), branches_by_id.keys(), exception=LookupError)
+        return branches_by_id[branch_id]
 
     def branch_launch_configuration(self):
         """
