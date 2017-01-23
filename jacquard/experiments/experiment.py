@@ -5,7 +5,7 @@ import contextlib
 import dateutil.parser
 
 from jacquard.utils import check_keys
-from jacquard.buckets import NUM_BUCKETS
+from jacquard.buckets.constants import NUM_BUCKETS
 
 from .constraints import Constraints, ConstraintContext
 
