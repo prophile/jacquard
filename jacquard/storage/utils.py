@@ -75,7 +75,7 @@ class TransactionMap(collections.abc.MutableMapping):
     def __getitem__(self, key):
         """Lookup by key. Respects any pending changes/deletions."""
         try:
-            result = self._cache[key]
+            return self._cache[key]
         except KeyError:
             result = self.store.get(self.store.encode_key(key))
 
