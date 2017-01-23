@@ -106,6 +106,7 @@ setup(
             'load-experiment = jacquard.experiments.commands:Load',
             'list = jacquard.experiments.commands:ListExperiments',
             'list-users = jacquard.directory.commands:ListUsers',
+            'rollout = jacquard.buckets.commands:Rollout',
         ),
         'jacquard.directory_engines': (
             'dummy = jacquard.directory.dummy:DummyDirectory',

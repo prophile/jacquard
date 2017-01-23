@@ -52,8 +52,9 @@ class Bucket(object):
     def affected_settings(self):
         """All settings determined in this bucket."""
         return frozenset(
-            x.settings.keys()
+            y
             for x in self.entries
+            for y in x.settings.keys()
         )
 
     def needs_constraints(self):
