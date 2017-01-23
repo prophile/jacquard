@@ -4,8 +4,10 @@ import contextlib
 
 import dateutil.parser
 
-from .constraints import Constraints, ConstraintContext
 from jacquard.utils import check_keys
+from jacquard.buckets import NUM_BUCKETS
+
+from .constraints import Constraints, ConstraintContext
 
 
 class Experiment(object):
@@ -164,8 +166,16 @@ class Experiment(object):
         This is the format expected for the `branches` argument of `release`
         and `close`, to actually decide which buckets see this experiment.
         """
+        def num_buckets(x):
+            percent = x.get('percent', 100 // len(self.branches))
+            return (NUM_BUCKETS * percent) // 100
+
         return [
-            (x['id'], 150, x['settings'])
+            (
+                x['id'],
+                num_buckets(x),
+                x['settings'],
+            )
             for x in self.branches
         ]
 
