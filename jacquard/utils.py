@@ -4,7 +4,7 @@
 import difflib
 
 
-def check_keys(passed_keys, known_keys):
+def check_keys(passed_keys, known_keys, exception=ValueError):
     """
     Validate that all elements of passed_keys are in known_keys.
 
@@ -21,23 +21,29 @@ def check_keys(passed_keys, known_keys):
         return
 
     if len(unknown_keys) > 1:
-        raise ValueError("Unknown keys: %s" % ", ".join(sorted(unknown_keys)))
+        raise exception("Unknown keys: %s" % ", ".join(sorted(unknown_keys)))
 
     (unknown_key,) = unknown_keys
 
-    close_matches = difflib.get_close_matches(unknown_key, known_keys)
+    if len(known_keys) > 3:
+        close_matches = difflib.get_close_matches(unknown_key, known_keys)
+        close_matches_string = "close matches"
+    else:
+        close_matches = list(known_keys)
+        close_matches_string = "choices"
 
     if not close_matches:
-        raise ValueError("Unknown key: %s" % unknown_key)
+        raise exception("Unknown key: %s" % unknown_key)
 
     if len(close_matches) == 1:
         (close_match,) = close_matches
-        raise ValueError("Unknown key: %s (did you mean %s?)" % (
+        raise exception("Unknown key: %s (did you mean %s?)" % (
             unknown_key,
             close_match,
         ))
 
-    raise ValueError("Unknown key: %s (close matches: %s)" % (
+    raise exception("Unknown key: %s (%s: %s)" % (
         unknown_key,
+        close_matches_string,
         ", ".join(close_matches),
     ))
