@@ -2,6 +2,8 @@
 
 import collections
 
+import dateutil.tz
+
 from jacquard.utils import check_keys
 
 ConstraintContext = collections.namedtuple(
@@ -52,6 +54,8 @@ class Constraints(object):
         era=None,
         required_tags=(),
         excluded_tags=(),
+        joined_before=None,
+        joined_after=None,
     ):
         """
         Manual constructor.
@@ -71,9 +75,18 @@ class Constraints(object):
         self.required_tags = tuple(required_tags)
         self.excluded_tags = tuple(excluded_tags)
 
+        self.joined_before = joined_before
+        self.joined_after = joined_after
+
     def __bool__(self):
         """Whether these constraints are non-universal."""
-        if self.era or self.required_tags or self.excluded_tags:
+        if (
+            self.era or
+            self.required_tags or
+            self.excluded_tags or
+            self.joined_after or
+            self.joined_before
+        ):
             return True
 
         if not self.include_named:
@@ -93,7 +106,17 @@ class Constraints(object):
             'era',
             'required_tags',
             'excluded_tags',
+            'joined_before',
+            'joined_after',
         ))
+
+        def get_maybe_date(key):
+            try:
+                string_date = description[key]
+            except KeyError:
+                return None
+
+            return dateutil.parser.parse(string_date)
 
         return cls(
             anonymous=description.get('anonymous', True),
@@ -101,6 +124,8 @@ class Constraints(object):
             era=description.get('era'),
             required_tags=description.get('required_tags', ()),
             excluded_tags=description.get('excluded_tags', ()),
+            joined_before=get_maybe_date('joined_before'),
+            joined_after=get_maybe_date('joined_after'),
         )
 
     def to_json(self):
@@ -123,29 +148,65 @@ class Constraints(object):
         if self.excluded_tags:
             description['excluded_tags'] = self.excluded_tags
 
+        if self.joined_after:
+            description['joined_after'] = str(self.joined_after)
+
+        if self.joined_before:
+            description['joined_before'] = str(self.joined_before)
+
         return description
 
-    def matches_user(self, user, context):
-        """Test matching a user in a given context."""
+    def specialise(self, context):
+        """A copy, specialised for a given context."""
+        joined_before_dates = []
+        joined_after_dates = []
+
+        if self.joined_before:
+            joined_before_dates.append(self.joined_before)
+
+        if self.joined_after:
+            joined_after_dates.append(self.joined_after)
+
+        if self.era == 'new':
+            joined_after_dates.append(context.era_start_date)
+
+        if self.era == 'old':
+            joined_before_dates.append(context.era_start_date)
+
+        if joined_before_dates:
+            joined_before = min(joined_before_dates)
+        else:
+            joined_before = None
+
+        if joined_after_dates:
+            joined_after = max(joined_after_dates)
+        else:
+            joined_after = None
+
+        return type(self)(
+            anonymous=self.include_anonymous,
+            named=self.include_named,
+            joined_before=joined_before,
+            joined_after=joined_after,
+            required_tags=self.required_tags,
+            excluded_tags=self.excluded_tags,
+        )
+
+    def matches_user(self, user, context=None):
+        """Test matching a user, potentially in a given context."""
+        if context is not None:
+            return self.specialise(context).matches_user(user)
+
         if user is None:
             return self.include_anonymous
 
         if not self.include_named:
             return False
 
-        minimum_join_date = None
-        maximum_join_date = None
-
-        if self.era == 'old':
-            maximum_join_date = context.era_start_date
-
-        if self.era == 'new':
-            minimum_join_date = context.era_start_date
-
-        if minimum_join_date and user.join_date < minimum_join_date:
+        if self.joined_before and user.join_date > self.joined_before:
             return False
 
-        if maximum_join_date and user.join_date > maximum_join_date:
+        if self.joined_after and user.join_date < self.joined_after:
             return False
 
         if any(x not in user.tags for x in self.required_tags):
