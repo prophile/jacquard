@@ -1,3 +1,5 @@
+"""Command-line utilities for bucket subsystem."""
+
 import yaml
 
 from jacquard.commands import BaseCommand
@@ -10,6 +12,7 @@ class Rollout(BaseCommand):
     help = "partially roll out a feature"
 
     def add_arguments(self, parser):
+        """Add argparse arguments."""
         parser.add_argument('setting', help="setting name")
         parser.add_argument('value', help="value to roll out")
 
@@ -35,6 +38,7 @@ class Rollout(BaseCommand):
         )
 
     def handle(self, config, options):
+        """Run command."""
         rollout_key = 'rollout:%s' % options.setting
         no_constraints = Constraints()
 
