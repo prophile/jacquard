@@ -9,6 +9,14 @@ from jacquard.experiments.constraints import Constraints
 
 
 class Rollout(BaseCommand):
+    """
+    Roll out feature or setting.
+
+    This command is used for partial deployment of a feature, generally for
+    piloting something before rollout or a test in order to check for
+    show-stopping bugs.
+    """
+
     help = "partially roll out a feature"
 
     def add_arguments(self, parser):
