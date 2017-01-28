@@ -1,8 +1,8 @@
 """Built-in, core HTTP endpoints."""
 
 from jacquard.users import get_settings
+from jacquard.buckets import NUM_BUCKETS, Bucket, user_bucket
 from jacquard.experiments import Experiment
-from jacquard.users.settings import branch_hash
 
 from .base import Endpoint
 
@@ -88,6 +88,11 @@ class ExperimentDetail(Endpoint):
         with self.config.storage.transaction() as store:
             experiment_config = Experiment.from_store(store, experiment)
 
+            buckets = [
+                Bucket.from_json(store.get('buckets/%s' % idx, ()))
+                for idx in range(NUM_BUCKETS)
+            ]
+
             branch_ids = [
                 branch['id'] for branch in experiment_config.branches
             ]
@@ -107,12 +112,11 @@ class ExperimentDetail(Endpoint):
                 if any(x in relevant_settings for x in user_overrides.keys()):
                     continue
 
-                branch_id = branch_ids[
-                    branch_hash(experiment, user_entry.id) %
-                    len(branch_ids)
-                ]
+                bucket = buckets[user_bucket(user_entry.id)]
 
-                branches[branch_id].append(user_entry.id)
+                for branch_id, members in branches.items():
+                    if bucket.covers([experiment_config.id, branch_id]):
+                        members.append(user_entry.id)
 
         return {
             'id': experiment_config.id,

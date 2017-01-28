@@ -4,6 +4,9 @@ import contextlib
 
 import dateutil.parser
 
+from jacquard.utils import check_keys
+from jacquard.buckets.constants import NUM_BUCKETS
+
 from .constraints import Constraints, ConstraintContext
 
 
@@ -151,10 +154,30 @@ class Experiment(object):
 
         If there is no such branch, LookupErrors will materialise.
         """
-        for branch in self.branches:
-            if branch['id'] == branch_id:
-                return branch
-        raise LookupError("No such branch: %r" % branch_id)
+        branches_by_id = {x['id']: x for x in self.branches}
+
+        check_keys((branch_id,), branches_by_id.keys(), exception=LookupError)
+        return branches_by_id[branch_id]
+
+    def branch_launch_configuration(self):
+        """
+        Launch configuration for the branches of this experiment.
+
+        This is the format expected for the `branches` argument of `release`
+        and `close`, to actually decide which buckets see this experiment.
+        """
+        def num_buckets(x):
+            percent = x.get('percent', 100 // len(self.branches))
+            return (NUM_BUCKETS * percent) // 100
+
+        return [
+            (
+                x['id'],
+                num_buckets(x),
+                x['settings'],
+            )
+            for x in self.branches
+        ]
 
     def includes_user(self, user_entry):
         """

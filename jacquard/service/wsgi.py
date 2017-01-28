@@ -1,12 +1,15 @@
 """Main WSGI application."""
 
 import json
+import logging
 
 import werkzeug.routing
 import werkzeug.wrappers
 import werkzeug.exceptions
 
 from jacquard.plugin import plug_all
+
+LOGGER = logging.getLogger('jacquard.service.wsgi')
 
 
 def _get_endpoints(config):
@@ -33,6 +36,12 @@ def get_wsgi_app(config):
         """WSGI callable."""
         try:
             urls = url_map.bind_to_environ(environ)
+
+            LOGGER.debug(
+                "%s %s",
+                environ['REQUEST_METHOD'],
+                environ['PATH_INFO'] or '/',
+            )
 
             def reverse(name, **kwargs):
                 endpoint = endpoints[name]

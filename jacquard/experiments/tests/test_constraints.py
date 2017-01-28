@@ -1,7 +1,7 @@
 import datetime
 
-import dateutil.tz
 import pytest
+import dateutil.tz
 
 from jacquard.directory.base import UserEntry
 from jacquard.experiments.constraints import Constraints, ConstraintContext

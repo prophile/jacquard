@@ -1,8 +1,6 @@
 """Per-user settings lookup."""
 
-import hashlib
-
-from jacquard.experiments.experiment import Experiment
+from jacquard.buckets import Bucket, user_bucket
 
 
 def get_settings(user_id, storage, directory=None):
@@ -17,40 +15,16 @@ def get_settings(user_id, storage, directory=None):
     """
     with storage.transaction() as store:
         defaults = store.get('defaults', {})
-        live_experiments = store.get('active-experiments', [])
+        bucket_id = user_bucket(user_id)
+        bucket = Bucket.from_json(store.get('buckets/%s' % bucket_id, []))
 
-        experiment_definitions = [
-            Experiment.from_store(store, x)
-            for x in live_experiments
-        ]
+        if bucket.needs_constraints():
+            user_entry = directory.lookup(user_id)
+        else:
+            user_entry = None
+
+        bucket_settings = bucket.get_settings(user_entry)
+
         overrides = store.get('overrides/%s' % user_id, {})
 
-    experiment_settings = {}
-
-    for experiment in experiment_definitions:
-        if experiment.constraints:
-            if directory is None:
-                raise ValueError(
-                    "Cannot evaluate constraints on experiment %r "
-                    "with no directory" % experiment.id,
-                )
-
-            user_entry = directory.lookup(user_id)
-
-            if not experiment.includes_user(user_entry):
-                continue
-
-        branch = experiment.branches[branch_hash(
-            experiment.id,
-            user_id,
-        ) % len(experiment.branches)]
-        experiment_settings.update(branch['settings'])
-
-    return {**defaults, **experiment_settings, **overrides}
-
-
-def branch_hash(experiment_id, user_id):
-    """Get the numeric branch hash for a given experiment ID/user ID pair."""
-    sha = hashlib.sha256()
-    sha.update(("%s::%s" % (experiment_id, user_id)).encode('utf-8'))
-    return int.from_bytes(sha.digest(), 'big', signed=False)
+    return {**defaults, **bucket_settings, **overrides}
