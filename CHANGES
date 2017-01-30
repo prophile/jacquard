@@ -1,3 +1,27 @@
+0.3.0  2017-01-30
+
+Major features:
+
+* Bucket-based experiment configuration.
+* Partial rollout feature.
+* `redis-cloned` storage engine no longer experimental.
+* Pluggable HTTP endpoints.
+* All command-line tools now handle retries gracefully.
+
+Minor features:
+
+* Control-C no longer vomits stack traces in the CLI.
+* setuptools plugins are now requirements-checked.
+* Integration tests.
+* Error message improvements.
+* Reworked the constraints system.
+* 'named' constraint, the counterpart of 'anonymous'.
+
+Removed:
+
+* etcd storage engine.
+
+
 0.2.3  2017-01-20
 
 Minor features:
