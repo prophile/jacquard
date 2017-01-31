@@ -140,6 +140,11 @@ class Load(BaseCommand):
             type=pathlib.Path,
             help="experiment definition",
         )
+        parser.add_argument(
+            '--skip-launched',
+            action='store_true',
+            help="do not error on launched experiments",
+        )
 
     @retrying
     def handle(self, config, options):
@@ -157,10 +162,15 @@ class Load(BaseCommand):
             live_experiments = store.get('active-experiments', ())
 
             if experiment.id in live_experiments:
-                print(
-                    "Experiment %r is live, refusing to edit" % experiment.id,
-                )
-                return
+                if options.skip_launched:
+                    return
+
+                else:
+                    print(
+                        "Experiment %r is live, refusing to edit" %
+                        experiment.id,
+                    )
+                    return
 
             experiment.save(store)
 
