@@ -25,8 +25,16 @@ class StorageEngine(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def begin(self):
-        """Enter a new transaction. Used even for reads."""
+        """Enter a new transaction."""
         raise NotImplementedError
+
+    def begin_read_only(self):
+        """
+        Enter a new, read-only transaction.
+
+        May be overloaded for efficiency - by default, just calls begin().
+        """
+        self.begin()
 
     @abc.abstractmethod
     def commit(self, changes, deletions):
@@ -114,7 +122,10 @@ class StorageEngine(metaclass=abc.ABCMeta):
         users of the API to deal with this. `Retry` is guaranteed not to be
         raised if the transaction was read-only.
         """
-        self.begin()
+        if read_only:
+            self.begin_read_only()
+        else:
+            self.begin()
 
         transaction_map = TransactionMap(self)
 
