@@ -31,14 +31,20 @@ class RedisStore(StorageEngine):
         """
         self.redis = redis.StrictRedis.from_url(connection_string)
         self.prefix = 'jacquard:'
+        self.omit_watch = False
 
     def begin(self):
         """Begin transaction."""
-        pass
+        self.omit_watch = False
+
+    def begin_read_only(self):
+        """Begin read-only transaction."""
+        self.omit_watch = True
 
     def rollback(self):
         """Roll back transaction."""
-        self.redis.unwatch()
+        if not self.omit_watch:
+            self.redis.unwatch()
 
     def commit(self, changes, deletions):
         """Commit transaction."""
@@ -59,7 +65,8 @@ class RedisStore(StorageEngine):
 
     def get(self, key):
         """Get value."""
-        self.redis.watch(key)
+        if not self.omit_watch:
+            self.redis.watch(key)
         return self.redis.get(key)
 
     def keys(self):
