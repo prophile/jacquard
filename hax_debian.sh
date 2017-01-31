@@ -10,7 +10,6 @@ fpm -s python \
     -a all \
     -m "Alistair Lynn <alistair@thread.com>" \
     --deb-compression xz \
-    --deb-suggests python3-sqlalchemy \
     --deb-suggests python3-psycopg2 \
     -d "python3 (>= 3.5)" \
     -d python3-pkg-resources \
