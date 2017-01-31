@@ -49,7 +49,7 @@ def test_simple_write():
     storage = RedisStore('')
     with storage.transaction() as store:
         store['test'] = "Bees"
-    with storage.transaction() as store:
+    with storage.transaction(read_only=True) as store:
         assert store['test'] == "Bees"
 
 
@@ -61,7 +61,7 @@ def test_enumerate_keys():
         store['foo1'] = "Bees"
         store['foo2'] = "Faces"
 
-    with storage.transaction() as store:
+    with storage.transaction(read_only=True) as store:
         assert set(store.keys()) == set(('foo1', 'foo2'))
 
 
