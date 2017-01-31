@@ -152,12 +152,12 @@ class Load(BaseCommand):
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction() as store:
+            live_experiments = store.get('active-experiments', ())
+
             for file in options.files:
                 definition = yaml.load(file)
 
                 experiment = Experiment.from_json(definition)
-
-                live_experiments = store.get('active-experiments', ())
 
                 if experiment.id in live_experiments:
                     if options.skip_launched:
