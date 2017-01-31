@@ -176,7 +176,7 @@ class ListExperiments(BaseCommand):
 
     def handle(self, config, options):
         """Run command."""
-        with config.storage.transaction() as store:
+        with config.storage.transaction(read_only=True) as store:
             for experiment in Experiment.enumerate(store):
                 if experiment.name == experiment.id:
                     title = experiment.id

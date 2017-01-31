@@ -147,7 +147,7 @@ class Show(BaseCommand):
                 config.directory,
             )
         else:
-            with config.storage.transaction() as store:
+            with config.storage.transaction(read_only=True) as store:
                 settings = store.get('defaults', {})
 
         yaml.dump(settings, sys.stdout, default_flow_style=False)

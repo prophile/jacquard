@@ -19,7 +19,7 @@ class StorageDump(BaseCommand):
 
     def handle(self, config, options):
         """Run command."""
-        with config.storage.transaction() as store:
+        with config.storage.transaction(read_only=True) as store:
             for key, value in store.items():
                 print(key)
                 print('=' * len(key))

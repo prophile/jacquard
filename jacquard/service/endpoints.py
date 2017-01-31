@@ -56,7 +56,7 @@ class ExperimentsOverview(Endpoint):
 
     def handle(self):
         """Dispatch request."""
-        with self.config.storage.transaction() as store:
+        with self.config.storage.transaction(read_only=True) as store:
             active_experiments = store.get('active-experiments', ())
             experiments = list(Experiment.enumerate(store))
 
@@ -85,7 +85,7 @@ class ExperimentDetail(Endpoint):
 
     def handle(self, experiment):
         """Dispatch request."""
-        with self.config.storage.transaction() as store:
+        with self.config.storage.transaction(read_only=True) as store:
             experiment_config = Experiment.from_store(store, experiment)
 
             buckets = [
