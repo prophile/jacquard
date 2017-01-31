@@ -154,10 +154,6 @@ class Load(BaseCommand):
         for file in options.files:
             definition = yaml.load(file)
 
-            if not definition.get('branches'):
-                print("No branches specified.")
-                return
-
             experiment = Experiment.from_json(definition)
 
             with config.storage.transaction() as store:
