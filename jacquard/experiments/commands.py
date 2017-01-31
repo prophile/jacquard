@@ -124,9 +124,7 @@ class Load(BaseCommand):
 
     This is obviously a pretty awful interface which will only do for this
     MVP state of the project, but currently this is the mechanism for loading
-    an experiment definition. There are some basic checks on having nonzero
-    branches and not altering live experiments but otherwise this is not
-    particularly robust code and needs replacing.
+    an experiment definition.
     """
 
     help = "load an experiment definition from a file"
