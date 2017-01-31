@@ -28,7 +28,7 @@ def retrying(fn):
 
 def copy_data(from_engine, to_engine):
     """Copy all keys between two storage engines."""
-    with from_engine.transaction() as src:
+    with from_engine.transaction(read_only=True) as src:
         with to_engine.transaction() as dst:
             dst.update(src)
 
