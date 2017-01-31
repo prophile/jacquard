@@ -98,7 +98,7 @@ class StorageEngine(metaclass=abc.ABCMeta):
         return key
 
     @contextlib.contextmanager
-    def transaction(self):
+    def transaction(self, read_only=False):
         """
         Run a transactional sequence on this store.
 
@@ -130,6 +130,21 @@ class StorageEngine(metaclass=abc.ABCMeta):
         ):
             # Don't bother running a commit if nothing actually changed
             self.rollback()
+        elif (
+            transaction_map.changes or
+            transaction_map.deletions
+        ) and read_only:
+            self.rollback()
+            raise RuntimeError(
+                "Commit in read-only transaction (keys: %s)" %
+                ', '.join(
+                    repr(x)
+                    for x in (
+                        set(transaction_map.changes.keys()) |
+                        set(transaction_map.deletions)
+                    )
+                )
+            )
         else:
             self.commit(
                 transaction_map.changes,
