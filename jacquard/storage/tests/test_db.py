@@ -52,6 +52,19 @@ def test_delete_key():
         assert 'foo' not in store
 
 
+def test_deleted_keys_do_not_appear_in_keys_call():
+    storage = DBStore('sqlite://')
+
+    with storage.transaction() as store:
+        store['foo'] = "Bees"
+
+    with storage.transaction() as store:
+        del store['foo']
+
+    with storage.transaction() as store:
+        assert 'foo' not in list(store.keys())
+
+
 def test_exceptions_back_out_writes():
     storage = DBStore('sqlite://')
 
