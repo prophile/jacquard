@@ -151,12 +151,12 @@ class Load(BaseCommand):
     @retrying
     def handle(self, config, options):
         """Run command."""
-        for file in options.files:
-            definition = yaml.load(file)
+        with config.storage.transaction() as store:
+            for file in options.files:
+                definition = yaml.load(file)
 
-            experiment = Experiment.from_json(definition)
+                experiment = Experiment.from_json(definition)
 
-            with config.storage.transaction() as store:
                 live_experiments = store.get('active-experiments', ())
 
                 if experiment.id in live_experiments:
