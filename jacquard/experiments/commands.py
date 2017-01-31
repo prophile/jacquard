@@ -127,8 +127,6 @@ class Load(BaseCommand):
     an experiment definition. There are some basic checks on having nonzero
     branches and not altering live experiments but otherwise this is not
     particularly robust code and needs replacing.
-
-    At least loading from YAML might be a good start...
     """
 
     help = "load an experiment definition from a file"
