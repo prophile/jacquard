@@ -13,7 +13,7 @@ def get_settings(user_id, storage, directory=None):
     2. Any experiment settings for experiments the user is in,
     3. User-specific overrides.
     """
-    with storage.transaction() as store:
+    with storage.transaction(read_only=True) as store:
         defaults = store.get('defaults', {})
         bucket_id = user_bucket(user_id)
         bucket = Bucket.from_json(store.get('buckets/%s' % bucket_id, []))
