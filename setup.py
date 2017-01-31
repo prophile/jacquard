@@ -91,6 +91,7 @@ setup(
             'redis = jacquard.storage.redis:RedisStore',
             'redis-cloned = jacquard.storage.cloned_redis:ClonedRedisStore',
             'file = jacquard.storage.file:FileStore',
+            'db = jacquard.storage.db:DBStore',
         ),
         'jacquard.commands': (
             'storage-dump = jacquard.storage.commands:StorageDump',
