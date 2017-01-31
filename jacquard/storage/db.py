@@ -1,7 +1,7 @@
 import sqlalchemy
 import sqlalchemy.orm
-import sqlalchemy.ext.declarative
 import sqlalchemy.sql.expression
+import sqlalchemy.ext.declarative
 
 from .base import StorageEngine
 
