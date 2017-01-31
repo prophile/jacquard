@@ -4,7 +4,6 @@ import os
 import sys
 import logging
 import pathlib
-import sqlalchemy
 import argparse
 import contextlib
 
