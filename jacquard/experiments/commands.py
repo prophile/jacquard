@@ -161,7 +161,7 @@ class Load(BaseCommand):
 
                 if experiment.id in live_experiments:
                     if options.skip_launched:
-                        return
+                        continue
 
                     else:
                         print(
