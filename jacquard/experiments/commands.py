@@ -1,6 +1,6 @@
 """Command-line utilities for experiments subsystem."""
 
-import pathlib
+import argparse
 import datetime
 
 import yaml
@@ -136,8 +136,10 @@ class Load(BaseCommand):
     def add_arguments(self, parser):
         """Add argparse arguments."""
         parser.add_argument(
-            'file',
-            type=pathlib.Path,
+            'files',
+            nargs='+',
+            type=argparse.FileType('r'),
+            metavar='file',
             help="experiment definition",
         )
         parser.add_argument(
@@ -149,30 +151,30 @@ class Load(BaseCommand):
     @retrying
     def handle(self, config, options):
         """Run command."""
-        with options.file.open('r') as f:
-            definition = yaml.load(f)
+        for file in options.files:
+            definition = yaml.load(file)
 
-        if not definition.get('branches'):
-            print("No branches specified.")
-            return
+            if not definition.get('branches'):
+                print("No branches specified.")
+                return
 
-        experiment = Experiment.from_json(definition)
+            experiment = Experiment.from_json(definition)
 
-        with config.storage.transaction() as store:
-            live_experiments = store.get('active-experiments', ())
+            with config.storage.transaction() as store:
+                live_experiments = store.get('active-experiments', ())
 
-            if experiment.id in live_experiments:
-                if options.skip_launched:
-                    return
+                if experiment.id in live_experiments:
+                    if options.skip_launched:
+                        return
 
-                else:
-                    print(
-                        "Experiment %r is live, refusing to edit" %
-                        experiment.id,
-                    )
-                    return
+                    else:
+                        print(
+                            "Experiment %r is live, refusing to edit" %
+                            experiment.id,
+                        )
+                        return
 
-            experiment.save(store)
+                experiment.save(store)
 
 
 class ListExperiments(BaseCommand):
