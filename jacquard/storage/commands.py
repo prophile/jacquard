@@ -66,12 +66,17 @@ class StorageExport(BaseCommand):
         """Add argparse arguments."""
         parser.add_argument('engine', help="storage engine to save to")
         parser.add_argument('url', help="storage URL to save to")
+        parser.add_argument(
+            '--flush',
+            action='store_true',
+            help="erase storage destination before writing",
+        )
 
     @retrying
     def handle(self, config, option):
         """Run command."""
         dst = open_engine(config, option.engine, option.url)
-        copy_data(config.storage, dst)
+        copy_data(config.storage, dst, flush=option.flush)
 
 
 class StorageFlush(BaseCommand):
