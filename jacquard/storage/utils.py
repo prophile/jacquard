@@ -26,10 +26,12 @@ def retrying(fn):
     return wrapper
 
 
-def copy_data(from_engine, to_engine):
+def copy_data(from_engine, to_engine, flush=False):
     """Copy all keys between two storage engines."""
     with from_engine.transaction(read_only=True) as src:
         with to_engine.transaction() as dst:
+            if flush:
+                dst.clear()
             dst.update(src)
 
 
