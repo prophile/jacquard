@@ -4,6 +4,7 @@ import os
 import sys
 import logging
 import pathlib
+import sqlalchemy
 import argparse
 import contextlib
 
@@ -95,6 +96,10 @@ def main(args=sys.argv[1:], config=None):
     options = parser.parse_args(args)
 
     logging.basicConfig(level=options.log_level)
+
+    if options.log_level == logging.DEBUG:
+        # Explicitly enable sqlalchemy debugging
+        logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
     if options.func is None:
         parser.print_help()
