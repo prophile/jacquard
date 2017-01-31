@@ -13,14 +13,19 @@ _Base = sqlalchemy.ext.declarative.declarative_base(metadata=_METADATA)
 class _Entry(_Base):
     __tablename__ = 'entries'
 
+    id = sqlalchemy.Column(
+        sqlalchemy.Integer(),
+        primary_key=True,
+    )
+
     key = sqlalchemy.Column(
         sqlalchemy.String(length=200),
-        primary_key=True,
+        nullable=False,
     )
 
     value = sqlalchemy.Column(
         sqlalchemy.Text(),
-        nullable=False,
+        nullable=True,
     )
 
     created = sqlalchemy.Column(
@@ -29,11 +34,12 @@ class _Entry(_Base):
         server_default=sqlalchemy.sql.expression.func.now(),
     )
 
-    updated = sqlalchemy.Column(
-        sqlalchemy.DateTime(timezone=True),
-        nullable=False,
-        server_default=sqlalchemy.sql.expression.func.now(),
-        onupdate=sqlalchemy.sql.expression.func.now(),
+    __table_args__ = (
+        sqlalchemy.Index(
+            'entries_by_key',
+            key,
+            id,
+        ),
     )
 
 
@@ -52,13 +58,15 @@ class DBStore(StorageEngine):
     # TODO: Investigate `begin_read_only` with a lower isolation
 
     def commit(self, changes, deletions):
-        for key, value in changes.items():
-            node = self._get_node(key)
-            node.value = value
-        for deletion in deletions:
-            node = self._get_node(deletion)
-            if node is not None:
-                self.session.delete(node)
+        self.session.add_all(
+            _Entry(key=key, value=value)
+            for key, value in changes.items()
+        )
+
+        self.session.add_all(
+            _Entry(key=key, value=None)
+            for key in deletions
+        )
 
         # TODO: Intercept the need for Retry here since we're running with the
         # SERIALIZABLE isolation level.
@@ -67,20 +75,37 @@ class DBStore(StorageEngine):
     def rollback(self):
         self.session.rollback()
 
-    def _get_node(self, key):
-        node = self.session.query(_Entry).get(ident=key)
+    def get(self, key):
+        node = self.session.query(
+            _Entry,
+        ).filter_by(
+            key=key,
+        ).order_by(
+            sqlalchemy.desc(_Entry.id),
+        ).first()
 
         if node is None:
-            node = _Entry(key=key)
-            self.session.add(node)
+            return None
 
-        return node
-
-    def get(self, key):
-        return self._get_node(key).value
+        return node.value
 
     def keys(self):
-        return [
-            x
-            for (x,) in self.session.query(_Entry.key)
-        ]
+        # This is a slightly fiddly top-n-per-group situation, but that's OK:
+        # essentially we want to exclude any keys whose latest value is null.
+
+        latest_by_key = self.session.query(
+            _Entry.key,
+            sqlalchemy.sql.expression.func.max(_Entry.id).label('latest_id'),
+        ).group_by(_Entry.key).subquery()
+
+        query = self.session.query(
+            _Entry.key,
+        ).join(
+            latest_by_key,
+            (_Entry.key == latest_by_key.c.key) &
+            (_Entry.id == latest_by_key.c.latest_id)
+        ).filter(
+            _Entry.value != None,  # noqa: E711
+        )
+
+        return [x for (x,) in query]
