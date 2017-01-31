@@ -94,7 +94,6 @@ class DBStore(StorageEngine):
         # essentially we want to exclude any keys whose latest value is null.
 
         latest_by_key = self.session.query(
-            _Entry.key,
             sqlalchemy.sql.expression.func.max(_Entry.id).label('latest_id'),
         ).group_by(_Entry.key).subquery()
 
@@ -102,8 +101,7 @@ class DBStore(StorageEngine):
             _Entry.key,
         ).join(
             latest_by_key,
-            (_Entry.key == latest_by_key.c.key) &
-            (_Entry.id == latest_by_key.c.latest_id)
+            _Entry.id == latest_by_key.c.latest_id,
         ).filter(
             _Entry.value != None,  # noqa: E711
         )
