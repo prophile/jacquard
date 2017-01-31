@@ -63,6 +63,15 @@ override
    :prog: jacquard
    :path: override
 
+rollout
+~~~~~~~
+
+.. argparse::
+   :module: jacquard.cli
+   :func: argument_parser
+   :proc: jacquard
+   :path: rollout
+
 Experiments
 -----------
 

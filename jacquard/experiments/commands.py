@@ -1,6 +1,6 @@
 """Command-line utilities for experiments subsystem."""
 
-import pathlib
+import argparse
 import datetime
 
 import yaml
@@ -124,11 +124,7 @@ class Load(BaseCommand):
 
     This is obviously a pretty awful interface which will only do for this
     MVP state of the project, but currently this is the mechanism for loading
-    an experiment definition. There are some basic checks on having nonzero
-    branches and not altering live experiments but otherwise this is not
-    particularly robust code and needs replacing.
-
-    At least loading from YAML might be a good start...
+    an experiment definition.
     """
 
     help = "load an experiment definition from a file"
@@ -136,33 +132,41 @@ class Load(BaseCommand):
     def add_arguments(self, parser):
         """Add argparse arguments."""
         parser.add_argument(
-            'file',
-            type=pathlib.Path,
+            'files',
+            nargs='+',
+            type=argparse.FileType('r'),
+            metavar='file',
             help="experiment definition",
+        )
+        parser.add_argument(
+            '--skip-launched',
+            action='store_true',
+            help="do not error on launched experiments",
         )
 
     @retrying
     def handle(self, config, options):
         """Run command."""
-        with options.file.open('r') as f:
-            definition = yaml.load(f)
-
-        if not definition.get('branches'):
-            print("No branches specified.")
-            return
-
-        experiment = Experiment.from_json(definition)
-
         with config.storage.transaction() as store:
             live_experiments = store.get('active-experiments', ())
 
-            if experiment.id in live_experiments:
-                print(
-                    "Experiment %r is live, refusing to edit" % experiment.id,
-                )
-                return
+            for file in options.files:
+                definition = yaml.load(file)
 
-            experiment.save(store)
+                experiment = Experiment.from_json(definition)
+
+                if experiment.id in live_experiments:
+                    if options.skip_launched:
+                        continue
+
+                    else:
+                        print(
+                            "Experiment %r is live, refusing to edit" %
+                            experiment.id,
+                        )
+                        raise RuntimeError()
+
+                experiment.save(store)
 
 
 class ListExperiments(BaseCommand):
