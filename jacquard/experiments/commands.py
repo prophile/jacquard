@@ -168,7 +168,7 @@ class Load(BaseCommand):
                             "Experiment %r is live, refusing to edit" %
                             experiment.id,
                         )
-                        return
+                        raise RuntimeError()
 
                 experiment.save(store)
 
