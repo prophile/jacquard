@@ -185,6 +185,14 @@ class Experiment(object):
 
         A (hopefully constant time) predicate.
         """
-        return self.constraints.matches_user(user_entry, ConstraintContext(
-            era_start_date=self.launched,
-        ))
+        try:
+            specialised_constraints = self._specialised_constraints
+        except AttributeError:
+            specialised_constraints = self.constraints.specialise(
+                ConstraintContext(
+                    era_start_date=self.launched,
+                ),
+            )
+            self._specialised_constraints = specialised_constraints
+
+        return specialised_constraints.matches_user(user_entry)

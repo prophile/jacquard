@@ -99,5 +99,5 @@ class DjangoDirectory(Directory):
 
         result = self.engine.execute(query)
 
-        for row in result:
+        for row in result.fetchall():
             yield self.describe_user(row)
