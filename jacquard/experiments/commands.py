@@ -37,7 +37,9 @@ class Launch(BaseCommand):
             current_experiments = store.get('active-experiments', [])
 
             if experiment.id in current_experiments:
-                raise CommandError("Experiment %r already launched!" % experiment.id)
+                raise CommandError(
+                    "Experiment %r already launched!" % experiment.id,
+                )
 
             release(
                 store,
@@ -91,7 +93,9 @@ class Conclude(BaseCommand):
             current_experiments = store.get('active-experiments', [])
 
             if options.experiment not in current_experiments:
-                raise CommandError("Experiment %r not launched!" % options.experiment)
+                raise CommandError(
+                    "Experiment %r not launched!" % options.experiment,
+                )
 
             current_experiments.remove(options.experiment)
 
