@@ -118,5 +118,6 @@ def main(args=sys.argv[1:], config=None):
             sys.stderr.write("%s\n", message)
             exit(1)
 
+
 if '__name__' == '__main__':
     main()
