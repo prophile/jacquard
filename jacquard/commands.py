@@ -3,6 +3,10 @@
 import abc
 
 
+class CommandError(Exception):
+    pass
+
+
 class BaseCommand(metaclass=abc.ABCMeta):
     """
     Abstract base class for subcommands.
