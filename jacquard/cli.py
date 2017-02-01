@@ -11,6 +11,7 @@ import pkg_resources
 
 from jacquard.config import load_config
 from jacquard.plugin import plug_all
+from jacquard.commands import CommandError
 
 DEFAULT_CONFIG_FILE_PATH = pathlib.Path(os.environ.get(
     'JACQUARD_CONFIG',
@@ -110,8 +111,12 @@ def main(args=sys.argv[1:], config=None):
 
     # Run subcommand
     with contextlib.suppress(KeyboardInterrupt):
-        options.func(config, options)
-
+        try:
+            options.func(config, options)
+        except CommandError as exc:
+            (message,) = exc.args
+            sys.stderr.write("%s\n", message)
+            exit(1)
 
 if '__name__' == '__main__':
     main()
