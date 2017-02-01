@@ -6,7 +6,7 @@ import contextlib
 import yaml
 
 from jacquard.users import get_settings
-from jacquard.commands import BaseCommand
+from jacquard.commands import BaseCommand, CommandError
 from jacquard.storage.utils import retrying
 
 
@@ -50,8 +50,7 @@ class SetDefault(BaseCommand):
                 try:
                     value = yaml.load(options.value)
                 except ValueError:
-                    print("Could not decode %r" % options.value)
-                    return
+                    raise CommandError("Could not decode %r" % options.value)
 
                 defaults[options.setting] = value
 
@@ -109,8 +108,7 @@ class Override(BaseCommand):
                 try:
                     value = yaml.load(options.value)
                 except ValueError:
-                    print("Could not decode %r" % options.value)
-                    return
+                    raise CommandError("Could not decode %r" % options.value)
 
                 overrides[options.setting] = value
                 store[key] = overrides

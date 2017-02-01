@@ -6,7 +6,7 @@ import datetime
 import yaml
 import dateutil.tz
 
-from jacquard.commands import BaseCommand
+from jacquard.commands import BaseCommand, CommandError
 from jacquard.buckets.utils import close, release
 from jacquard.storage.utils import retrying
 
@@ -37,8 +37,7 @@ class Launch(BaseCommand):
             current_experiments = store.get('active-experiments', [])
 
             if experiment.id in current_experiments:
-                print("Experiment %r already launched!" % experiment.id)
-                return
+                raise CommandError("Experiment %r already launched!" % experiment.id)
 
             release(
                 store,
@@ -92,8 +91,7 @@ class Conclude(BaseCommand):
             current_experiments = store.get('active-experiments', [])
 
             if options.experiment not in current_experiments:
-                print("Experiment %r not launched!" % options.experiment)
-                return
+                raise CommandError("Experiment %r not launched!" % options.experiment)
 
             current_experiments.remove(options.experiment)
 
@@ -160,11 +158,10 @@ class Load(BaseCommand):
                         continue
 
                     else:
-                        print(
+                        raise CommandError(
                             "Experiment %r is live, refusing to edit" %
                             experiment.id,
                         )
-                        raise RuntimeError()
 
                 experiment.save(store)
 
