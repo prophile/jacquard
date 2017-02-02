@@ -6,29 +6,16 @@ import hypothesis
 import hypothesis.strategies
 
 from jacquard.storage.exceptions import Retry
-from jacquard.storage.cloned_redis import ClonedRedisStore, resync_all_connections
+from jacquard.storage.cloned_redis import (
+    ClonedRedisStore,
+    resync_all_connections
+)
+from jacquard.storage.testing_utils import arbitrary_key, arbitrary_json
 
 try:
     import fakeredis
 except ImportError:
     fakeredis = None
-
-
-arbitrary_key = hypothesis.strategies.characters()
-arbitrary_json = hypothesis.strategies.recursive(
-    hypothesis.strategies.floats(allow_nan=False, allow_infinity=False) |
-    hypothesis.strategies.booleans() |
-    hypothesis.strategies.text() |
-    hypothesis.strategies.none(),
-    lambda children: (
-        hypothesis.strategies.lists(children) |
-        hypothesis.strategies.dictionaries(
-            hypothesis.strategies.text(),
-            children,
-        )
-    ),
-    max_leaves=10,
-).filter(lambda x: x is not None)
 
 
 def cloned_redis_test(**kwargs):
