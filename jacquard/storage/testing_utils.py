@@ -1,3 +1,5 @@
+# flake8: noqa
+
 """Misc utils for use in storage tests."""
 
 import pytest
@@ -27,6 +29,8 @@ arbitrary_key = hypothesis.strategies.text(
 
 
 class StorageGauntlet(object):
+    """A standard gamut of tests run for any storage engine."""
+
     def setUp(self):
         super().setUp()
         self.setup_example()
