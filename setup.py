@@ -48,6 +48,18 @@ setup(
     author="Alistair Lynn",
     author_email="alistair@alynn.co.uk",
 
+    keywords = (
+        'ab-testing',
+        'e-commerce',
+        'experiments',
+        'jacquard',
+        'metrics',
+        'redis',
+        'science',
+        'split-testing',
+        'testing',
+        'zucchini',
+    ),
     license='MIT',
 
     zip_safe=False,
