@@ -1,5 +1,4 @@
 import unittest
-import functools
 import unittest.mock
 
 import pytest
