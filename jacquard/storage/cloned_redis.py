@@ -41,6 +41,7 @@ class _RedisDataPool(object):
     def sync_update(self):
         with self.lock:
             self.state_key = self.connection.get(b'jacquard-store:state-key')
+            LOGGER.debug("Got state key: %s", self.state_key)
             self.load_state()
 
     def load_state(self):
@@ -106,11 +107,15 @@ class _RedisDataPool(object):
                         continue
 
                     with self.lock:
+                        new_key = message['data']
+                        if new_key == self.state_key:
+                            continue
+
                         LOGGER.debug(
                             "Received state delta push: %s",
-                            message['data'],
+                            new_key,
                         )
-                        self.state_key = message['data']
+                        self.state_key = new_key
                         self.load_state()
             except redis.exceptions.ConnectionError:
                 LOGGER.warning(
@@ -236,6 +241,12 @@ class ClonedRedisStore(StorageEngine):
             raise Retry()
 
         self.pool.set_state(new_state_key, self.transaction_data)
+
+        LOGGER.debug(
+            "Committed state delta: %s -> %s",
+            self.state_key,
+            new_state_key,
+        )
 
         del self.transaction_data
         del self.state_key
