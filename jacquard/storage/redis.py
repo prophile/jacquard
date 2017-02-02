@@ -59,7 +59,7 @@ class RedisStore(StorageEngine):
 
         try:
             pipe.execute()
-        except Exception:  # TODO: specify
+        except redis.exceptions.WatchError:
             LOGGER.exception("Redis key conflict")
             raise Retry()
 

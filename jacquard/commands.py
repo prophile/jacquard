@@ -3,6 +3,17 @@
 import abc
 
 
+class CommandError(Exception):
+    """
+    Generic, user-visible error.
+
+    Where this is raised with a message, the message will generally be printed
+    to standard error without a backtrace.
+    """
+
+    pass
+
+
 class BaseCommand(metaclass=abc.ABCMeta):
     """
     Abstract base class for subcommands.

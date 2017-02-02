@@ -56,11 +56,11 @@ class TransactionMap(collections.abc.MutableMapping):
         """Get all (decoded) keys from storage engine."""
         if self._store_keys is None:
             self._store_keys = list(self.store.keys())
-        current_keys = set(
+        current_keys = {
             x
             for x in self._store_keys
             if x not in self.deletions
-        )
+        }
         current_keys.update(self.changes.keys())
         return sorted(
             self.store.decode_key(x) for x in current_keys

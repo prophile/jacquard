@@ -50,7 +50,7 @@ class Rollout(BaseCommand):
         rollout_key = 'rollout:%s' % options.setting
         no_constraints = Constraints()
 
-        value = yaml.load(options.value)
+        value = yaml.safe_load(options.value)
         settings = {options.setting: value}
 
         buckets_per_percent = NUM_BUCKETS // 100
