@@ -48,7 +48,7 @@ class SetDefault(BaseCommand):
 
             else:
                 try:
-                    value = yaml.load(options.value)
+                    value = yaml.safe_load(options.value)
                 except ValueError:
                     raise CommandError("Could not decode %r" % options.value)
 
@@ -106,7 +106,7 @@ class Override(BaseCommand):
 
             elif options.value:
                 try:
-                    value = yaml.load(options.value)
+                    value = yaml.safe_load(options.value)
                 except ValueError:
                     raise CommandError("Could not decode %r" % options.value)
 

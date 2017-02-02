@@ -36,7 +36,7 @@ engine = dummy
 ])
 def test_integration(test_file):
     with (INTEGRATION_TESTS_ROOT / test_file).open('r') as f:
-        test_config = yaml.load(f)
+        test_config = yaml.safe_load(f)
 
     config = load_config(io.StringIO(TEST_CONFIG))
     config = unittest.mock.Mock(wraps=config)

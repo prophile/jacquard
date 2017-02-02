@@ -153,7 +153,7 @@ class Load(BaseCommand):
             live_experiments = store.get('active-experiments', ())
 
             for file in options.files:
-                definition = yaml.load(file)
+                definition = yaml.safe_load(file)
 
                 experiment = Experiment.from_json(definition)
 
