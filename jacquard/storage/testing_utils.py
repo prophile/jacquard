@@ -12,10 +12,11 @@ arbitrary_json = hypothesis.strategies.recursive(
     hypothesis.strategies.text() |
     hypothesis.strategies.none(),
     lambda children: (
-        hypothesis.strategies.lists(children) |
+        hypothesis.strategies.lists(children, average_size=2) |
         hypothesis.strategies.dictionaries(
             hypothesis.strategies.text(),
             children,
+            average_size=1,
         )
     ),
     max_leaves=10,
