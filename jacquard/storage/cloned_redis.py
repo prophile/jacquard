@@ -34,13 +34,6 @@ class _RedisDataPool(object):
         LOGGER.debug("Launching pubsub thread for %s", connection_string)
         pubsub_thread.start()
 
-        poll_thread = threading.Thread(
-            target=self.poll_thread,
-            daemon=True,
-        )
-        LOGGER.debug("Launching poll thread for %s", connection_string)
-        poll_thread.start()
-
         LOGGER.debug("Waiting for pubsub semaphore...")
         self.pubsub_semaphore.acquire()
         LOGGER.debug("Done with connection init on %s", connection_string)
@@ -90,9 +83,22 @@ class _RedisDataPool(object):
                     released_semaphore = True
 
                 while True:
-                    message = subscriber.get_message(timeout=10)
+                    message = subscriber.get_message(timeout=30)
                     if message is None:
-                        # Structured to allow any periodic tests here
+                        # Poll for resync
+                        current_state = self.connection.get(
+                            b'jacquard-store:state-key',
+                        )
+
+                        if current_state != self.state_key:
+                            LOGGER.info(
+                                "Poll noticed state delta on %s: %s",
+                                self.connection_string,
+                                current_state,
+                            )
+                            # Use sync_update to recheck the key with the lock taken
+                            self.sync_update()
+
                         continue
 
                     if message['type'] != 'message':
@@ -113,30 +119,6 @@ class _RedisDataPool(object):
                 )
                 # Wait and retry
                 time.sleep(10)
-
-    def poll_thread(self):
-        while True:
-            time.sleep(30)
-            try:
-                current_state = self.connection.get(
-                    b'jacquard-store:state-key',
-                )
-
-                if current_state != self.state_key:
-                    LOGGER.info(
-                        "Poll noticed state delta on %s: %s",
-                        self.connection_string,
-                        current_state,
-                    )
-                    # Use sync_update to recheck the key with the lock taken
-                    self.sync_update()
-            except redis.exceptions.ConnectionError:
-                # Silently ignore, wait for reconnection
-                LOGGER.warning(
-                    "Connection failure in poll thread for %s, skipping check",
-                    self.connection_string,
-                )
-                pass
 
     def get_state(self):
         with self.lock:
