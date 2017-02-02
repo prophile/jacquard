@@ -41,6 +41,7 @@ class _RedisDataPool(object):
     def sync_update(self):
         with self.lock:
             self.state_key = self.connection.get(b'jacquard-store:state-key')
+            LOGGER.debug("Got state key: %s", self.state_key)
             self.load_state()
 
     def load_state(self):
