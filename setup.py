@@ -50,6 +50,8 @@ setup(
 
     license='MIT',
 
+    zip_safe=False,
+
     packages=find_packages(),
 
     classifiers=(
