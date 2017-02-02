@@ -107,11 +107,15 @@ class _RedisDataPool(object):
                         continue
 
                     with self.lock:
+                        new_key = message['data']
+                        if new_key == self.state_key:
+                            continue
+
                         LOGGER.debug(
                             "Received state delta push: %s",
-                            message['data'],
+                            new_key,
                         )
-                        self.state_key = message['data']
+                        self.state_key = new_key
                         self.load_state()
             except redis.exceptions.ConnectionError:
                 LOGGER.warning(
