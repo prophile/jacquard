@@ -5,6 +5,6 @@ This is to enable `python -m jacquard` if that is needed for any reason,
 normal use should be to use the `jacquard` command-line tool directly.
 """
 
-from .cli import main
+from jacquard.cli import main
 
 main()
