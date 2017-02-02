@@ -89,7 +89,12 @@ class _RedisDataPool(object):
                     LOGGER.debug("Released pubsub semaphore.")
                     released_semaphore = True
 
-                for message in subscriber.listen():
+                while True:
+                    message = subscriber.get_message(timeout=10)
+                    if message is None:
+                        # Structured to allow any periodic tests here
+                        continue
+
                     if message['type'] != 'message':
                         continue
 
