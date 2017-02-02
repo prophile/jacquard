@@ -66,7 +66,7 @@ def test_enumerate_keys():
         store['foo2'] = "Faces"
 
     with storage.transaction() as store:
-        assert set(store.keys()) == set(('foo1', 'foo2'))
+        assert set(store.keys()) == {'foo1', 'foo2'}
 
 
 @cloned_redis_test
