@@ -94,6 +94,7 @@ setup(
     tests_require=(
         'pytest',
         'fakeredis',
+        'hypothesis',
     ),
 
     entry_points={
