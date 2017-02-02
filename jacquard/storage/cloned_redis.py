@@ -238,6 +238,12 @@ class ClonedRedisStore(StorageEngine):
 
         self.pool.set_state(new_state_key, self.transaction_data)
 
+        LOGGER.debug(
+            "Committed state delta: %s -> %s",
+            self.state_key,
+            new_state_key,
+        )
+
         del self.transaction_data
         del self.state_key
 
