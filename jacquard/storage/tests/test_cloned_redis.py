@@ -4,7 +4,7 @@ import unittest.mock
 import pytest
 
 from jacquard.storage.exceptions import Retry
-from jacquard.storage.cloned_redis import ClonedRedisStore, destroy_shared_data
+from jacquard.storage.cloned_redis import ClonedRedisStore, resync_all_connections
 
 try:
     import fakeredis
@@ -25,7 +25,7 @@ def cloned_redis_test(fn):
             fn(*args, **kwargs)
         finally:
             fakeredis.FakeStrictRedis().flushall()
-            destroy_shared_data()
+            resync_all_connections()
 
     return wrapper
 

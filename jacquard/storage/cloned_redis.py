@@ -161,10 +161,11 @@ def _get_shared_data(connection_string):
         return new_pool
 
 
-def destroy_shared_data():
-    """For testing purposes, drop any shared data."""
+def resync_all_connections():
+    """For testing purposes, immediately resync all connections."""
     with _REDIS_POOL_LOCK:
-        _REDIS_POOL.clear()
+        for connection in _REDIS_POOL.values():
+            connection.sync_update()
 
 
 class ClonedRedisStore(StorageEngine):
