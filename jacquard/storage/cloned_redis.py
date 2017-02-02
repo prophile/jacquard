@@ -96,7 +96,8 @@ class _RedisDataPool(object):
                                 self.connection_string,
                                 current_state,
                             )
-                            # Use sync_update to recheck the key with the lock taken
+                            # Use sync_update to recheck the key with the
+                            # lock taken
                             self.sync_update()
 
                         continue
