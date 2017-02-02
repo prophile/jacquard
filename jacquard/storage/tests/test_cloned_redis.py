@@ -27,6 +27,7 @@ arbitrary_json = hypothesis.strategies.recursive(
             children,
         )
     ),
+    max_leaves=10,
 ).filter(lambda x: x is not None)
 
 
