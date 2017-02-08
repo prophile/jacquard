@@ -30,4 +30,7 @@ class DummyDirectory(Directory):
 
     def all_users(self):
         """Iterable over all users."""
-        return self.users.values()
+        return sorted(
+            self.users.values(),
+            key=lambda x: x.id,
+        )
