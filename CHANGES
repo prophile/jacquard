@@ -1,3 +1,23 @@
+0.3.1  2017-02-08
+
+Minor features:
+
+* Multiple experiment loading in `jacquard load-experiment`.
+* `--skip-launched` argument to `jacquard load-experiment`.
+* `jacquard rollout` now has documentation.
+* `redis-cloned` storage engine now only uses one background thread.
+* Read-only transaction support (minor speed up for `redis`).
+* Nicer error messages.
+* Storage export can take a `--flush` argument.
+* YAML loaded with `safe_load` to avoid accidental code execution.
+* Much more extensive test coverage on storage backends.
+
+Bugfixes:
+
+* Package correctly declared zip-unsafe.
+* Package supplanted with keyword arguments for PyPI compliance.
+
+
 0.3.0  2017-01-30
 
 Major features:
