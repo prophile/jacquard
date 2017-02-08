@@ -82,3 +82,9 @@ def test_integration(test_file):
             actual_output = textwrap.dedent(output).strip()
 
             assert expected_output == actual_output
+
+        if 'expect_yaml' in step:
+            expected_output = step['expect_yaml']
+            actual_output = yaml.safe_load(output)
+
+            assert expected_output == actual_output

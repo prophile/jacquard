@@ -1,13 +1,13 @@
 - command: set-default foo bar
 - get: /users/1
-  expect: |
+  expect_yaml:
     {"foo": "bar", "user": "1"}
 
 - command: show
-  expect: |
+  expect_yaml:
     foo: bar
 
 - command: set-default -d foo
 - get: /users/2
-  expect: |
+  expect_yaml:
     {"user": "2"}
