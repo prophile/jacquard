@@ -52,12 +52,20 @@ class Rollout(BaseCommand):
             default=[],
         )
 
+        parser.add_argument(
+            '--without-tag',
+            action='append',
+            help="tags to exclude from rollout",
+            default=[],
+        )
+
     def handle(self, config, options):
         """Run command."""
         rollout_key = 'rollout:%s' % options.setting
 
         constraints = Constraints(
             required_tags=options.with_tag,
+            excluded_tags=options.without_tag,
         )
 
         value = yaml.safe_load(options.value)
