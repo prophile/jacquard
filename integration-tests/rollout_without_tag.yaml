@@ -1,0 +1,8 @@
+- command: set-default test_key value_default
+- command: rollout --percent 100 --without-tag tag1 test_key value_test
+- command: show 1
+  expect_yaml:
+    test_key: value_test
+- command: show 2
+  expect_yaml:
+    test_key: value_default

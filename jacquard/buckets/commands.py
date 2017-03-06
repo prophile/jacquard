@@ -45,10 +45,28 @@ class Rollout(BaseCommand):
             help="do a staged rollout",
         )
 
+        parser.add_argument(
+            '--with-tag',
+            action='append',
+            help="tags to rollout to",
+            default=[],
+        )
+
+        parser.add_argument(
+            '--without-tag',
+            action='append',
+            help="tags to exclude from rollout",
+            default=[],
+        )
+
     def handle(self, config, options):
         """Run command."""
         rollout_key = 'rollout:%s' % options.setting
-        no_constraints = Constraints()
+
+        constraints = Constraints(
+            required_tags=options.with_tag,
+            excluded_tags=options.without_tag,
+        )
 
         value = yaml.safe_load(options.value)
         settings = {options.setting: value}
@@ -64,7 +82,7 @@ class Rollout(BaseCommand):
                 close(
                     store,
                     rollout_key,
-                    no_constraints,
+                    constraints,
                     branch_configuration,
                 )
 
@@ -76,6 +94,6 @@ class Rollout(BaseCommand):
                 release(
                     store,
                     rollout_key,
-                    no_constraints,
+                    constraints,
                     branch_configuration,
                 )
