@@ -49,6 +49,7 @@ class Rollout(BaseCommand):
             '--with-tag',
             action='append',
             help="tags to rollout to",
+            default=[],
         )
 
     def handle(self, config, options):
