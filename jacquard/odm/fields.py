@@ -1,5 +1,6 @@
 import abc
 
+
 class BaseField(object, metaclass=abc.ABCMeta):
     def __init__(self, null=False, default=None):
         self.null = null
