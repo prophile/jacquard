@@ -77,8 +77,6 @@ class Session(object):
         self._dirty[model].add(pk)
 
     def flush(self):
-        store = self.store
-
         for model, dirty_pks in self._dirty.items():
             print(model.__name__)
             model_instances = self._instances[model]
