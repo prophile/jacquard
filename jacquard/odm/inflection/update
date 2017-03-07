@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Vendor in `inflection` - alas, it seems there is no Debian package for it
+# as of yet.
+
+VERSION=0.3.1
+
+ROOT=https://raw.githubusercontent.com/jpvanhal/inflection/$VERSION
+
+curl $ROOT/inflection.py -o __init__.py
+curl $ROOT/LICENSE -o LICENSE
+curl $ROOT/README.rst -o README.rst
