@@ -3,8 +3,8 @@ from . import inflection
 
 class ModelMeta(type):
     @property
-    def storage_name(cls):
-        return inflection.tableize(cls.__name__)
+    def storage_name(self):
+        return inflection.tableize(self.__name__)
 
 
 class Model(object, metaclass=ModelMeta):
