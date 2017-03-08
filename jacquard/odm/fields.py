@@ -14,6 +14,14 @@ class BaseField(object, metaclass=abc.ABCMeta):
     """
 
     def __init__(self, null=False, default=None):
+        """
+        Construct the field.
+
+        If `null=True`, None is not permitted in this field. The naming is for
+        consistency with the equivalent concept in relational algebra and ORMs.
+
+        `default` does what it says on the tin.
+        """
         self.null = null
         self.default = default
 
