@@ -120,5 +120,7 @@ def transaction(storage, read_only=False):
         session = Session(store)
         try:
             yield session
+        except Exception:
+            raise
         else:
             session.flush()
