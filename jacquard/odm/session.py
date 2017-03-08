@@ -1,3 +1,4 @@
+import contextlib
 import collections
 import collections.abc
 
@@ -111,3 +112,13 @@ class Session(object):
                 self.store_put(storage_key, dict(instance._fields))
 
         self._dirty.clear()
+
+
+@contextlib.contextmanager
+def transaction(storage, read_only=False):
+    with storage.transaction(read_only=read_only) as store:
+        session = Session(store)
+        try:
+            yield session
+        else:
+            session.flush()
