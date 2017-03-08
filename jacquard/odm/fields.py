@@ -1,4 +1,5 @@
 import abc
+import copy
 
 
 class BaseField(object, metaclass=abc.ABCMeta):
@@ -59,7 +60,15 @@ class BaseField(object, metaclass=abc.ABCMeta):
 
 class TextField(BaseField):
     def transform_to_storage(self, value):
-        return value
+        return str(value)
 
     def transform_from_storage(self, value):
         return value
+
+
+class JSONField(BaseField):
+    def transform_to_storage(self, value):
+        return copy.deepcopy(value)
+
+    def transform_from_storage(self, value):
+        return copy.deepcopy(value)
