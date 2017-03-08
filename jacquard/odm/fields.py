@@ -5,7 +5,6 @@ class BaseField(object, metaclass=abc.ABCMeta):
     def __init__(self, null=False, default=None):
         self.null = null
         self.default = default
-        self._default_storage = self.transform_to_storage(default)
 
     @abc.abstractmethod
     def transform_to_storage(self, value):
@@ -27,13 +26,20 @@ class BaseField(object, metaclass=abc.ABCMeta):
             if value is self:
                 self.name = field_name
 
+    def validate(self, raw_value):
+        if not self.null and raw_value is None:
+            raise ValueError("%s is not nullable" % self.name)
+
     def __get__(self, obj, owner):
         if obj is None:
             self._learn_from_owner(owner)
             return self
-        return self.transform_from_storage(
-            obj._fields[self.name],
-        )
+        try:
+            raw_value = obj._fields[self.name]
+        except KeyError:
+            return self.default
+
+        return self.transform_from_storage(raw_value)
 
     def __set__(self, obj, value):
         self._learn_from_owner(type(obj))

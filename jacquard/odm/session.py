@@ -2,6 +2,7 @@ import collections
 import collections.abc
 
 from .utils import method_dispatch
+from .fields import BaseField
 
 
 class Session(object):
@@ -94,6 +95,18 @@ class Session(object):
                         # flush since the object's being `add`ed.
                         pass
                     continue
+
+                # Validate all of the fields
+                for field_name, field in vars(model).items():
+                    if not isinstance(field, BaseField):
+                        continue
+
+                    try:
+                        raw_value = instance._fields[field_name]
+                    except KeyError:
+                        continue
+
+                    field.validate(raw_value)
 
                 self.store_put(storage_key, dict(instance._fields))
 

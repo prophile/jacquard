@@ -5,6 +5,7 @@ from jacquard.odm import Model, TextField, Session
 
 class Example(Model):
     name = TextField()
+    defaulted_field = TextField(null=False, default="Pony")
 
 
 def test_builtin_model_key():
@@ -149,3 +150,18 @@ def test_error_when_removing_from_different_instance():
     ex1 = session1.query(Example, 1)
     with pytest.raises(RuntimeError):
         session2.remove(ex1)
+
+
+def test_fields_take_default_values_when_unspecified():
+    instance = Example(pk=1)
+    assert instance.defaulted_field == "Pony"
+
+
+def test_non_nullable_fields_cannot_be_saved_with_null_values():
+    instance = Example(pk=1)
+    instance.defaulted_field = None
+    session = Session({})
+    session.add(instance)
+
+    with pytest.raises(ValueError):
+        session.flush()
