@@ -1,8 +1,18 @@
+"""Field declarations."""
+
 import abc
 import copy
 
 
 class BaseField(object, metaclass=abc.ABCMeta):
+    """
+    Base class for all fields.
+
+    Subclasses should override `transform_to_storage` and
+    `transform_from_storage`. They may optionally also override `validate`,
+    but should call `super().validate` if doing so.
+    """
+
     def __init__(self, null=False, default=None):
         self.null = null
         self.default = default
