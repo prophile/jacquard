@@ -1,3 +1,5 @@
+"""ODM interaction sessions."""
+
 import contextlib
 import collections
 import collections.abc
@@ -7,8 +9,22 @@ from .fields import BaseField
 
 
 class Session(object):
+    """Single interaction session, for a document store."""
+
     @method_dispatch
     def __init__(self, get, put, delete):
+        """
+        Standard constructor.
+
+        `get` is a callable which, given a string key, either returns the
+        associated JSON-compatible data or raises a LookupError.
+
+        `put` is a callable which takes a string key and JSON-compatible data.
+
+        `delete` is a callable which takes a string key and either removes the
+        corresponding entry or, if the entry does not exist, raises a
+        LookupError.
+        """
         self.store_get = get
         self.store_put = put
         self.store_delete = delete
@@ -17,6 +33,12 @@ class Session(object):
 
     @__init__.register(collections.abc.MutableMapping)
     def _(self, store):
+        """
+        Constructor from mutable mappings.
+
+        Passes through to the standard constructor with `__getitem__`,
+        `__setitem__` and `__delitem__`.
+        """
         self.__init__(
             get=store.__getitem__,
             put=store.__setitem__,
@@ -25,6 +47,7 @@ class Session(object):
         self.store = store
 
     def add(self, instance):
+        """Add a fresh instance to the session."""
         model_instances = self._instances[type(instance)]
 
         previous_instance = model_instances.get(instance.pk)
@@ -44,6 +67,7 @@ class Session(object):
         self.mark_instance_dirty(instance)
 
     def remove(self, instance):
+        """Disassociate an instance from the session and remove it."""
         if instance.session is None:
             # For idempotence, do nothing here
             return
@@ -57,6 +81,12 @@ class Session(object):
         self.mark_model_pk_dirty(type(instance), instance.pk)
 
     def query(self, model, pk):
+        """
+        Look up an instance by PK.
+
+        This guarantees that within one session, querying multiple times for
+        the same model/pk will return the same object.
+        """
         try:
             return self._instances[model][pk]
         except KeyError:
@@ -73,12 +103,23 @@ class Session(object):
         return instance
 
     def mark_instance_dirty(self, instance):
+        """
+        Mark an instance as needing to be written on flush.
+
+        This generally won't need to be called directly.
+        """
         self.mark_model_pk_dirty(type(instance), instance.pk)
 
     def mark_model_pk_dirty(self, model, pk):
+        """
+        Mark a model/pk pair as needing to be written on flush.
+
+        This generally won't need to be called directly.
+        """
         self._dirty[model].add(pk)
 
     def flush(self):
+        """Write all pending changes to the document store."""
         for model, dirty_pks in self._dirty.items():
             print(model.__name__)
             model_instances = self._instances[model]
@@ -116,6 +157,7 @@ class Session(object):
 
 @contextlib.contextmanager
 def transaction(storage, **kwargs):
+    """Run a session for a given `StorageEngine`."""
     with storage.transaction(**kwargs) as store:
         session = Session(store)
         try:

@@ -27,17 +27,26 @@ class BaseField(object, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def transform_to_storage(self, value):
+        """Encode the value in JSON-compatible data types."""
         raise NotImplementedError()
 
     @abc.abstractmethod
     def transform_from_storage(self, value):
+        """Decode the value from JSON-compatible data types."""
         raise NotImplementedError()
 
     def validate(self, raw_value):
+        """
+        Check that the value is 'permitted' before submission.
+
+        Note that this operates on values _as they appear in the data store_,
+        i.e. post JSON-encoding.
+        """
         if not self.null and raw_value is None:
             raise ValueError("%s is not nullable" % self.name)
 
     def __get__(self, obj, owner):
+        """Read descriptor."""
         if obj is None:
             return self
 
@@ -49,6 +58,7 @@ class BaseField(object, metaclass=abc.ABCMeta):
         return self.transform_from_storage(raw_value)
 
     def __set__(self, obj, value):
+        """Write descriptor."""
         if value is None:
             obj._fields[self.name] = None
         else:
@@ -58,21 +68,33 @@ class BaseField(object, metaclass=abc.ABCMeta):
             obj.session.mark_instance_dirty(obj)
 
     def __set_name__(self, owner, name):
+        """Inherit ownership pointer and name."""
+        # Note that this is called automatically on Python 3.6+; on Python 3.5
+        # this is done with some emulation by the `ModelMeta` metaclass.
+
         self.owner = owner
         self.name = name
 
 
 class TextField(BaseField):
+    """Plain text field."""
+
     def transform_to_storage(self, value):
+        """Encode the value in JSON-compatible data types."""
         return str(value)
 
     def transform_from_storage(self, value):
+        """Decode the value from JSON-compatible data types."""
         return value
 
 
 class JSONField(BaseField):
+    """Arbitrary JSON field."""
+
     def transform_to_storage(self, value):
+        """Encode the value in JSON-compatible data types."""
         return copy.deepcopy(value)
 
     def transform_from_storage(self, value):
+        """Decode the value from JSON-compatible data types."""
         return copy.deepcopy(value)
