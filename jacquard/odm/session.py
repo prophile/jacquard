@@ -115,8 +115,8 @@ class Session(object):
 
 
 @contextlib.contextmanager
-def transaction(storage, read_only=False):
-    with storage.transaction(read_only=read_only) as store:
+def transaction(storage, **kwargs):
+    with storage.transaction(**kwargs) as store:
         session = Session(store)
         try:
             yield session
