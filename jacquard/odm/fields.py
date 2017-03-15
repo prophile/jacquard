@@ -122,3 +122,21 @@ class ListField(BaseField):
         if raw_value is not None:
             for x in raw_value:
                 self.field.validate(x)
+
+
+class EncodeDecodeField(BaseField):
+    """Field with callbacks for transforming in and out of storage."""
+
+    def __init__(self, *, encode, decode, **kwargs):
+        """Construct from encode/decode callbacks."""
+        super().__init__(**kwargs)
+        self.encode = encode
+        self.decode = decode
+
+    def transform_to_storage(self, value):
+        """Encode the value in JSON-compatible data types."""
+        return self.encode(value)
+
+    def transform_from_storage(self, value):
+        """Decode the value from JSON-compatible data types."""
+        return self.decode(value)
