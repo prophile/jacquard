@@ -7,7 +7,6 @@ import collections.abc
 from .utils import method_dispatch
 from .fields import BaseField
 
-
 RAISE = object()
 EMPTY = object()
 CREATE = object()

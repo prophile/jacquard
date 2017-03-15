@@ -1,6 +1,6 @@
 import pytest
 
-from jacquard.odm import Model, TextField, Session
+from jacquard.odm import Model, Session, TextField
 
 
 class Example(Model):
