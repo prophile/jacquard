@@ -8,6 +8,11 @@ from .utils import method_dispatch
 from .fields import BaseField
 
 
+RAISE = object()
+EMPTY = object()
+CREATE = object()
+
+
 class Session(object):
     """Single interaction session, for a document store."""
 
@@ -80,7 +85,7 @@ class Session(object):
 
         self.mark_model_pk_dirty(type(instance), instance.pk)
 
-    def query(self, model, pk):
+    def query(self, model, pk, default=RAISE):
         """
         Look up an instance by PK.
 
@@ -93,7 +98,21 @@ class Session(object):
             pass
 
         storage_key = model.storage_key(pk)
-        data = self.store_get(storage_key)  # Allow the KeyError to propagate
+        try:
+            data = self.store_get(storage_key)
+        except KeyError:
+            if default is RAISE:
+                raise  # Propagate the original KeyError
+
+            if default is EMPTY:
+                return model(pk)
+
+            if default is CREATE:
+                instance = model(pk)
+                self.add(instance)
+                return instance
+
+            return default
 
         instance = model(pk=pk)
         instance._fields = data
