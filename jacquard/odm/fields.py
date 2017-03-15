@@ -97,3 +97,28 @@ class JSONField(BaseField):
     def transform_from_storage(self, value):
         """Decode the value from JSON-compatible data types."""
         return copy.deepcopy(value)
+
+
+class ListField(BaseField):
+    """Arbitrary list, of another field type."""
+
+    def __init__(self, *, field, **kwargs):
+        """Construct with a given 'lower' field"""
+        super().__init__(**kwargs)
+        self.field = field
+
+    def transform_to_storage(self, value):
+        """Encode the value in JSON-compatible data types."""
+        return [self.field.transform_to_storage(x) for x in value]
+
+    def transform_from_storage(self, value):
+        """Decode the value from JSON-compatible data types."""
+        return [self.field.transform_from_storage(x) for x in value]
+
+    def validate(self, raw_value):
+        """Recursively validate."""
+        super().validate(raw_value)
+
+        if raw_value is not None:
+            for x in raw_value:
+                self.field.validate(x)
