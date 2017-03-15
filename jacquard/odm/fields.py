@@ -13,7 +13,7 @@ class BaseField(object, metaclass=abc.ABCMeta):
     but should call `super().validate` if doing so.
     """
 
-    def __init__(self, null=False, default=None):
+    def __init__(self, *, null=False, default=None):
         """
         Construct the field.
 
