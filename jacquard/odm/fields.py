@@ -103,7 +103,7 @@ class ListField(BaseField):
     """Arbitrary list, of another field type."""
 
     def __init__(self, *, field, **kwargs):
-        """Construct with a given 'lower' field"""
+        """Construct with a given 'lower' field."""
         super().__init__(**kwargs)
         self.field = field
 
