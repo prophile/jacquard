@@ -35,6 +35,9 @@ def copy_data(from_engine, to_engine, flush=False):
             dst.update(src)
 
 
+_MISSING = object()
+
+
 class TransactionMap(collections.abc.MutableMapping):
     """
     Mutable mapping built on storage engines.
@@ -77,12 +80,16 @@ class TransactionMap(collections.abc.MutableMapping):
     def __getitem__(self, key):
         """Lookup by key. Respects any pending changes/deletions."""
         try:
-            return self._cache[key]
+            cached_value = self._cache[key]
         except KeyError:
             result = self.store.get(self.store.encode_key(key))
+        else:
+            if cached_value is _MISSING:
+                raise KeyError(key)
+            return cached_value
 
         if result is None:
-            self._cache[key] = None
+            self._cache[key] = _MISSING
             raise KeyError(key)
 
         # UTF-8 decoding
