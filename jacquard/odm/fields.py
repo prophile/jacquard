@@ -53,7 +53,7 @@ class BaseField(object, metaclass=abc.ABCMeta):
         try:
             raw_value = obj._fields[self.name]
         except KeyError:
-            return self.default
+            return copy.copy(self.default)
 
         return self.transform_from_storage(raw_value)
 
