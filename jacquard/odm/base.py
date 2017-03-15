@@ -63,6 +63,16 @@ class Model(object, metaclass=ModelMeta):
         for field_name, value in fields.items():
             setattr(self, field_name, value)
 
+    def mark_dirty(self):
+        """
+        Inform the attached session about changes.
+
+        If there is no attached session, this is a no-op; if there is one,
+        this will mean that at the next flush this object is written out.
+        """
+        if self.session:
+            self.session.mark_instance_dirty(self)
+
     @classmethod
     def storage_key(cls, pk):
         """Key within the document store for a particular pk."""

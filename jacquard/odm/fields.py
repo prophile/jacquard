@@ -64,8 +64,7 @@ class BaseField(object, metaclass=abc.ABCMeta):
         else:
             obj._fields[self.name] = self.transform_to_storage(value)
 
-        if obj.session:
-            obj.session.mark_instance_dirty(obj)
+        obj.mark_dirty()
 
     def __set_name__(self, owner, name):
         """Inherit ownership pointer and name."""
