@@ -85,6 +85,9 @@ class _RedisDataPool(object):
 
                 while True:
                     message = subscriber.get_message(timeout=30)
+
+                    LOGGER.debug("`get_message` finished")
+
                     if message is None:
                         # Poll for resync
                         current_state = self.connection.get(
