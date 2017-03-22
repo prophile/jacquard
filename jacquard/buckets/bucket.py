@@ -2,6 +2,7 @@
 
 import collections
 
+from jacquard.odm import Model, ListField, EncodeDecodeField
 from jacquard.experiments.constraints import Constraints
 
 _Entry = collections.namedtuple(
@@ -10,31 +11,32 @@ _Entry = collections.namedtuple(
 )
 
 
-class Bucket(object):
+def _decode_entry(json):
+    key, settings, constraints = json
+    return _Entry(
+        key=key,
+        settings=settings,
+        constraints=Constraints.from_json(constraints),
+    )
+
+
+def _encode_entry(entry):
+    return [
+        entry.key,
+        entry.settings,
+        entry.constraints.to_json(),
+    ]
+
+
+class Bucket(Model):
     """A single partition of user space, with associated settings."""
 
-    def __init__(self, entries=()):
-        """Construct directly from a list of `_Entry` objects - internal."""
-        self.entries = list(entries)
-
-    @classmethod
-    def from_json(cls, description):
-        """Construct from JSON-encoded list as found in storage."""
-        return cls(
-            _Entry(
-                key=key,
-                settings=settings,
-                constraints=Constraints.from_json(constraints),
-            )
-            for (key, settings, constraints) in description
-        )
-
-    def to_json(self):
-        """Convert to JSON-encodable list."""
-        return [
-            [x.key, x.settings, x.constraints.to_json()]
-            for x in self.entries
-        ]
+    entries = ListField(null=False, field=EncodeDecodeField(
+        encode=_encode_entry,
+        decode=_decode_entry,
+        null=False,
+        default=[],
+    ), default=[])
 
     def get_settings(self, user_entry):
         """Look up settings by user entry."""
@@ -68,6 +70,7 @@ class Bucket(object):
             settings=settings,
             constraints=constraints,
         ))
+        self.mark_dirty()
 
     def remove(self, key):
         """Remove any matching, keyed entry."""
@@ -76,6 +79,7 @@ class Bucket(object):
             for x in self.entries
             if x.key != key
         ]
+        self.mark_dirty()
 
     def covers(self, key):
         """Whether a given key is covered under this bucket."""

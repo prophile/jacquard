@@ -1,5 +1,6 @@
 """Built-in, core HTTP endpoints."""
 
+from jacquard.odm import EMPTY, Session
 from jacquard.users import get_settings
 from jacquard.buckets import NUM_BUCKETS, Bucket, user_bucket
 from jacquard.experiments import Experiment
@@ -86,10 +87,12 @@ class ExperimentDetail(Endpoint):
     def handle(self, experiment):
         """Dispatch request."""
         with self.config.storage.transaction(read_only=True) as store:
+            session = Session(store)
+
             experiment_config = Experiment.from_store(store, experiment)
 
             buckets = [
-                Bucket.from_json(store.get('buckets/%s' % idx, ()))
+                session.query(Bucket, idx, default=EMPTY)
                 for idx in range(NUM_BUCKETS)
             ]
 

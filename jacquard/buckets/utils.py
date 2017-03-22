@@ -3,6 +3,8 @@
 import random
 import hashlib
 
+from jacquard.odm import CREATE, Session
+
 from .bucket import Bucket
 from .constants import NUM_BUCKETS
 
@@ -35,9 +37,11 @@ def release(store, name, constraints, branches):
     The utility will select buckets which are not already covering the given
     settings, which allows for partial rollout before running a test.
     """
+    session = Session(store)
+
     # Branches is a list of (name, n_buckets, settings) tuples
     all_buckets = [
-        Bucket.from_json(store.get('buckets/%s' % x, ()))
+        session.query(Bucket, x, default=CREATE)
         for x in range(NUM_BUCKETS)
     ]
 
@@ -51,8 +55,6 @@ def release(store, name, constraints, branches):
 
     random.shuffle(valid_bucket_indices)
 
-    affected_bucket_indices = set()
-
     for branch_name, n_buckets, settings in branches:
         key = [name, branch_name]
         bucket_indices = valid_bucket_indices[:n_buckets]
@@ -64,12 +66,10 @@ def release(store, name, constraints, branches):
 
         for bucket_idx in bucket_indices:
             bucket = all_buckets[bucket_idx]
-            affected_bucket_indices.add(bucket_idx)
 
             bucket.add(key, settings, constraints)
 
-    for bucket_idx in affected_bucket_indices:
-        store['buckets/%s' % bucket_idx] = all_buckets[bucket_idx].to_json()
+    session.flush()
 
 
 def close(store, name, constraints, branches):
@@ -83,21 +83,17 @@ def close(store, name, constraints, branches):
 
     Deliberately looks like `release` and works to counteract its effects.
     """
+    session = Session(store)
+
     keys = [
         [name, x[0]]
         for x in branches
     ]
 
     for idx in range(NUM_BUCKETS):
-        bucket = Bucket.from_json(store.get('buckets/%s' % idx, ()))
-        for key in keys:
-            bucket.remove(key)
-        new_bucket_json = bucket.to_json()
+        bucket = session.query(Bucket, idx, default=None)
+        if bucket is not None:
+            for key in keys:
+                bucket.remove(key)
 
-        if new_bucket_json:
-            store['buckets/%s' % idx] = new_bucket_json
-        else:
-            try:
-                del store['buckets/%s' % idx]
-            except KeyError:
-                pass
+    session.flush()
