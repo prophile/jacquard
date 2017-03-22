@@ -30,4 +30,9 @@ check_keys((LOG_LEVEL,), KNOWN_LOG_LEVELS, RuntimeError)
 
 logging.basicConfig(level=KNOWN_LOG_LEVELS[LOG_LEVEL])
 
+wsgi_logger = logging.getLogger('jacquard.wsgi')
+wsgi_logger.warning("Logging warnings in Jacquard")
+wsgi_logger.info("Logging informational messages in Jacquard")
+wsgi_logger.debug("Emitting debug messages from Jacquard")
+
 app = get_wsgi_app(load_config(DEFAULT_CONFIG_FILE_PATH))
