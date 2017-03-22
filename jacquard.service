@@ -7,6 +7,7 @@ WorkingDirectory=/var/jacquard
 ExecStart=/usr/bin/waitress-serve-python3 --port=1212 jacquard.wsgi:app
 PrivateTmp=on
 PrivateDevices=on
+Environment="JACQUARD_LOG_LEVEL=info"
 
 [Install]
 WantedBy=multi-user.target
