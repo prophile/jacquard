@@ -78,6 +78,8 @@ class _RedisDataPool(object):
                 self.sync_update()
                 LOGGER.debug("Resync finished.")
 
+                LOGGER.info("Connected to Redis pub/sub and synchronised state")
+
                 if not released_semaphore:
                     self.pubsub_semaphore.release()
                     LOGGER.debug("Released pubsub semaphore.")
