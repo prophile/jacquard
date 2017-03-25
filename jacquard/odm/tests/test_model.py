@@ -165,3 +165,14 @@ def test_non_nullable_fields_cannot_be_saved_with_null_values():
 
     with pytest.raises(ValueError):
         session.flush()
+
+
+def test_sessions_are_not_global():
+    instance_session1 = Example(pk=1)
+    session = Session({})
+    session.add(instance_session1)
+    session.flush()
+
+    session2 = Session({})
+    with pytest.raises(KeyError):
+        instance_session2 = session2.query(Example, 1)
