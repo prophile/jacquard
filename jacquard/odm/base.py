@@ -82,6 +82,7 @@ class Model(object, metaclass=ModelMeta):
         )
 
     def __repr__(self):
+        """Python reproducer. Handy for debugging!"""
         cls = type(self)
         return "%s(pk=%r, %s)" % (
             cls.__name__,
