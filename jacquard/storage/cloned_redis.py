@@ -28,6 +28,7 @@ class _RedisDataPool(object):
         self.pubsub_semaphore = threading.Semaphore(0)
 
         pubsub_thread = threading.Thread(
+            name="Redis-PubSub:%s" % self.connection_string,
             target=self.pubsub_thread,
             daemon=True,
         )
