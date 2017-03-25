@@ -139,7 +139,6 @@ class Session(object):
     def flush(self):
         """Write all pending changes to the document store."""
         for model, dirty_pks in self._dirty.items():
-            print(model.__name__)
             model_instances = self._instances[model]
             model_storage_key = model.storage_key
             for pk in dirty_pks:
