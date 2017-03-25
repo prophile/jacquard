@@ -84,7 +84,7 @@ class Session(object):
 
         self.mark_model_pk_dirty(type(instance), instance.pk)
 
-    def query(self, model, pk, default=RAISE):
+    def get(self, model, pk, default=RAISE):
         """
         Look up an instance by PK.
 

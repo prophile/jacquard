@@ -60,7 +60,7 @@ def test_get():
     data = {'examples/1': {'name': "Paula"}}
     session = Session(data)
 
-    ex1 = session.query(Example, 1)
+    ex1 = session.get(Example, 1)
     assert ex1.name == "Paula"
 
 
@@ -68,8 +68,8 @@ def test_get_twice_returns_same_instance():
     data = {'examples/1': {'name': "Paula"}}
     session = Session(data)
 
-    ex1 = session.query(Example, 1)
-    ex2 = session.query(Example, 1)
+    ex1 = session.get(Example, 1)
+    ex2 = session.get(Example, 1)
     assert ex1 is ex2
 
 
@@ -78,14 +78,14 @@ def test_get_missing_entity_raises_keyerror():
     session = Session(data)
 
     with pytest.raises(KeyError):
-        session.query(Example, 2)
+        session.get(Example, 2)
 
 
 def test_get_then_edit_entity():
     data = {'examples/1': {'name': "Paula"}}
     session = Session(data)
 
-    ex1 = session.query(Example, 1)
+    ex1 = session.get(Example, 1)
     ex1.name = "Paul"
     session.flush()
 
@@ -96,7 +96,7 @@ def test_get_then_remove_entity():
     data = {'examples/1': {'name': "Paula"}}
     session = Session(data)
 
-    ex1 = session.query(Example, 1)
+    ex1 = session.get(Example, 1)
     session.remove(ex1)
     session.flush()
 
@@ -107,7 +107,7 @@ def test_remove_is_idempotent():
     data = {'examples/1': {'name': "Paula"}}
     session = Session(data)
 
-    ex1 = session.query(Example, 1)
+    ex1 = session.get(Example, 1)
     session.remove(ex1)
     session.remove(ex1)
     session.flush()
@@ -147,7 +147,7 @@ def test_error_when_removing_from_different_instance():
     session1 = Session({'examples/1': {}})
     session2 = Session({})
 
-    ex1 = session1.query(Example, 1)
+    ex1 = session1.get(Example, 1)
     with pytest.raises(RuntimeError):
         session2.remove(ex1)
 
@@ -175,4 +175,4 @@ def test_sessions_are_not_global():
 
     session2 = Session({})
     with pytest.raises(KeyError):
-        instance_session2 = session2.query(Example, 1)
+        instance_session2 = session2.get(Example, 1)

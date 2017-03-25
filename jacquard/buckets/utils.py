@@ -41,7 +41,7 @@ def release(store, name, constraints, branches):
 
     # Branches is a list of (name, n_buckets, settings) tuples
     all_buckets = [
-        session.query(Bucket, x, default=CREATE)
+        session.get(Bucket, x, default=CREATE)
         for x in range(NUM_BUCKETS)
     ]
 
@@ -91,7 +91,7 @@ def close(store, name, constraints, branches):
     ]
 
     for idx in range(NUM_BUCKETS):
-        bucket = session.query(Bucket, idx, default=None)
+        bucket = session.get(Bucket, idx, default=None)
         if bucket is not None:
             for key in keys:
                 bucket.remove(key)

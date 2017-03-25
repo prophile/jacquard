@@ -92,7 +92,7 @@ class ExperimentDetail(Endpoint):
             experiment_config = Experiment.from_store(store, experiment)
 
             buckets = [
-                session.query(Bucket, idx, default=EMPTY)
+                session.get(Bucket, idx, default=EMPTY)
                 for idx in range(NUM_BUCKETS)
             ]
 
