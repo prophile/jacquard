@@ -78,6 +78,10 @@ class _RedisDataPool(object):
                 self.sync_update()
                 LOGGER.debug("Resync finished.")
 
+                LOGGER.info(
+                    "Connected to Redis pub/sub and synchronised state",
+                )
+
                 if not released_semaphore:
                     self.pubsub_semaphore.release()
                     LOGGER.debug("Released pubsub semaphore.")
@@ -85,6 +89,9 @@ class _RedisDataPool(object):
 
                 while True:
                     message = subscriber.get_message(timeout=30)
+
+                    LOGGER.debug("`get_message` finished")
+
                     if message is None:
                         # Poll for resync
                         current_state = self.connection.get(
@@ -103,8 +110,30 @@ class _RedisDataPool(object):
 
                         continue
 
-                    if message['type'] != 'message':
+                    if (
+                        message['type'] == 'subscribe' and
+                        message['channel'] == b'jacquard-store:state-key'
+                    ):
+                        # This is the expected 'subscription' message which we
+                        # receive when the connection is first opened; we can
+                        # safely ignore these.
                         continue
+
+                    if message['type'] != 'message':
+                        raise RuntimeError(
+                            "Received unexpected Redis pub/sub message "
+                            "of type %r (full data: %r)" % (
+                                message['type'],
+                                message,
+                            ),
+                        )
+
+                    if message['channel'] != b'jacquard-store:state-key':
+                        raise RuntimeError(
+                            "Unexpectedly received Redis pub/sub message "
+                            "for channel '%s' (should only be received on "
+                            "'jacquard-store:state-key')" % message['channel'],
+                        )
 
                     with self.lock:
                         new_key = message['data']

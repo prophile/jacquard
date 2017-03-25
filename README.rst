@@ -27,3 +27,8 @@ Documentation
 -------------
 
 Full documentation is available in `ReadTheDocs <http://jacquard-split.readthedocs.io/en/latest/>`_.
+
+
+.. image:: https://pbs.twimg.com/media/C6_VTi0U4AEobsb.jpg
+   :width: 400px
+   :alt: advice for hacking

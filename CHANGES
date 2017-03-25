@@ -1,3 +1,18 @@
+0.3.3  2017-03-24
+
+Bugfixes:
+
+* Linting check which caused release to break.
+
+
+0.3.2  2017-03-23
+
+Minor features:
+
+* Default to more verbose logging from the webserver.
+* Add some aggressive debug logging to the cached Redis storage backend.
+
+
 0.3.1  2017-02-08
 
 Minor features:
