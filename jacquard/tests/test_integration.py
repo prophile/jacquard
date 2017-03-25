@@ -1,4 +1,5 @@
 import io
+import os
 import shlex
 import pathlib
 import datetime
@@ -17,7 +18,8 @@ from jacquard.service import get_wsgi_app
 from jacquard.directory.base import UserEntry
 from jacquard.directory.dummy import DummyDirectory
 
-INTEGRATION_TESTS_ROOT = pathlib.Path('integration-tests')
+JACQUARD_ROOT = pathlib.Path(__file__).parent.parent.parent
+INTEGRATION_TESTS_ROOT = JACQUARD_ROOT / 'integration-tests'
 
 
 TEST_CONFIG = """
@@ -28,6 +30,30 @@ url = about:blank
 [directory]
 engine = dummy
 """
+
+
+_INTEGRATION_TEST_FILES = [
+    x.name
+    for x in INTEGRATION_TESTS_ROOT.glob('*.yaml')
+]
+
+
+if not _INTEGRATION_TEST_FILES:
+    raise AssertionError(
+        "Found no integration tests, at root %s" %
+        INTEGRATION_TESTS_ROOT.absolute(),
+    )
+
+
+@contextlib.contextmanager
+def _temporary_working_directory(pwd):
+    new_pwd = str(pwd)
+    old_pwd = os.getcwd()
+    os.chdir(new_pwd)
+    try:
+        yield
+    finally:
+        os.chdir(old_pwd)
 
 
 @pytest.mark.parametrize('test_file', [
@@ -62,7 +88,8 @@ def test_integration(test_file):
 
             try:
                 with contextlib.redirect_stdout(stdout):
-                    main(args, config=config)
+                    with _temporary_working_directory(JACQUARD_ROOT):
+                        main(args, config=config)
             except SystemExit:
                 pass
 
