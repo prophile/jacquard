@@ -11,6 +11,7 @@ import redis
 
 from .base import StorageEngine
 from .exceptions import Retry
+from .utils import thread_unsafe
 
 LOGGER = logging.getLogger('jacquard.storage.cloned_redis')
 
@@ -185,6 +186,7 @@ def resync_all_connections():
             connection.sync_update()
 
 
+@thread_unsafe
 class ClonedRedisStore(StorageEngine):
     """
     Cloned Redis store.

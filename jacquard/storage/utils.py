@@ -10,6 +10,13 @@ from jacquard.plugin import plug
 from .exceptions import Retry
 
 
+def thread_unsafe(cls):
+    """
+    Add thread-safety wrapping to the given storage engine.
+    """
+    return cls
+
+
 def retrying(fn):
     """Decorator: reissues the function if it raises Retry."""
     logger = logging.getLogger('jacquard.storage.retrying')

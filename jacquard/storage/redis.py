@@ -6,10 +6,12 @@ import redis
 
 from .base import StorageEngine
 from .exceptions import Retry
+from .utils import thread_unsafe
 
 LOGGER = logging.getLogger('jacquard.storage.redis')
 
 
+@thread_unsafe
 class RedisStore(StorageEngine):
     """
     Redis storage engine.

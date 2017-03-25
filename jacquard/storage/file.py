@@ -3,8 +3,10 @@
 import sqlite3
 
 from .base import StorageEngine
+from .utils import thread_unsafe
 
 
+@thread_unsafe
 class FileStore(StorageEngine):
     """Flat(ish)-file SQLite3-based storage engine."""
 
