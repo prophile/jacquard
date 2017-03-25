@@ -5,7 +5,7 @@ import hashlib
 
 from jacquard.odm import CREATE, Session
 
-from .bucket import Bucket
+from .models import Bucket
 from .constants import NUM_BUCKETS
 
 
