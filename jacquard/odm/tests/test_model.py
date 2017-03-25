@@ -176,3 +176,10 @@ def test_sessions_are_not_global():
     session2 = Session({})
     with pytest.raises(KeyError):
         instance_session2 = session2.get(Example, 1)
+
+
+def test_basic_repr_functions_properly():
+    instance = Example(pk=1)
+    instance.name = "Bees"
+
+    assert repr(instance) == "Example(pk=1, name='Bees')"
