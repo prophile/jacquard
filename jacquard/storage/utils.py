@@ -3,6 +3,7 @@
 import json
 import logging
 import functools
+import threading
 import collections.abc
 
 from jacquard.plugin import plug
@@ -14,7 +15,33 @@ def thread_unsafe(cls):
     """
     Add thread-safety wrapping to the given storage engine.
     """
-    return cls
+    # Some minor magic
+    from .base import StorageEngine
+
+    class _ThreadSafeWrapper(object):
+        def __init__(self, connection_string):
+            self._connection_string = connection_string
+            self._instances = threading.local()
+            # Force the construction of this thread's instance
+            self._local_instance()
+
+        def _local_instance(self):
+            if not hasattr(self._instances, 'instance'):
+                instance = cls(self._connection_string)
+                self._instances.instance = instance
+                return instance
+            return self._instances.instance
+
+        def __getattr__(self, attr):
+            return getattr(self._local_instance(), attr)
+
+    # Copy in docstring and name
+    _ThreadSafeWrapper.__name__ = cls.__name__
+    _ThreadSafeWrapper.__doc__ = getattr(cls, '__doc__', cls.__name__)
+
+    StorageEngine.register(_ThreadSafeWrapper)
+
+    return _ThreadSafeWrapper
 
 
 def retrying(fn):
