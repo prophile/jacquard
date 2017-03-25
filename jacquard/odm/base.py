@@ -81,7 +81,7 @@ class Model(object, metaclass=ModelMeta):
             pk,
         )
 
-    def __repr__(self):
+    def __repr__(self):  # noqa: D400
         """Python reproducer. Handy for debugging!"""
         cls = type(self)
         return "%s(pk=%r, %s)" % (
