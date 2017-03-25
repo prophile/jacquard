@@ -35,6 +35,9 @@ def thread_unsafe(cls):
         def __getattr__(self, attr):
             return getattr(self._local_instance(), attr)
 
+        def __str__(self):
+            return str(self._local_instance())
+
     # Copy in docstring and name
     _ThreadSafeWrapper.__name__ = cls.__name__
     _ThreadSafeWrapper.__doc__ = getattr(cls, '__doc__', cls.__name__)
