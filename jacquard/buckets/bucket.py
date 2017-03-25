@@ -36,7 +36,7 @@ class Bucket(Model):
         decode=_decode_entry,
         null=False,
         default=[],
-    ), default=[])
+    ), default=())
 
     def get_settings(self, user_entry):
         """Look up settings by user entry."""
@@ -65,11 +65,11 @@ class Bucket(Model):
 
     def add(self, key, settings, constraints):
         """Add a new, keyed entry."""
-        self.entries.append(_Entry(
+        self.entries = self.entries + (_Entry(
             key=key,
             settings=settings,
             constraints=constraints,
-        ))
+        ),)
         self.mark_dirty()
 
     def remove(self, key):

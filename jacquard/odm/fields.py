@@ -113,7 +113,7 @@ class ListField(BaseField):
 
     def transform_from_storage(self, value):
         """Decode the value from JSON-compatible data types."""
-        return [self.field.transform_from_storage(x) for x in value]
+        return tuple(self.field.transform_from_storage(x) for x in value)
 
     def validate(self, raw_value):
         """Recursively validate."""
