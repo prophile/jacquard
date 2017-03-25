@@ -29,6 +29,8 @@ class Config(collections.abc.Mapping):
 
         self._thread_local = threading.local()
 
+        self.storage = open_engine(self, self.storage_engine, self.storage_url)
+
     def _load_path(self):
         for path in self.get('paths', {}).values():
             sys.path.append(path.strip())
@@ -53,19 +55,6 @@ class Config(collections.abc.Mapping):
         if not hasattr(self._thread_local, name):
             setattr(self._thread_local, name, generator())
         return getattr(self._thread_local, name)
-
-    def _open_storage(self):
-        return open_engine(self, self.storage_engine, self.storage_url)
-
-    @property
-    def storage(self):
-        """
-        Key-value storage engine.
-
-        Note that this is actually thread-local, so users need not worry
-        about thread synchronisation of connections.
-        """
-        return self._thread_local_property('storage', self._open_storage)
 
     def _open_directory(self):
         kwargs = {
