@@ -35,6 +35,11 @@ class SetDefault(BaseCommand):
             help="clear the associated value",
             action='store_true',
         )
+        parser.add_argument(
+            '--add',
+            help="skip any keys which already exist in the database",
+            action='store_true',
+        )
 
     @retrying
     def handle(self, config, options):
@@ -42,9 +47,12 @@ class SetDefault(BaseCommand):
         with config.storage.transaction() as store:
             defaults = dict(store.get('defaults', {}))
 
+            any_changes = False
+
             if options.delete:
                 with contextlib.suppress(KeyError):
                     del defaults[options.setting]
+                    any_changes = True
 
             else:
                 try:
@@ -52,9 +60,12 @@ class SetDefault(BaseCommand):
                 except ValueError:
                     raise CommandError("Could not decode %r" % options.value)
 
-                defaults[options.setting] = value
+                if not options.add or options.setting not in defaults:
+                    defaults[options.setting] = value
+                    any_changes = True
 
-            store['defaults'] = defaults
+            if any_changes:
+                store['defaults'] = defaults
 
 
 class Override(BaseCommand):
