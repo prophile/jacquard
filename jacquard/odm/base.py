@@ -80,3 +80,19 @@ class Model(object, metaclass=ModelMeta):
             cls.storage_name,
             pk,
         )
+
+    def __repr__(self):
+        cls = type(self)
+        return "%s(pk=%r, %s)" % (
+            cls.__name__,
+            self.pk,
+            ', '.join(
+                '%s=%r' % (
+                    field_name,
+                    getattr(cls, field_name).transform_from_storage(
+                        field_raw_value,
+                    ),
+                )
+                for field_name, field_raw_value in self._fields.items()
+            ),
+        )
