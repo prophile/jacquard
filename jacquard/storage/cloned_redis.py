@@ -150,7 +150,7 @@ class _RedisDataPool(object):
                 LOGGER.warning(
                     "Disconnected from pub/sub on %s, "
                     "attempting reconnect in 10s",
-                    self.connect_string,
+                    self.connection_string,
                 )
                 # Wait and retry
                 time.sleep(10)
