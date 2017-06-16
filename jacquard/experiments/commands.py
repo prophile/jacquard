@@ -91,6 +91,7 @@ class Conclude(BaseCommand):
             experiment = Experiment.from_store(store, options.experiment)
 
             current_experiments = store.get('active-experiments', [])
+            concluded_experiments = store.get('concluded-experiments', [])
 
             if options.experiment not in current_experiments:
                 raise CommandError(
@@ -98,6 +99,7 @@ class Conclude(BaseCommand):
                 )
 
             current_experiments.remove(options.experiment)
+            concluded_experiments.append(options.experiment)
 
             close(
                 store,
@@ -118,6 +120,7 @@ class Conclude(BaseCommand):
             experiment.save(store)
 
             store['active-experiments'] = current_experiments
+            store['concluded-experiments'] = concluded_experiments
 
 
 class Load(BaseCommand):
@@ -151,6 +154,7 @@ class Load(BaseCommand):
         """Run command."""
         with config.storage.transaction() as store:
             live_experiments = store.get('active-experiments', ())
+            concluded_experiments = store.get('concluded-experiments', ())
 
             for file in options.files:
                 definition = yaml.safe_load(file)
@@ -164,6 +168,16 @@ class Load(BaseCommand):
                     else:
                         raise CommandError(
                             "Experiment %r is live, refusing to edit" %
+                            experiment.id,
+                        )
+
+                elif experiment.id in concluded_experiments:
+                    if options.skip_launched:
+                        continue
+
+                    else:
+                        raise CommandError(
+                            "Experiment %r has concluded, refusing to edit" %
                             experiment.id,
                         )
 
