@@ -57,3 +57,18 @@ Jacquard is tested with py.test, you can run the tests with:
 .. code:: bash
 
     python setup.py test
+
+Linting
+^^^^^^^
+
+Jacquard uses `flake8` for linting. You can install the requirements using:
+
+.. code:: bash
+
+    pip install scripts/linting/requirements.txt
+
+and run the linter with:
+
+.. code:: bash
+
+    ./scripts/linting/lint
