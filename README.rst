@@ -45,6 +45,20 @@ in editable mode:
     cd jacquard
     pip install -e .
 
+Since Jacquard requires a config file for all commands, you may also wish to export
+the `JACQUARD_CONFIG` environment variable, pointed at a suitable file.
+
+.. code:: bash
+
+    cd jacquard
+    export JACQUARD_CONFIG=$PWD/config.cfg
+
+If you're using `virtualenvwrapper <https://virtualenvwrapper.readthedocs.io/en/latest/>`_
+to manage your virtualenvs (and you probably want to be), and you've configured
+the virtualenv to `cd` to the project directory when it loads, then you can add
+the `export` line to your virtualenv's `postactivate` file to have it always
+available when you're working on Jacquard.
+
 Running tests
 ^^^^^^^^^^^^^
 
