@@ -3,6 +3,16 @@
 - command: list experiments
   expect: |
     hello: Hello!
+- command: list --detailed
+  expect: |
+    hello: Hello!
+    =============
+
+    Not yet launched
+
+- command: show-experiment hello
+  expect: |
+    hello: Hello!
     =============
 
     Not yet launched
