@@ -143,7 +143,7 @@ class Load(BaseCommand):
         parser.add_argument(
             '--skip-launched',
             action='store_true',
-            help="do not error on launched experiments",
+            help="do not load or error on launched experiments",
         )
 
     @retrying
