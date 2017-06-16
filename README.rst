@@ -32,3 +32,28 @@ Full documentation is available in `ReadTheDocs <http://jacquard-split.readthedo
 .. image:: https://pbs.twimg.com/media/C6_VTi0U4AEobsb.jpg
    :width: 400px
    :alt: advice for hacking
+
+Contributing
+------------
+
+After cloning the repo you'll almost certainly want to install into a
+`virtualenv <https://python-guide-pt-br.readthedocs.io/en/latest/dev/virtualenvs/>`_
+in editable mode:
+
+.. code:: bash
+
+    cd jacquard
+    pip install -e .
+
+Running tests
+^^^^^^^^^^^^^
+
+Jacquard has good test coverage. A great way to check that you're up and running
+is to run the tests. Please ensure you also do this while developing new features
+as pull requests without tests (or with failing) are unlikely to be accepted.
+
+Jacquard is tested with py.test, you can run the tests with:
+
+.. code:: bash
+
+    python setup.py test
