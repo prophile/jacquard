@@ -115,7 +115,7 @@ def main(args=sys.argv[1:], config=None):
             options.func(config, options)
         except CommandError as exc:
             (message,) = exc.args
-            sys.stderr.write("%s\n", message)
+            print(message, file=sys.stderr)
             exit(1)
 
 
