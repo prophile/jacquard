@@ -32,3 +32,57 @@ Full documentation is available in `ReadTheDocs <http://jacquard-split.readthedo
 .. image:: https://pbs.twimg.com/media/C6_VTi0U4AEobsb.jpg
    :width: 400px
    :alt: advice for hacking
+
+Contributing
+------------
+
+After cloning the repo you'll almost certainly want to install into a
+`virtualenv <https://python-guide-pt-br.readthedocs.io/en/latest/dev/virtualenvs/>`_
+in editable mode:
+
+.. code:: bash
+
+    cd jacquard
+    pip install -e .
+
+Since Jacquard requires a config file for all commands, you may also wish to export
+the `JACQUARD_CONFIG` environment variable, pointed at a suitable file.
+
+.. code:: bash
+
+    cd jacquard
+    export JACQUARD_CONFIG=$PWD/config.cfg
+
+If you're using `virtualenvwrapper <https://virtualenvwrapper.readthedocs.io/en/latest/>`_
+to manage your virtualenvs (and you probably want to be), and you've configured
+the virtualenv to `cd` to the project directory when it loads, then you can add
+the `export` line to your virtualenv's `postactivate` file to have it always
+available when you're working on Jacquard.
+
+Running tests
+^^^^^^^^^^^^^
+
+Jacquard has good test coverage. A great way to check that you're up and running
+is to run the tests. Please ensure you also do this while developing new features
+as pull requests without tests (or with failing) are unlikely to be accepted.
+
+Jacquard is tested with py.test, you can run the tests with:
+
+.. code:: bash
+
+    python setup.py test
+
+Linting
+^^^^^^^
+
+Jacquard uses `flake8` for linting. You can install the requirements using:
+
+.. code:: bash
+
+    pip install scripts/linting/requirements.txt
+
+and run the linter with:
+
+.. code:: bash
+
+    ./scripts/linting/lint
