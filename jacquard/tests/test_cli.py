@@ -3,7 +3,9 @@ import textwrap
 import contextlib
 import unittest.mock
 
-from jacquard.cli import main
+import pytest
+
+from jacquard.cli import CommandError, main
 from jacquard.storage.dummy import DummyStore
 
 
@@ -59,3 +61,28 @@ def test_run_write_command():
     assert output.getvalue() == ''
 
     assert config.storage.data == {'defaults': '{"foo": "bar"}'}
+
+
+def test_erroring_command():
+    config = unittest.mock.Mock()
+
+    ERROR_MESSAGE = "MOCK ERROR: Something went wrong in the"
+
+    mock_parser = unittest.mock.Mock()
+    mock_options = unittest.mock.Mock()
+    mock_options.func = unittest.mock.Mock(
+        side_effect=CommandError(ERROR_MESSAGE),
+    )
+    mock_parser.parse_args = unittest.mock.Mock(
+        return_value=mock_options,
+    )
+
+    stderr = io.StringIO()
+    with contextlib.redirect_stderr(stderr), pytest.raises(SystemExit):
+        with unittest.mock.patch(
+            'jacquard.cli.argument_parser',
+            return_value=mock_parser,
+        ):
+            main(['command'], config=config)
+
+    assert stderr.getvalue() == ERROR_MESSAGE + "\n"
