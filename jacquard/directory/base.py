@@ -40,7 +40,7 @@ class Directory(metaclass=abc.ABCMeta):
         By default this does not use the `config` and just defers to
         `__init__` passing the options as kwargs.
         """
-        return self(**options)
+        return cls(**options)
 
     @abc.abstractmethod
     def lookup(self, user_id):
