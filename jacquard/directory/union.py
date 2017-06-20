@@ -78,7 +78,6 @@ class UnionDirectory(Directory):
         Where a user is present in multiple subdirectories, the first is
         taken.
         """
-
         for subdirectory in self._subdirectories:
             user_entry = subdirectory.lookup(user_id)
 
