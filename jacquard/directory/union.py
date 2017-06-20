@@ -66,6 +66,19 @@ class UnionDirectory(Directory):
 
     @classmethod
     def from_configuration(cls, config, options):
+        """
+        Build from the configuration format.
+
+        This lists configuration for the subdirectories with square bracket
+        indexing. For example:
+
+            [directory]
+            engine = union
+            engine[0] = my_engine
+            param[0] = my_param
+            engine[1] = django
+            url[1] = postgresql:///my_django_db
+        """
         return cls(cls._construct_subdirectories_from_config(config, options))
 
     def lookup(self, user_id):
