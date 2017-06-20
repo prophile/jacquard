@@ -17,6 +17,7 @@ from .utils import open_directory
 
 INDEXED_KEY_RE = re.compile(r'^([^\[]+)\[([0-9]+)]$')
 
+
 class UnionDirectory(Directory):
     """
     A union of zero or more directories.
