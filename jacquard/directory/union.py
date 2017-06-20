@@ -61,7 +61,7 @@ class UnionDirectory(Directory):
 
         for subdirectory_index in range(maximum_index + 1):
             sub_configuration = sub_configurations[subdirectory_index]
-            engine = sub_configurations.pop('engine')
+            engine = sub_configuration.pop('engine')
             yield open_directory(config, engine, sub_configuration)
 
     @classmethod
