@@ -54,7 +54,7 @@ class UnionDirectory(Directory):
             sub_configurations[config_index][config_key] = value
 
         try:
-            maximum_index = max(options.keys())
+            maximum_index = max(sub_configurations.keys())
         except ValueError:
             # No configurations at all: this is a null union
             return
