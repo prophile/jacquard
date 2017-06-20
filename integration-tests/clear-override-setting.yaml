@@ -1,0 +1,4 @@
+- command: override 30 foo bar
+- command: clear-overrides --setting foo
+- command: storage-dump
+  expect: ""
