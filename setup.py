@@ -126,6 +126,7 @@ setup(
         'jacquard.directory_engines': (
             'dummy = jacquard.directory.dummy:DummyDirectory',
             'django = jacquard.directory.django:DjangoDirectory',
+            'union = jacquard.directory.union:UnionDirectory',
         ),
         'jacquard.http_endpoints': (
             'root = jacquard.service.endpoints:Root',
