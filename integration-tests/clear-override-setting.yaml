@@ -1,4 +1,6 @@
 - command: override 30 foo bar
+- command: override 30 bazz quux
 - command: clear-overrides --setting foo
-- command: storage-dump
-  expect: ""
+- command: show 30
+  expect_yaml:
+    bazz: quux
