@@ -32,6 +32,16 @@ class Directory(metaclass=abc.ABCMeta):
         """
         raise NotImplementedError
 
+    @classmethod
+    def from_configuration(cls, config, options):
+        """
+        Construct from a Config object, and a dictionary of options.
+
+        By default this does not use the `config` and just defers to
+        `__init__` passing the options as kwargs.
+        """
+        return self(**options)
+
     @abc.abstractmethod
     def lookup(self, user_id):
         """

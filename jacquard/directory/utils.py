@@ -11,4 +11,4 @@ def open_directory(config, engine, kwargs):
     point group and instantiates the given class with `**kwargs`.
     """
     cls = plug('directory_engines', engine, config=config)()
-    return cls(**kwargs)
+    return cls.from_configuration(config, **kwargs)
