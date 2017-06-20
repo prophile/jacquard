@@ -19,9 +19,7 @@ INDEXED_KEY_RE = re.compile(r'^([^\[]+)\[([0-9]+)]$')
 
 
 class UnionDirectory(Directory):
-    """
-    A union of zero or more directories.
-    """
+    """A union of zero or more directories."""
 
     def __init__(self, subdirectories):
         """
