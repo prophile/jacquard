@@ -129,9 +129,7 @@ class Override(BaseCommand):
 
 
 class OverrideClear(BaseCommand):
-    """
-    Clear all overrides, per-user or per-setting.
-    """
+    """Clear all overrides, per-user or per-setting."""
 
     help = "erase user overrides in bulk"
 
