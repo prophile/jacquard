@@ -114,6 +114,7 @@ setup(
             'storage-export = jacquard.storage.commands:StorageExport',
             'set-default = jacquard.users.commands:SetDefault',
             'override = jacquard.users.commands:Override',
+            'clear-overrides = jacquard.users.commands:OverrideClear',
             'show = jacquard.users.commands:Show',
             'runserver = jacquard.service.commands:RunServer',
             'launch = jacquard.experiments.commands:Launch',

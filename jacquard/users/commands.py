@@ -128,6 +128,61 @@ class Override(BaseCommand):
                 yaml.dump(overrides, sys.stdout, default_flow_style=False)
 
 
+class OverrideClear(BaseCommand):
+    """Clear all overrides, per-user or per-setting."""
+
+    help = "erase user overrides in bulk"
+
+    def add_arguments(self, parser):
+        """Add argparse arguments."""
+        mutex_group = parser.add_mutually_exclusive_group(required=True)
+        mutex_group.add_argument(
+            'user',
+            help="user ID to wipe overrides for",
+            nargs='?',
+        )
+        mutex_group.add_argument(
+            '-s',
+            '--setting',
+            help="setting to wipe overrides for",
+        )
+
+    def _clear_overrides_for_user(self, store, user):
+        key = 'overrides/%s' % user
+
+        with contextlib.suppress(KeyError):
+            del store[key]
+
+    def _clear_overrides_for_setting(self, store, setting):
+        prefix = 'overrides/'
+
+        for key in store:
+            if not key.startswith(prefix):
+                continue
+
+            overrides = dict(store[key])
+
+            try:
+                del overrides[setting]
+            except KeyError:
+                continue
+
+            if overrides:
+                store[key] = overrides
+            else:
+                # All overrides gone, delete this key from storage entirely
+                del store[key]
+
+    @retrying
+    def handle(self, config, options):
+        """Run command."""
+        with config.storage.transaction() as store:
+            if options.user:
+                self._clear_overrides_for_user(store, options.user)
+            else:
+                self._clear_overrides_for_setting(store, options.setting)
+
+
 class Show(BaseCommand):
     """
     Show current settings for a given user.
