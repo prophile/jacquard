@@ -1,6 +1,7 @@
+from jacquard.directory.base import UserEntry
 from jacquard.directory.dummy import DummyDirectory
 from jacquard.directory.union import UnionDirectory
-from jacquard.directory.base import UserEntry
+
 
 def test_union_returns_results_from_first_directory():
     user_1 = UserEntry(id=1, join_date=None, tags=())

@@ -6,7 +6,7 @@ import pickle
 import logging
 import warnings
 import threading
-from typing import Dict, Any
+from typing import Any, Dict
 
 import redis
 
