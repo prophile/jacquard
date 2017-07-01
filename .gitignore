@@ -61,3 +61,4 @@ target/
 jacquard.db
 config.cfg
 doc/_build
+.mypy_cache/
