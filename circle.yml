@@ -19,7 +19,7 @@ test:
     - mkdir -p $CIRCLE_TEST_REPORTS/pytest
     - py.test -v --cov=jacquard --junit-xml=$CIRCLE_TEST_REPORTS/pytest/junit.xml jacquard
     - script/linting/lint
-    - mypy jacquard --ignore-missing-imports
+    - MYPYPATH="`pwd`/type-stubs:$MYPYPATH" mypy jacquard --ignore-missing-imports
   post:
     - ./hax_debian.sh
     - mv *.deb $CIRCLE_ARTIFACTS/
