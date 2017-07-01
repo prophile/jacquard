@@ -6,6 +6,7 @@ import pickle
 import logging
 import warnings
 import threading
+from typing import Dict, Any
 
 import redis
 
@@ -15,7 +16,7 @@ from .exceptions import Retry
 LOGGER = logging.getLogger('jacquard.storage.cloned_redis')
 
 
-_REDIS_POOL = {}
+_REDIS_POOL: Dict[str, Any] = {}
 _REDIS_POOL_LOCK = threading.Lock()
 
 
