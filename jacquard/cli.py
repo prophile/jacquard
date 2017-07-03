@@ -19,6 +19,8 @@ DEFAULT_CONFIG_FILE_PATH = pathlib.Path(os.environ.get(
 ))
 
 SUBCOMMAND_GROUPS = (
+    ('list', "show lists of various topics"),
+    ('show', "show items"),
 )
 
 
