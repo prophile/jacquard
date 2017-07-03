@@ -1,6 +1,6 @@
 - command: override 30 foo bar
 - command: override 30 bazz quux
 - command: clear-overrides --setting foo
-- command: show 30
+- command: show user 30
   expect_yaml:
     bazz: quux

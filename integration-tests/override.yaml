@@ -6,13 +6,13 @@
     {'foo': 'bar'}
 
 - command: override 30 bazz quux
-- command: show 30
+- command: show user 30
   expect_yaml:
     bazz: quux
     foo: bar
 
 - command: override 30 -d foo
-- command: show 30
+- command: show user 30
   expect_yaml:
     bazz: quux
 

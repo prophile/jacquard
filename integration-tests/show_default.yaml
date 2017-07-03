@@ -3,7 +3,7 @@
   expect_yaml:
     {"foo": "bar", "user": "1"}
 
-- command: show
+- command: show defaults
   expect_yaml:
     foo: bar
 
