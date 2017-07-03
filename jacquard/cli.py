@@ -18,6 +18,10 @@ DEFAULT_CONFIG_FILE_PATH = pathlib.Path(os.environ.get(
     '/etc/jacquard/config.cfg',
 ))
 
+SUBCOMMAND_GROUPS = (
+)
+
+
 def _add_subparsers_from_plugins(subparsers, plugin_group):
     for name, plugin in plug_all(plugin_group):
         command = plugin()()
@@ -85,7 +89,18 @@ def argument_parser():
         plugin_group='commands',
     )
 
+    # Subcommand plugins
+    for subcommand, subcommand_help in SUBCOMMAND_GROUPS:
+        subcommand_parser = subparsers.add_parser(subcommand, help=subcommand_help)
+        subsubcommands = subcommand_parser.add_subparsers(
+            metavar="subject",
+            title="subjects",
+        )
 
+        _add_subparsers_from_plugins(
+            subparsers=subsubcommands,
+            plugin_group='commands.%s' % subcommand,
+        )
 
     return parser
 
