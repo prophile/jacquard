@@ -93,7 +93,10 @@ def argument_parser():
 
     # Subcommand plugins
     for subcommand, subcommand_help in SUBCOMMAND_GROUPS:
-        subcommand_parser = subparsers.add_parser(subcommand, help=subcommand_help)
+        subcommand_parser = subparsers.add_parser(
+            subcommand,
+            help=subcommand_help,
+        )
         subsubcommands = subcommand_parser.add_subparsers(
             metavar="subject",
             title="subjects",
