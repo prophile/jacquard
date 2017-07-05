@@ -1,3 +1,30 @@
+0.4.0  2017-07-05
+
+Major features:
+
+* Major changes to the command structure:
+  `jacquard show` is now `jacquard show user`,
+  `jacquard list-users` is now `jacquard list users`,
+  `jacquard list` is now `jacquard list experiments`.
+* `jacquard show defaults` for an explicit output of defaults.
+* New command to clear all overrides for a setting or user: `jacquard
+  clear-overrides`.
+* New `union` directory backend, to merge together multiple directories
+  easily.
+* `jacquard rollout` can now roll out to users with or without specific
+  tags.
+
+Minor features:
+
+* Buckets moved over to the new object-document mapper system, which is a
+  significant rework of how we store objects.
+* `jacquard set-default` now takes an `--add` option, which skips existing
+  keys.
+* More test coverage on some internal utilities.
+* Basic test coverage to check layering violations.
+* `jacquard set-defaults` now does not do any writes if no changes were made.
+
+
 0.3.3  2017-03-24
 
 Bugfixes:
