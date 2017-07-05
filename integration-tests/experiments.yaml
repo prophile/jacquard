@@ -1,6 +1,6 @@
 - command: load-experiment test-data/experiment.yaml
 
-- command: list
+- command: list experiments
   expect: |
     hello: Hello!
     =============
@@ -9,6 +9,6 @@
 
 - command: launch hello
 - command: conclude hello test
-- command: show
+- command: show defaults
   expect: |
     cta: red
