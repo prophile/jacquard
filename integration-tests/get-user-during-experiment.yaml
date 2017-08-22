@@ -1,0 +1,6 @@
+- command: load-experiment test-data/experiment.yaml
+- command: launch hello
+- get: /users/104
+  expect_yaml_keys:
+    - cta
+    - user
