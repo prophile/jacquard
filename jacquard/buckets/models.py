@@ -15,6 +15,14 @@ class Bucket(Model):
         default=[],
     ), default=())
 
+    @classmethod
+    def upgrade_data(self, data):
+        if isinstance(data, list):
+            # Data is in the old "just entries" format, forward-convert it to
+            # the ODM format.
+            return {'entries': data}
+        return data
+
     def get_settings(self, user_entry):
         """Look up settings by user entry."""
         settings = {}
