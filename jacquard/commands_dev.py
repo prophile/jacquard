@@ -150,6 +150,18 @@ class Bugpoint(BaseCommand):
         copy_data(backup, config.storage)
 
     def _get_run_target(self, config, options):
+        """
+        Get the 'run target' out from options.
+
+        This is a nullary callable which is expected to raise an exception -
+        the exception we are needing to debug.
+
+        For the command case it's a wrapped version of the command, which
+        silences stdout and stderr.
+
+        For the URL case it's a call with a WSGI client which catches 4xx and
+        5xx status codes turning them into ValueErrors.
+        """
         if options.command:
             def target():
                 out_stream = io.StringIO()
