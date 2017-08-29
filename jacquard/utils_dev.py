@@ -24,6 +24,12 @@ def _shrink_number(data, is_valid):
         return 1, False
     elif is_valid(-1):
         return -1, False
+    # Try making the number smaller
+    elif isinstance(data, int) and is_valid(data // 2):
+        return int(data // 2), True
+    elif isinstance(data, float) and is_valid(int(data)):
+        # Upcast floats to ints where possible
+        return int(data), True
     else:
         return data, False
 
