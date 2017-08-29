@@ -47,30 +47,7 @@ class Bugpoint(BaseCommand):
         """Run command."""
         log = print
 
-        if options.command:
-            def target():
-                out_stream = io.StringIO()
-
-                with contextlib.ExitStack() as context:
-                    context.enter_context(
-                        contextlib.redirect_stdout(out_stream),
-                    )
-                    context.enter_context(
-                        contextlib.redirect_stderr(out_stream),
-                    )
-
-                    run_command(options.command, config)
-        elif options.url:
-            app = get_wsgi_app(config)
-            test_client = Client(app)
-
-            def target():
-                result = test_client.get(options.url)
-
-                status_class = str(result.status_code)[0]
-
-                if status_class in ('4', '5'):
-                    raise ValueError("Class 4 or 5 status")
+        target = self._get_run_target(config, options)
 
         def target_failure_mode():
             try:
@@ -171,3 +148,33 @@ class Bugpoint(BaseCommand):
 
         log("Restoring state from backup")
         copy_data(backup, config.storage)
+
+    def _get_run_target(self, config, options):
+        if options.command:
+            def target():
+                out_stream = io.StringIO()
+
+                with contextlib.ExitStack() as context:
+                    context.enter_context(
+                        contextlib.redirect_stdout(out_stream),
+                    )
+                    context.enter_context(
+                        contextlib.redirect_stderr(out_stream),
+                    )
+
+                    run_command(options.command, config)
+        elif options.url:
+            app = get_wsgi_app(config)
+            test_client = Client(app)
+
+            def target():
+                result = test_client.get(options.url)
+
+                status_class = str(result.status_code)[0]
+
+                if status_class in ('4', '5'):
+                    raise ValueError("Class 4 or 5 status")
+        else:
+            raise AssertionError("No target type")
+
+        return target
