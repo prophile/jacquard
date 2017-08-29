@@ -2,6 +2,7 @@
 
 import io
 import json
+import functools
 import itertools
 import contextlib
 
@@ -48,17 +49,10 @@ class Bugpoint(BaseCommand):
         log = print
 
         target = self._get_run_target(config, options)
-
-        def target_failure_mode():
-            try:
-                target()
-            except KeyboardInterrupt:
-                # Pass through ^C
-                raise
-            except Exception as exc:
-                return repr(exc)
-            else:
-                return None
+        target_failure_mode = functools.partial(
+            self._failure_mode,
+            target,
+        )
 
         reference_failure_mode = target_failure_mode()
 
@@ -148,6 +142,29 @@ class Bugpoint(BaseCommand):
 
         log("Restoring state from backup")
         copy_data(backup, config.storage)
+
+    def _failure_mode(self, target):
+        """
+        Get a representation of the failure mode of a run target.
+
+        The nature of this representation is unspecified other than that:
+
+         * In case of no exception, it is None;
+         * In case of an exception it is printable;
+         * In all cases it has functional equality.
+
+        In order to make life easier if bugpoint is feeling particularly slow,
+        we special-case KeyboardInterrupt and pass it straight through.
+        """
+        try:
+            target()
+        except KeyboardInterrupt:
+            # Pass through ^C
+            raise
+        except Exception as exc:
+            return repr(exc)
+        else:
+            return None
 
     def _get_run_target(self, config, options):
         """
