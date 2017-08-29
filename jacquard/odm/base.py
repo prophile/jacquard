@@ -63,6 +63,11 @@ class Model(object, metaclass=ModelMeta):
         for field_name, value in fields.items():
             setattr(self, field_name, value)
 
+    @classmethod
+    def upgrade_data(cls, data):
+        """Upgrade mechanism to convert potentially old data formats."""
+        return data
+
     def mark_dirty(self):
         """
         Inform the attached session about changes.
