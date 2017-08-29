@@ -69,7 +69,7 @@ rollout
 .. argparse::
    :module: jacquard.cli
    :func: argument_parser
-   :proc: jacquard
+   :prog: jacquard
    :path: rollout
 
 Experiments
