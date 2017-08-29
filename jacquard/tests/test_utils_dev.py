@@ -45,6 +45,9 @@ def test_strings_shrink_by_cutting_off_from_both_ends():
 def test_unshrinkable_strings_are_not_shrunk():
     assert shrink('bees', lambda x: x == 'bees') == 'bees'
 
+def test_strings_shrink_to_a_where_possible():
+    assert shrink('bees', lambda x: len(x) >= 2) == 'aa'
+
 def test_empty_string_is_unshrunk():
     assert shrink('', lambda x: True) == ''
 

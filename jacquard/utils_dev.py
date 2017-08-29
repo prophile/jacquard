@@ -38,7 +38,20 @@ def _shrink_string(data, is_valid):
         data = data[1:]
     while is_valid(data[:-1]):
         data = data[:-1]
-    return data, False  # No further string shrinks
+
+    # Try to turn as much of the string as possible into 'a'
+    did_modify = False
+    for n in range(len(data)):
+        if data[n] == 'a':
+            continue
+
+        modified_string = data[:n] + 'a' + data[n + 1:]
+
+        if is_valid(modified_string):
+            data = modified_string
+            did_modify = True
+
+    return data, did_modify
 
 
 def _shrink_list(data, is_valid):
