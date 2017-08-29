@@ -54,6 +54,7 @@ DEPENDENCIES = (
 EXCLUDED_COMPONENTS = (
     'utils',  # Allowed to be included from anywhere
     'commands_dev',  # Allowed to do whatever it wants
+    'utils_dev',  # Allowed to be included from wherever
 )
 
 
