@@ -46,8 +46,6 @@ class Bugpoint(BaseCommand):
 
     def handle(self, config, options):
         """Run command."""
-        log = print
-
         target = self._get_run_target(config, options)
         target_failure_mode = functools.partial(
             self._failure_mode,
@@ -65,7 +63,7 @@ class Bugpoint(BaseCommand):
                 return target_failure_mode() == reference_failure_mode
 
             # Sequence 1: Simplify by dropping keys
-            log("Dropping keys")
+            print("Dropping keys")
             self._progressively_simplify(
                 config.storage,
                 self._try_dropping_key,
@@ -74,14 +72,14 @@ class Bugpoint(BaseCommand):
 
             # Sequence 2: Progressively simplify all remaining keys
 
-            log("Simplifying keys")
+            print("Simplifying keys")
             self._progressively_simplify(
                 config.storage,
                 self._try_simplifying_key,
                 predicate,
             )
 
-            log("Done bugpointing")
+            print("Done bugpointing")
 
             # Output storage state
             run_command(["storage-dump"], config)
