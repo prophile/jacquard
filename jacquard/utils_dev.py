@@ -1,5 +1,6 @@
 """Utilities for dev commands."""
 
+
 def shrink(data, is_valid):
     """
     Simplify `data` subject to `is_valid(data)`.
