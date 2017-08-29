@@ -1,6 +1,10 @@
 """Utilities for dev commands."""
 
 
+# These individual shrinkers define how to shrink by an individual type. They
+# return a 2-tuple, (shrunk value, continue). If the second parameter is True
+# it means further passes may be necessary.
+
 def _shrink_bool(data, is_valid):
     # Attempt to reduce to False, if valid
     if data and is_valid(False):
