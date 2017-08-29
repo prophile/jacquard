@@ -114,7 +114,25 @@ def _shrink_dict(data, is_valid):
             del data[key]
             any_changes = True
         else:
-            # We can't, try to shrink this key
+            # Try to rename this key
+            def is_valid_rename(rename):
+                if rename in data:
+                    return False
+
+                copied_data = dict(data)
+                value = copied_data.pop(key)
+                copied_data[rename] = value
+                return is_valid(copied_data)
+
+            better_name = shrink(key, is_valid_rename)
+
+            if better_name != key:
+                value = data.pop(key)
+                data[better_name] = value
+                any_changes = True
+                continue
+
+            # We can't, try to shrink this key instead
             def is_valid_substitution(substitution):
                 copied_data = dict(data)
                 copied_data[key] = substitution
