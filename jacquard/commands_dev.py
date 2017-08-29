@@ -57,6 +57,8 @@ class Bugpoint(BaseCommand):
         if reference_failure_mode is None:
             raise CommandError("Target is not currently failing")
 
+        print("Failure mode: ", reference_failure_mode)
+
         with self._backed_up_storage(config.storage):
             def predicate():
                 """Determine if the config maintains the original failure."""
