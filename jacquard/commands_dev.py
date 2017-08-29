@@ -60,57 +60,26 @@ class Bugpoint(BaseCommand):
             raise CommandError("Target is not currently failing")
 
         with self._backed_up_storage(config.storage):
+            def predicate():
+                """Determine if the config maintains the original failure."""
+                return target_failure_mode() == reference_failure_mode
+
             # Sequence 1: Simplify by dropping keys
-            def try_dropping_key(storage, key):
-                storage.begin()
-                old_value = storage.get(key)
-                storage.commit({}, (key,))
-
-                failure_mode = target_failure_mode()
-
-                if failure_mode != reference_failure_mode:
-                    # This either passes the tests or changes the failure mode,
-                    # and so must be kept.
-                    storage.begin()
-                    storage.commit({key: old_value}, ())
-                    return False
-                else:
-                    print("Dropped key {}".format(key))
-                    return True
-
             log("Dropping keys")
-            self._progressively_simplify(config.storage, try_dropping_key)
+            self._progressively_simplify(
+                config.storage,
+                self._try_dropping_key,
+                predicate,
+            )
 
             # Sequence 2: Progressively simplify all remaining keys
-            def try_simplifying_key(storage, key):
-                storage.begin()
-                old_value = storage.get(key)
-                storage.commit({}, (key,))
-
-                def test_validity(new_json):
-                    dumped_json = json.dumps(new_json)
-                    storage.begin()
-                    storage.commit({key: dumped_json}, ())
-
-                    failure_mode = target_failure_mode()
-
-                    return failure_mode == reference_failure_mode
-
-                parsed_old_value = json.loads(old_value)
-
-                shrunk_value = shrink(parsed_old_value, test_validity)
-
-                storage.begin()
-                storage.commit({key: json.dumps(shrunk_value)}, ())
-
-                if shrunk_value != parsed_old_value:
-                    log("Shrunk key: {}".format(key))
-                    return True
-                else:
-                    return False
 
             log("Simplifying keys")
-            self._progressively_simplify(config.storage, try_simplifying_key)
+            self._progressively_simplify(
+                config.storage,
+                self._try_simplifying_key,
+                predicate,
+            )
 
             log("Done bugpointing")
 
@@ -140,12 +109,13 @@ class Bugpoint(BaseCommand):
         else:
             return None
 
-    def _progressively_simplify(self, storage, process):
+    def _progressively_simplify(self, storage, process, predicate):
         """
         Repeatedly simplify storage, using `process`.
 
         Process is a callable taking a storage engine and a key, and returning
-        whether it committed any changes or not.
+        whether it committed any changes or not. The `predicate` is an argument
+        to `process`, determining whether a simplification has been valid.
         """
         pass_number = itertools.count(1)
 
@@ -161,7 +131,47 @@ class Bugpoint(BaseCommand):
             all_keys.sort()
 
             for key in all_keys:
-                any_changes = process(storage, key) or any_changes
+                any_changes = process(storage, key, predicate) or any_changes
+
+    def _try_dropping_key(self, storage, key, predicate):
+        storage.begin()
+        old_value = storage.get(key)
+        storage.commit({}, (key,))
+
+        if not predicate():
+            # This either passes the tests or changes the failure mode,
+            # and so must be kept.
+            storage.begin()
+            storage.commit({key: old_value}, ())
+            return False
+        else:
+            print("Dropped key {}".format(key))
+            return True
+
+    def _try_simplifying_key(self, storage, key, predicate):
+        storage.begin()
+        old_value = storage.get(key)
+        storage.commit({}, (key,))
+
+        def test_validity(new_json):
+            dumped_json = json.dumps(new_json)
+            storage.begin()
+            storage.commit({key: dumped_json}, ())
+
+            return predicate()
+
+        parsed_old_value = json.loads(old_value)
+
+        shrunk_value = shrink(parsed_old_value, test_validity)
+
+        storage.begin()
+        storage.commit({key: json.dumps(shrunk_value)}, ())
+
+        if shrunk_value != parsed_old_value:
+            print("Shrunk key: {}".format(key))
+            return True
+        else:
+            return False
 
     def _get_run_target(self, config, options):
         """
