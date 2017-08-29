@@ -3,28 +3,6 @@ Command-line interface
 
 jacquard is controlled via a command-line interface.
 
-Information retrieval
----------------------
-
-list
-~~~~
-
-.. argparse::
-   :module: jacquard.cli
-   :func: argument_parser
-   :prog: jacquard
-   :path: list
-
-show
-~~~~
-
-.. argparse::
-   :module: jacquard.cli
-   :func: argument_parser
-   :prog: jacquard
-   :path: show
-
-
 Storage tools
 -------------
 
@@ -58,6 +36,24 @@ storage-flush
 Users and settings
 ------------------
 
+show defaults
+~~~~~~~~~~~~~
+
+.. argparse::
+   :module: jacquard.cli
+   :func: argument_parser
+   :prog: jacquard
+   :path: show defaults
+
+show user
+~~~~~~~~~
+
+.. argparse::
+   :module: jacquard.cli
+   :func: argument_parser
+   :prog: jacquard
+   :path: show user
+
 set-default
 ~~~~~~~~~~~
 
@@ -87,6 +83,15 @@ rollout
 
 Experiments
 -----------
+
+list experiments
+~~~~~~~~~~~~~~~~
+
+.. argparse::
+   :module: jacquard.cli
+   :func: argument_parser
+   :prog: jacquard
+   :path: list experiments
 
 load-experiment
 ~~~~~~~~~~~~~~~
