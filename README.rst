@@ -86,3 +86,14 @@ and run the linter with:
 .. code:: bash
 
     ./scripts/linting/lint
+
+Documenting
+^^^^^^^^^^^
+
+The docs are hosted on `readthedocs <https://readthedocs.org>`_ and built using
+`sphinx <http://sphinx-doc.org>`_. The `sphinx-argparse` extension is also needed:
+
+.. code:: bash
+
+    pip install sphinx sphinx-argparse
+    python setup.py build_sphinx
