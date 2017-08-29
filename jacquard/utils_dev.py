@@ -17,6 +17,8 @@ def shrink(data, is_valid):
         if isinstance(data, bool) and data:
             # Try setting bools to false
             return False if is_valid(False) else True
+        elif isinstance(data, bool) or data is None:
+            return data
         elif isinstance(data, int) or isinstance(data, float):
             # Try setting numbers to 0, 1 or -1
             if is_valid(0):
