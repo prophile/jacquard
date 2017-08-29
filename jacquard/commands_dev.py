@@ -61,80 +61,61 @@ class Bugpoint(BaseCommand):
 
         with self._backed_up_storage(config.storage):
             # Sequence 1: Simplify by dropping keys
-            pass_number = itertools.count(1)
+            def try_dropping_key(storage, key):
+                storage.begin()
+                old_value = storage.get(key)
+                storage.commit({}, (key,))
 
-            any_changes = True
+                failure_mode = target_failure_mode()
+
+                if failure_mode != reference_failure_mode:
+                    # This either passes the tests or changes the failure mode,
+                    # and so must be kept.
+                    storage.begin()
+                    storage.commit({key: old_value}, ())
+                    return False
+                else:
+                    print("Dropped key {}".format(key))
+                    return True
+
             log("Dropping keys")
-            while any_changes:
-                log("Loop {}".format(next(pass_number)))
-                any_changes = False
+            self._progressively_simplify(config.storage, try_dropping_key)
 
-                # Get list of keys
-                config.storage.begin_read_only()
-                all_keys = list(config.storage.keys())
-                config.storage.rollback()
-                all_keys.sort()
+            # Sequence 2: Progressively simplify all remaining keys
+            def try_simplifying_key(storage, key):
+                storage.begin()
+                old_value = storage.get(key)
+                storage.commit({}, (key,))
 
-                for key in all_keys:
-                    # Try dropping this key and see what happens
-                    config.storage.begin()
-                    old_value = config.storage.get(key)
-                    config.storage.commit({}, (key,))
+                def test_validity(new_json):
+                    dumped_json = json.dumps(new_json)
+                    storage.begin()
+                    storage.commit({key: dumped_json}, ())
 
                     failure_mode = target_failure_mode()
 
-                    if failure_mode != reference_failure_mode:
-                        # This either passes the tests or changes the failure mode,
-                        # and so must be kept.
-                        config.storage.begin()
-                        config.storage.commit({key: old_value}, ())
-                    else:
-                        log("Dropped key {}".format(key))
-                        any_changes = True
+                    return failure_mode == reference_failure_mode
 
-            # Sequence 2: Progressively simplify all remaining keys
+                parsed_old_value = json.loads(old_value)
+
+                shrunk_value = shrink(parsed_old_value, test_validity)
+
+                storage.begin()
+                storage.commit({key: json.dumps(shrunk_value)}, ())
+
+                if shrunk_value != parsed_old_value:
+                    log("Shrunk key: {}".format(key))
+                    return True
+                else:
+                    return False
+
             log("Simplifying keys")
+            self._progressively_simplify(config.storage, try_simplifying_key)
             pass_number = itertools.count(1)
-
-            any_changes = True
-            while any_changes:
-                log("Loop {}".format(next(pass_number)))
-                any_changes = False
-
-                # Get list of keys
-                config.storage.begin_read_only()
-                all_keys = list(config.storage.keys())
-                config.storage.rollback()
-                all_keys.sort()
-
-                for key in all_keys:
-                    # Try to shrink this key
-                    config.storage.begin()
-                    old_value = config.storage.get(key)
-                    config.storage.commit({}, (key,))
-
-                    def test_validity(new_json):
-                        dumped_json = json.dumps(new_json)
-                        config.storage.begin()
-                        config.storage.commit({key: dumped_json}, ())
-
-                        failure_mode = target_failure_mode()
-
-                        return failure_mode == reference_failure_mode
-
-                    parsed_old_value = json.loads(old_value)
-
-                    shrunk_value = shrink(parsed_old_value, test_validity)
-
-                    config.storage.begin()
-                    config.storage.commit({key: json.dumps(shrunk_value)}, ())
-
-                    if shrunk_value != parsed_old_value:
-                        log("Shrunk key: {}".format(key))
-                        any_changes = True
 
             log("Done bugpointing")
 
+            # Output storage state
             run_command(["storage-dump"], config)
 
     def _failure_mode(self, target):
@@ -159,6 +140,29 @@ class Bugpoint(BaseCommand):
             return repr(exc)
         else:
             return None
+
+    def _progressively_simplify(self, storage, process):
+        """
+        Repeatedly simplify storage, using `process`.
+
+        Process is a callable taking a storage engine and a key, and returning
+        whether it committed any changes or not.
+        """
+        pass_number = itertools.count(1)
+
+        any_changes = True
+        while any_changes:
+            print("Pass {}".format(pass_number))
+            any_changes = False
+
+            # Get list of keys
+            storage.begin_read_only()
+            all_keys = list(storage.keys())
+            storage.rollback()
+            all_keys.sort()
+
+            for key in all_keys:
+                any_changes = process(storage, key) or any_changes
 
     def _get_run_target(self, config, options):
         """
