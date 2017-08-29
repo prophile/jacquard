@@ -111,7 +111,6 @@ class Bugpoint(BaseCommand):
 
             log("Simplifying keys")
             self._progressively_simplify(config.storage, try_simplifying_key)
-            pass_number = itertools.count(1)
 
             log("Done bugpointing")
 
