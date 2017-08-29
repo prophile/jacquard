@@ -83,7 +83,7 @@ def shrink(data, is_valid):
             # Drop keys and shrink values
             any_changes = False
 
-            keys = list(data.keys)
+            keys = list(data.keys())
             keys.sort()
 
             for key in keys:
