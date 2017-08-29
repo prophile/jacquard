@@ -25,6 +25,8 @@ class Bugpoint(BaseCommand):
 
     help = "minimise test case from storage"
 
+    plumbing = True
+
     def add_arguments(self, parser):
         """Add command-line arguments."""
         target = parser.add_mutually_exclusive_group(required=True)
