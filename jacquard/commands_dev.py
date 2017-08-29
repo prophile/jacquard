@@ -124,37 +124,6 @@ class Bugpoint(BaseCommand):
                     log("Dropped key {}".format(key))
                     any_changes = True
 
-        # Sequence 1: Simplify by dropping keys
-        pass_number = itertools.count(1)
-
-        any_changes = True
-        while any_changes:
-            log("Loop {}".format(next(pass_number)))
-            any_changes = False
-
-            # Get list of keys
-            config.storage.begin_read_only()
-            all_keys = list(config.storage.keys())
-            config.storage.rollback()
-            all_keys.sort()
-
-            for key in all_keys:
-                # Try dropping this key and see what happens
-                config.storage.begin()
-                old_value = config.storage.get(key)
-                config.storage.commit({}, (key,))
-
-                failure_mode = target_failure_mode()
-
-                if failure_mode != reference_failure_mode:
-                    # This either passes the tests or changes the failure mode,
-                    # and so must be kept.
-                    config.storage.begin()
-                    config.storage.commit({key: old_value}, ())
-                else:
-                    log("Dropped key {}".format(key))
-                    any_changes = True
-
         # Sequence 2: Progressively simplify all remaining keys
         log("Simplifying keys")
         pass_number = itertools.count(1)
