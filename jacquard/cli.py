@@ -18,6 +18,29 @@ DEFAULT_CONFIG_FILE_PATH = pathlib.Path(os.environ.get(
     '/etc/jacquard/config.cfg',
 ))
 
+SUBCOMMAND_GROUPS = (
+    ('list', "show lists of various topics"),
+    ('show', "show items"),
+)
+
+
+def _add_subparsers_from_plugins(subparsers, plugin_group):
+    for name, plugin in plug_all(plugin_group):
+        command = plugin()()
+
+        command_help = getattr(command, 'help', name)
+        is_plumbing = getattr(command, 'plumbing', False)
+
+        if is_plumbing:
+            kwargs = {'description': command_help}
+        else:
+            kwargs = {'description': command_help, 'help': command_help}
+
+        subparser = subparsers.add_parser(name, **kwargs)
+
+        subparser.set_defaults(func=command.handle)
+        command.add_arguments(subparser)
+
 
 def argument_parser():
     """
@@ -62,21 +85,27 @@ def argument_parser():
 
     subparsers = parser.add_subparsers(metavar='command', title='subcommands')
 
-    for name, plugin in plug_all('commands'):
-        command = plugin()()
+    # Top-level plugins
+    _add_subparsers_from_plugins(
+        subparsers=subparsers,
+        plugin_group='commands',
+    )
 
-        command_help = getattr(command, 'help', name)
-        is_plumbing = getattr(command, 'plumbing', False)
+    # Subcommand plugins
+    for subcommand, subcommand_help in SUBCOMMAND_GROUPS:
+        subcommand_parser = subparsers.add_parser(
+            subcommand,
+            help=subcommand_help,
+        )
+        subsubcommands = subcommand_parser.add_subparsers(
+            metavar="subject",
+            title="subjects",
+        )
 
-        if is_plumbing:
-            kwargs = {'description': command_help}
-        else:
-            kwargs = {'description': command_help, 'help': command_help}
-
-        subparser = subparsers.add_parser(name, **kwargs)
-
-        subparser.set_defaults(func=command.handle)
-        command.add_arguments(subparser)
+        _add_subparsers_from_plugins(
+            subparsers=subsubcommands,
+            plugin_group='commands.%s' % subcommand,
+        )
 
     return parser
 

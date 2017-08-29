@@ -115,3 +115,9 @@ def test_integration(test_file):
             actual_output = yaml.safe_load(output)
 
             assert actual_output == expected_output
+
+        if 'expect_yaml_keys' in step:
+            expected_keys = step['expect_yaml_keys']
+            actual_output = yaml.safe_load(output)
+
+            assert set(actual_output.keys()) == set(expected_keys)

@@ -40,7 +40,7 @@ with open('README.rst', 'r', encoding='utf-8') as f:
 
 setup(
     name='jacquard-split',
-    version='0.3.1',
+    version='0.4.0',
     url='https://github.com/prophile/jacquard',
     description="Split testing server",
     long_description=long_description,
@@ -115,14 +115,19 @@ setup(
             'set-default = jacquard.users.commands:SetDefault',
             'override = jacquard.users.commands:Override',
             'clear-overrides = jacquard.users.commands:OverrideClear',
-            'show = jacquard.users.commands:Show',
             'runserver = jacquard.service.commands:RunServer',
             'launch = jacquard.experiments.commands:Launch',
             'conclude = jacquard.experiments.commands:Conclude',
             'load-experiment = jacquard.experiments.commands:Load',
-            'list = jacquard.experiments.commands:ListExperiments',
-            'list-users = jacquard.directory.commands:ListUsers',
             'rollout = jacquard.buckets.commands:Rollout',
+        ),
+        'jacquard.commands.list': (
+            'experiments = jacquard.experiments.commands:ListExperiments',
+            'users = jacquard.directory.commands:ListUsers',
+        ),
+        'jacquard.commands.show': (
+            'user = jacquard.users.commands:Show',
+            'defaults = jacquard.users.commands:Show',
         ),
         'jacquard.directory_engines': (
             'dummy = jacquard.directory.dummy:DummyDirectory',
