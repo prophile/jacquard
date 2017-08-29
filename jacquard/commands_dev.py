@@ -301,3 +301,8 @@ class Bugpoint(BaseCommand):
                     any_changes = True
 
         log("Done bugpointing")
+
+        run_command(["storage-dump"], config)
+
+        log("Restoring state from backup")
+        copy_data(backup, config.storage)
