@@ -51,6 +51,11 @@ DEPENDENCIES = (
     ('wsgi', 'service'),
 )
 
+EXCLUDED_COMPONENTS = (
+    'utils',  # Allowed to be included from anywhere
+    'commands_dev',  # Allowed to do whatever it wants
+)
+
 
 def build_dependency_graph():
     assert networkx is not None
@@ -131,8 +136,10 @@ def test_layers():
         importer_component = importer_match.group(1)
         importee_component = importee_match.group(1)
 
-        if importee_component == 'utils':
-            # Utils is allowed to be imported globally
+        if importer_component in EXCLUDED_COMPONENTS:
+            continue
+
+        if importee_component in EXCLUDED_COMPONENTS:
             continue
 
         try:
