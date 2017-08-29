@@ -1,18 +1,18 @@
 """Useful commands for Jacquard development."""
 
-import contextlib
 import io
-import itertools
 import json
+import itertools
+import contextlib
 
 from werkzeug.test import Client
 
 from jacquard.cli import main as run_command
-from jacquard.commands import BaseCommand, CommandError
 from jacquard.service import get_wsgi_app
+from jacquard.commands import BaseCommand, CommandError
+from jacquard.utils_dev import shrink
 from jacquard.storage.dummy import DummyStore
 from jacquard.storage.utils import copy_data
-from jacquard.utils_dev import shrink
 
 
 class Bugpoint(BaseCommand):
