@@ -16,7 +16,7 @@ class Bucket(Model):
     ), default=())
 
     @classmethod
-    def upgrade_data(self, data):
+    def upgrade_data(cls, data):
         if isinstance(data, list):
             # Data is in the old "just entries" format, forward-convert it to
             # the ODM format.
