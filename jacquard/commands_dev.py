@@ -204,6 +204,11 @@ class Bugpoint(BaseCommand):
 
     @contextlib.contextmanager
     def _backed_up_storage(self, storage):
+        """
+        Back up storage and restore it on exiting.
+
+        A convenience context manager.
+        """
         backup = DummyStore('')
         copy_data(storage, backup)
 
