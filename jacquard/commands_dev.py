@@ -16,6 +16,25 @@ from jacquard.storage.dummy import DummyStore
 from jacquard.storage.utils import copy_data
 
 
+class _DuplicateStorageConfig(object):
+    """Dummy config emulator with a duplicate store."""
+
+    def __init__(self, config):
+        """
+        Init from config.
+
+        Copies the storage but otherwise passes through.
+        """
+        self.storage = DummyStore('')
+        print("Copying all data to a local version")
+        copy_data(config.storage, self.storage)
+        self.config = config
+
+    def __getattr__(self, item):
+        """Attribute lookup pass-through."""
+        return getattr(self.config, item)
+
+
 class Bugpoint(BaseCommand):
     """
     Minimise error by reducing storage.
@@ -46,7 +65,9 @@ class Bugpoint(BaseCommand):
 
     def handle(self, config, options):
         """Run command."""
-        target = self._get_run_target(config, options)
+        replacement_config = _DuplicateStorageConfig(config)
+
+        target = self._get_run_target(replacement_config, options)
         target_failure_mode = functools.partial(
             self._failure_mode,
             target,
@@ -59,7 +80,7 @@ class Bugpoint(BaseCommand):
 
         print("Failure mode: ", reference_failure_mode)
 
-        with self._backed_up_storage(config.storage):
+        with self._backed_up_storage(replacement_config.storage):
             def predicate():
                 """Determine if the config maintains the original failure."""
                 return target_failure_mode() == reference_failure_mode
@@ -67,7 +88,7 @@ class Bugpoint(BaseCommand):
             # Sequence 1: Simplify by dropping keys
             print("Dropping keys")
             self._progressively_simplify(
-                config.storage,
+                replacement_config.storage,
                 self._try_dropping_key,
                 predicate,
             )
@@ -76,7 +97,7 @@ class Bugpoint(BaseCommand):
 
             print("Simplifying keys")
             self._progressively_simplify(
-                config.storage,
+                replacement_config.storage,
                 self._try_simplifying_key,
                 predicate,
             )
@@ -84,7 +105,7 @@ class Bugpoint(BaseCommand):
             print("Done bugpointing")
 
             # Output storage state
-            run_command(["storage-dump"], config)
+            run_command(["storage-dump"], replacement_config)
 
     def _failure_mode(self, target):
         """
