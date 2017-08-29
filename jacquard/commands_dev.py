@@ -5,13 +5,13 @@ import json
 import itertools
 import contextlib
 
-from jacquard.commands import BaseCommand, CommandError
-from jacquard.service import get_wsgi_app
+from werkzeug.test import Client
+
 from jacquard.cli import main as run_command
+from jacquard.service import get_wsgi_app
+from jacquard.commands import BaseCommand, CommandError
 from jacquard.storage.dummy import DummyStore
 from jacquard.storage.utils import copy_data
-
-from werkzeug.test import Client
 
 
 def _shrink(data, is_valid):
@@ -44,7 +44,7 @@ def _shrink(data, is_valid):
             if is_valid(data[:-1]):
                 data = data[:-1]
                 continue
-            return data  # No further string shrinks
+            return data  # No further string shrinks
         elif isinstance(data, list):
             if len(data) == 0:
                 return data  # as minimal as it gets
@@ -117,9 +117,8 @@ def _shrink(data, is_valid):
             if not any_changes:
                 return data
         else:
-            # No shrink on this type
+            # No shrink on this type
             return data
-
 
 
 class Bugpoint(BaseCommand):
@@ -150,9 +149,7 @@ class Bugpoint(BaseCommand):
 
     def handle(self, config, options):
         """Run command."""
-
-        def log(message):
-            print(message)
+        log = print
 
         if options.command:
             def target():
