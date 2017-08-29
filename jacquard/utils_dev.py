@@ -88,10 +88,10 @@ def _shrink_dict(data, is_valid):
     for key in keys:
         # See if we can drop this key
         if is_valid({
-                        dict_key: dict_value
-                        for dict_key, dict_value in data.items()
-                        if dict_key != key
-                        }):
+            dict_key: dict_value
+            for dict_key, dict_value in data.items()
+            if dict_key != key
+        }):
             del data[key]
             any_changes = True
         else:
