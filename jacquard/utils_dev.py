@@ -1,4 +1,15 @@
+"""Utilities for dev commands."""
+
 def shrink(data, is_valid):
+    """
+    Simplify `data` subject to `is_valid(data)`.
+
+    `data` is any JSON-form data (strings, bools, None, ints, floats, lists,
+    and dicts). This is roughly analogous to the concept of `shrink` from
+    `QuickCheck`.
+
+    It's used in `bugpoint`.
+    """
     # This is in principle recursive, but we do this with explicit iteration
     # to save on stack space.
 
