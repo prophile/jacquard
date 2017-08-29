@@ -59,89 +59,83 @@ class Bugpoint(BaseCommand):
         if reference_failure_mode is None:
             raise CommandError("Target is not currently failing")
 
-        log("Taking backup of state")
-        backup = DummyStore('')
-        copy_data(config.storage, backup)
+        with self._backed_up_storage(config.storage):
+            # Sequence 1: Simplify by dropping keys
+            pass_number = itertools.count(1)
 
-        # Sequence 1: Simplify by dropping keys
-        pass_number = itertools.count(1)
+            any_changes = True
+            log("Dropping keys")
+            while any_changes:
+                log("Loop {}".format(next(pass_number)))
+                any_changes = False
 
-        any_changes = True
-        log("Dropping keys")
-        while any_changes:
-            log("Loop {}".format(next(pass_number)))
-            any_changes = False
+                # Get list of keys
+                config.storage.begin_read_only()
+                all_keys = list(config.storage.keys())
+                config.storage.rollback()
+                all_keys.sort()
 
-            # Get list of keys
-            config.storage.begin_read_only()
-            all_keys = list(config.storage.keys())
-            config.storage.rollback()
-            all_keys.sort()
-
-            for key in all_keys:
-                # Try dropping this key and see what happens
-                config.storage.begin()
-                old_value = config.storage.get(key)
-                config.storage.commit({}, (key,))
-
-                failure_mode = target_failure_mode()
-
-                if failure_mode != reference_failure_mode:
-                    # This either passes the tests or changes the failure mode,
-                    # and so must be kept.
+                for key in all_keys:
+                    # Try dropping this key and see what happens
                     config.storage.begin()
-                    config.storage.commit({key: old_value}, ())
-                else:
-                    log("Dropped key {}".format(key))
-                    any_changes = True
-
-        # Sequence 2: Progressively simplify all remaining keys
-        log("Simplifying keys")
-        pass_number = itertools.count(1)
-
-        any_changes = True
-        while any_changes:
-            log("Loop {}".format(next(pass_number)))
-            any_changes = False
-
-            # Get list of keys
-            config.storage.begin_read_only()
-            all_keys = list(config.storage.keys())
-            config.storage.rollback()
-            all_keys.sort()
-
-            for key in all_keys:
-                # Try to shrink this key
-                config.storage.begin()
-                old_value = config.storage.get(key)
-                config.storage.commit({}, (key,))
-
-                def test_validity(new_json):
-                    dumped_json = json.dumps(new_json)
-                    config.storage.begin()
-                    config.storage.commit({key: dumped_json}, ())
+                    old_value = config.storage.get(key)
+                    config.storage.commit({}, (key,))
 
                     failure_mode = target_failure_mode()
 
-                    return failure_mode == reference_failure_mode
+                    if failure_mode != reference_failure_mode:
+                        # This either passes the tests or changes the failure mode,
+                        # and so must be kept.
+                        config.storage.begin()
+                        config.storage.commit({key: old_value}, ())
+                    else:
+                        log("Dropped key {}".format(key))
+                        any_changes = True
 
-                parsed_old_value = json.loads(old_value)
+            # Sequence 2: Progressively simplify all remaining keys
+            log("Simplifying keys")
+            pass_number = itertools.count(1)
 
-                shrunk_value = shrink(parsed_old_value, test_validity)
+            any_changes = True
+            while any_changes:
+                log("Loop {}".format(next(pass_number)))
+                any_changes = False
 
-                config.storage.begin()
-                config.storage.commit({key: json.dumps(shrunk_value)}, ())
+                # Get list of keys
+                config.storage.begin_read_only()
+                all_keys = list(config.storage.keys())
+                config.storage.rollback()
+                all_keys.sort()
 
-                if shrunk_value != parsed_old_value:
-                    log("Shrunk key: {}".format(key))
-                    any_changes = True
+                for key in all_keys:
+                    # Try to shrink this key
+                    config.storage.begin()
+                    old_value = config.storage.get(key)
+                    config.storage.commit({}, (key,))
 
-        log("Done bugpointing")
+                    def test_validity(new_json):
+                        dumped_json = json.dumps(new_json)
+                        config.storage.begin()
+                        config.storage.commit({key: dumped_json}, ())
 
-        run_command(["storage-dump"], config)
+                        failure_mode = target_failure_mode()
 
-        log("Restoring state from backup")
-        copy_data(backup, config.storage)
+                        return failure_mode == reference_failure_mode
+
+                    parsed_old_value = json.loads(old_value)
+
+                    shrunk_value = shrink(parsed_old_value, test_validity)
+
+                    config.storage.begin()
+                    config.storage.commit({key: json.dumps(shrunk_value)}, ())
+
+                    if shrunk_value != parsed_old_value:
+                        log("Shrunk key: {}".format(key))
+                        any_changes = True
+
+            log("Done bugpointing")
+
+            run_command(["storage-dump"], config)
 
     def _failure_mode(self, target):
         """
@@ -207,3 +201,13 @@ class Bugpoint(BaseCommand):
             raise AssertionError("No target type")
 
         return target
+
+    @contextlib.contextmanager
+    def _backed_up_storage(self, storage):
+        backup = DummyStore('')
+        copy_data(storage, backup)
+
+        try:
+            yield
+        finally:
+            copy_data(backup, storage)
