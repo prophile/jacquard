@@ -119,7 +119,7 @@ class Bugpoint(BaseCommand):
 
         any_changes = True
         while any_changes:
-            print("Pass {}".format(pass_number))
+            print("Pass {}".format(next(pass_number)))
             any_changes = False
 
             # Get list of keys
