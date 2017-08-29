@@ -5,6 +5,7 @@ import sys
 import logging
 import pathlib
 import argparse
+import functools
 import contextlib
 
 import pkg_resources
@@ -42,6 +43,7 @@ def _add_subparsers_from_plugins(subparsers, plugin_group):
         command.add_arguments(subparser)
 
 
+@functools.lru_cache()
 def argument_parser():
     """
     Generate an argparse `ArgumentParser` for the CLI.
