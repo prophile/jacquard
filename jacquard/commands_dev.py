@@ -230,7 +230,7 @@ class Bugpoint(BaseCommand):
                 status_class = str(result.status_code)[0]
 
                 if status_class in ('4', '5'):
-                    raise ValueError("Class 4 or 5 status")
+                    raise ValueError("Status: {}".format(result.status_code))
         else:
             raise AssertionError("No target type")
 
