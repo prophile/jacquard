@@ -44,7 +44,7 @@ def _add_subparsers_from_plugins(subparsers, plugin_group):
 
 
 @functools.lru_cache()
-def argument_parser():
+def _build_argument_parser(cwd=None):
     """
     Generate an argparse `ArgumentParser` for the CLI.
 
@@ -52,6 +52,8 @@ def argument_parser():
     subcommands; these are subclasses of `jacquard.commands.BaseCommand`.
     Using this mechanism, plugins can add their own subcommands.
     """
+    # We parameterise this by cwd to persuade `lru_cache` that this is
+    # important.
     parser = argparse.ArgumentParser(description="Split testing server")
     parser.add_argument(
         '-v',
@@ -110,6 +112,17 @@ def argument_parser():
         )
 
     return parser
+
+
+def argument_parser():
+    """
+    Generate an argparse `ArgumentParser` for the CLI.
+
+    This will look through all defined `jacquard.commands` entry points for
+    subcommands; these are subclasses of `jacquard.commands.BaseCommand`.
+    Using this mechanism, plugins can add their own subcommands.
+    """
+    return _build_argument_parser(os.getcwd())
 
 
 def main(args=sys.argv[1:], config=None):
