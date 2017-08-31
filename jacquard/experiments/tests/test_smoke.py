@@ -90,7 +90,7 @@ def test_load_after_launch_errors():
         ), patch(
             'jacquard.experiments.commands.argparse.FileType',
             return_value=str,
-        ):
+        ),  _disable_argparse_cache():
             main(('load-experiment', 'foo.yaml'), config=config)
 
     stderr_content = stderr.getvalue()
