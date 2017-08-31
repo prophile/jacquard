@@ -64,7 +64,7 @@ class Model(object, metaclass=ModelMeta):
             setattr(self, field_name, value)
 
     @classmethod
-    def upgrade_data(cls, data):
+    def transitional_upgrade_raw_data(cls, data):
         """Upgrade mechanism to convert potentially old data formats."""
         return data
 

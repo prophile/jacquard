@@ -114,7 +114,7 @@ class Session(object):
             return default
 
         # Use the upgrade path such as it is
-        data = model.upgrade_data(data)
+        data = model.transitional_upgrade_raw_data(data)
 
         instance = model(pk=pk)
         instance._fields = data

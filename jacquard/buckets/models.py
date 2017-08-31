@@ -16,7 +16,7 @@ class Bucket(Model):
     ), default=())
 
     @classmethod
-    def upgrade_data(cls, data):
+    def transitional_upgrade_raw_data(cls, data):
         """Convert data from the old list format if needs be."""
         if isinstance(data, list):
             # Data is in the old "just entries" format, forward-convert it to
