@@ -202,6 +202,7 @@ def test_overlapping_settings_allowed_if_disjoint_constraints():
             ],
             'constraints': {
                 'required_tags': ['baz'],
+                'anonymous': False,
             },
         },
         'experiments/bar': {
@@ -210,6 +211,7 @@ def test_overlapping_settings_allowed_if_disjoint_constraints():
             ],
             'constraints': {
                 'excluded_tags': ['baz'],
+                'anonymous': False,
             },
         },
     })
