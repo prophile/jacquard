@@ -37,7 +37,7 @@ def constraint_match(description, user):
 
 
 def is_disjoint(c1, c2):
-    return Constraints.from_json(c1).is_disjoint_from_constraints(
+    return Constraints.from_json(c1).is_provably_disjoint_from_constraints(
         Constraints.from_json(c2),
     )
 

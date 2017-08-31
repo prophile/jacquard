@@ -217,10 +217,10 @@ class Constraints(object):
 
         return True
 
-    def is_disjoint_from_constraints(self, other_constraints):
+    def is_provably_disjoint_from_constraints(self, other_constraints):
         """
         Test whether the set of users matching ``self``, and the set matching
-        ``constraints`` are disjoint.
+        ``constraints`` are provably disjoint.
 
         Currently only constraints on anonymity and tags are supported, era,
         and ``joined_before``/``joined_after`` constraints are not supported.

@@ -81,7 +81,7 @@ def is_valid_bucket(bucket, new_settings, new_constraints):
 
     for constraints, settings in existing.items():
         if (
-            not constraints.is_disjoint_from_constraints(new_constraints) and
+            not constraints.is_provably_disjoint_from_constraints(new_constraints) and
             not settings.isdisjoint(new_settings)
         ):
             return False
