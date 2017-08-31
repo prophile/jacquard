@@ -62,10 +62,12 @@ class Config(collections.abc.Mapping):
         """
         Key-value storage engine.
 
-        Note that this is actually thread-local, so users need not worry
-        about thread synchronisation of connections.
+        Note that this is lazily initialised.
         """
-        return self._thread_local_property('storage', self._open_storage)
+        # Lazily initialise storage
+        if not hasattr(self, '_storage'):
+            self._storage = self._open_storage()
+        return self._storage
 
     def _open_directory(self):
         kwargs = {
