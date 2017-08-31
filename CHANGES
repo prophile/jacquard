@@ -1,3 +1,11 @@
+0.4.1  2017-08-31
+
+Bugfixes:
+
+* Upgrade path avoids major breaking from backwards compatibility problems
+  with storage.
+
+
 0.4.0  2017-07-05
 
 Major features:

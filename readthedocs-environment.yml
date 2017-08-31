@@ -3,5 +3,6 @@ dependencies:
 - python=3.5
 - pip
 - pip:
+  - CommonMark==0.7.4
   - sphinx-argparse
   - /home/docs/checkouts/readthedocs.org/user_builds/jacquard-split/checkouts/latest

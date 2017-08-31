@@ -15,6 +15,15 @@ class Bucket(Model):
         default=[],
     ), default=())
 
+    @classmethod
+    def transitional_upgrade_raw_data(cls, data):
+        """Convert data from the old list format if needs be."""
+        if isinstance(data, list):
+            # Data is in the old "just entries" format, forward-convert it to
+            # the ODM format.
+            return {'entries': data}
+        return data
+
     def get_settings(self, user_entry):
         """Look up settings by user entry."""
         settings = {}
