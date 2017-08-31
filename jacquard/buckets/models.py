@@ -39,6 +39,8 @@ class Bucket(Model):
 
     def affected_settings_by_constraints(self):
         """
+        Get constraints and the settings under them in this bucket.
+
         All settings determined in this bucket, by the constraints that they
         apply under.
         """

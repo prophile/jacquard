@@ -73,15 +73,15 @@ def release(store, name, constraints, branches):
 
 
 def is_valid_bucket(bucket, new_settings, new_constraints):
-    """
-    Determine if a bucket is valid for some new settings under some constraints
-    based on the existing constraints and settings in the bucket.
-    """
+    """Is this bucket a valid place for new settings under some constraints."""
     existing = bucket.affected_settings_by_constraints()
 
     for constraints, settings in existing.items():
+        constraints_disjoint = \
+            constraints.is_provably_disjoint_from_constraints(new_constraints)
+
         if (
-            not constraints.is_provably_disjoint_from_constraints(new_constraints) and
+            not constraints_disjoint and
             not settings.isdisjoint(new_settings)
         ):
             return False
