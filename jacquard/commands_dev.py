@@ -7,6 +7,7 @@ import itertools
 import contextlib
 
 from werkzeug.test import Client
+from werkzeug.wrappers import BaseResponse
 
 from jacquard.cli import main as run_command
 from jacquard.service import get_wsgi_app
@@ -222,7 +223,7 @@ class Bugpoint(BaseCommand):
                     run_command(options.command, config)
         elif options.url:
             app = get_wsgi_app(config)
-            test_client = Client(app)
+            test_client = Client(app, BaseResponse)
 
             def target():
                 result = test_client.get(options.url)
