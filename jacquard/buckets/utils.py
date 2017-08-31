@@ -82,7 +82,7 @@ def is_valid_bucket(bucket, new_settings, new_constraints):
 
         if (
             not constraints_disjoint and
-            not settings.isdisjoint(new_settings)
+            not frozenset.isdisjoint(settings, new_settings)
         ):
             return False
 
