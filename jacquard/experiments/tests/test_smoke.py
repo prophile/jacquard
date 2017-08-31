@@ -7,7 +7,7 @@ from unittest.mock import Mock, patch
 import pytest
 import dateutil.tz
 
-from jacquard.cli import main
+from jacquard.cli import main, _build_argument_parser
 from jacquard.storage.dummy import DummyStore
 
 BRANCH_SETTINGS = {'pony': 'gravity'}
@@ -29,6 +29,15 @@ DUMMY_DATA_POST_LAUNCH = {
     },
     'active-experiments': ['foo'],
 }
+
+
+@contextlib.contextmanager
+def _disable_argparse_cache():
+    _build_argument_parser.cache_clear()
+    try:
+        yield
+    finally:
+        _build_argument_parser.cache_clear()
 
 
 def test_launch():
@@ -105,7 +114,7 @@ def test_load_after_launch_with_skip_launched():
     ), patch(
         'jacquard.experiments.commands.argparse.FileType',
         return_value=str,
-    ):
+    ), _disable_argparse_cache():
         main(('load-experiment', '--skip-launched', 'foo.yaml'), config=config)
 
     fresh_data = DummyStore('', data=DUMMY_DATA_POST_LAUNCH)
@@ -133,7 +142,7 @@ def test_load_after_conclude_errors():
         ), patch(
             'jacquard.experiments.commands.argparse.FileType',
             return_value=str,
-        ):
+        ), _disable_argparse_cache():
             main(('load-experiment', 'foo.yaml'), config=config)
 
     assert original_data == config.storage.data, "Data should be unchanged"
@@ -159,7 +168,7 @@ def test_load_after_conclude_with_skip_launched():
     ), patch(
         'jacquard.experiments.commands.argparse.FileType',
         return_value=str,
-    ):
+    ), _disable_argparse_cache():
         main(('load-experiment', '--skip-launched', 'foo.yaml'), config=config)
 
     assert original_data == config.storage.data, "Data should be unchanged"
