@@ -77,13 +77,12 @@ def is_valid_bucket(bucket, new_settings, new_constraints):
     existing = bucket.affected_settings_by_constraints()
 
     for constraints, settings in existing.items():
+
+        settings_disjoint = frozenset.isdisjoint(settings, new_settings)
         constraints_disjoint = \
             constraints.is_provably_disjoint_from_constraints(new_constraints)
 
-        if (
-            not constraints_disjoint and
-            not frozenset.isdisjoint(settings, new_settings)
-        ):
+        if not (constraints_disjoint or settings_disjoint):
             return False
 
     return True
