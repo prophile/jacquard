@@ -191,3 +191,36 @@ def test_launch_experiment_with_overlapping_settings_errors():
     assert 'launched' not in config.storage['experiments/bar']
     assert 'concluded' not in config.storage['experiments/bar']
     assert 'bar' not in config.storage['active-experiments']
+
+
+def test_overlapping_settings_allowed_if_disjoint_constraints():
+    config = Mock()
+    config.storage = DummyStore('', data={
+        'experiments/foo': {
+            'branches': [
+                {'id': 'foo', 'settings': BRANCH_SETTINGS},
+            ],
+            'constraints': {
+                'required_tags': ['baz'],
+            },
+        },
+        'experiments/bar': {
+            'branches': [
+                {'id': 'bar', 'settings': BRANCH_SETTINGS},
+            ],
+            'constraints': {
+                'excluded_tags': ['baz'],
+            },
+        },
+    })
+
+    main(('launch', 'foo'), config=config)
+    main(('launch', 'bar'), config=config)
+
+    assert 'launched' in config.storage['experiments/foo']
+    assert 'concluded' not in config.storage['experiments/foo']
+    assert 'foo' in config.storage['active-experiments']
+
+    assert 'launched' in config.storage['experiments/bar']
+    assert 'concluded' not in config.storage['experiments/bar']
+    assert 'bar' in config.storage['active-experiments']
