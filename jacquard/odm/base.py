@@ -63,6 +63,21 @@ class Model(object, metaclass=ModelMeta):
         for field_name, value in fields.items():
             setattr(self, field_name, value)
 
+    @classmethod
+    def transitional_upgrade_raw_data(cls, data):
+        """
+        Upgrade mechanism to convert potentially old data formats.
+
+        This is a basic, always-forwards-compatible transition mechanism which
+        do arbitrary edits to the raw document JSON _before_ being read by the
+        ODM. It was designed to fill a specific problem of transitioning the
+        `buckets` structure into being handled as part of the ODM.
+
+        Its use is not highly recommended for upgrades, though there is
+        currently no strong alternative.
+        """
+        return data
+
     def mark_dirty(self):
         """
         Inform the attached session about changes.
