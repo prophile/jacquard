@@ -50,7 +50,7 @@ def release(store, name, constraints, branches):
     valid_bucket_indices = [
         idx
         for idx, bucket in enumerate(all_buckets)
-        if edited_settings.isdisjoint(bucket.affected_settings())
+        if is_valid_bucket(bucket, edited_settings, constraints)
     ]
 
     random.shuffle(valid_bucket_indices)
@@ -70,6 +70,22 @@ def release(store, name, constraints, branches):
             bucket.add(key, settings, constraints)
 
     session.flush()
+
+
+def is_valid_bucket(bucket, new_settings, new_constraints):
+    """Is this bucket a valid place for new settings under some constraints."""
+    existing = bucket.affected_settings_by_constraints()
+
+    for constraints, settings in existing.items():
+
+        settings_disjoint = frozenset.isdisjoint(settings, new_settings)
+        constraints_disjoint = \
+            constraints.is_provably_disjoint_from_constraints(new_constraints)
+
+        if not (constraints_disjoint or settings_disjoint):
+            return False
+
+    return True
 
 
 def close(store, name, constraints, branches):

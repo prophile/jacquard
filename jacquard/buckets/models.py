@@ -37,13 +37,17 @@ class Bucket(Model):
 
         return settings
 
-    def affected_settings(self):
-        """All settings determined in this bucket."""
-        return frozenset(
-            y
+    def affected_settings_by_constraints(self):
+        """
+        Get constraints and the settings under them in this bucket.
+
+        All settings determined in this bucket, by the constraints that they
+        apply under.
+        """
+        return {
+            x.constraints: frozenset(x.settings.keys())
             for x in self.entries
-            for y in x.settings.keys()
-        )
+        }
 
     def needs_constraints(self):
         """Whether any settings in this bucket involve constraint lookups."""
