@@ -68,7 +68,7 @@ class DjangoDirectory(Directory):
         added WHERE clause), with a small LRU cache applied on top.
         """
         query = self.query + " WHERE id = :user"
-        
+
         try:
             user_id = int(user_id)
         except ValueError:
