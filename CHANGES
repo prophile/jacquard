@@ -1,3 +1,15 @@
+0.4.2  2017-09-01
+
+Major features:
+
+* Settings can now overlap, as long as the constraints on those settings
+  constrain to disjoint sets of users.
+
+Bugfixes:
+
+* Fix the Django directory erroring when passed a non-integer ID.
+
+
 0.4.1  2017-08-31
 
 Bugfixes:
