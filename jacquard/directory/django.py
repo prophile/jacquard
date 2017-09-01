@@ -68,11 +68,17 @@ class DjangoDirectory(Directory):
         added WHERE clause), with a small LRU cache applied on top.
         """
         query = self.query + " WHERE id = :user"
+        
+        try:
+            user_id = int(user_id)
+        except ValueError:
+            LOGGER.debug("Invalid ID")
+            return None
 
         LOGGER.debug("Lookup user %s", user_id)
         result = self.engine.execute(
             sqlalchemy.sql.text(query),
-            user=int(user_id),
+            user=user_id,
         )
 
         try:
