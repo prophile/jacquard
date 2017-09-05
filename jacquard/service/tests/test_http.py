@@ -82,8 +82,8 @@ def test_experiment_get_smoke():
     assert get('/experiments/foo')['name'] == 'foo'
 
 
-def test_experiment_get_membership():
-    assert set(get('/experiments/foo')['branches'].keys()) == {'bar'}
+def test_experiment_get_branches():
+    assert set(get('/experiments/foo')['branches']) == {'bar'}
 
 
 def test_missing_paths_get_404():
