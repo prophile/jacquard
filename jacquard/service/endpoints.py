@@ -85,8 +85,6 @@ class ExperimentDetail(Endpoint):
     def handle(self, experiment):
         """Dispatch request."""
         with self.config.storage.transaction(read_only=True) as store:
-            session = Session(store)
-
             experiment_config = Experiment.from_store(store, experiment)
 
             branches = [x['id'] for x in experiment_config.branches]
