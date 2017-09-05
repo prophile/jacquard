@@ -4,6 +4,7 @@ import tempfile
 import textwrap
 
 from jacquard.config import load_config
+from jacquard.directory.dummy import DummyDirectory
 
 
 CONFIG_FILE = """
@@ -48,7 +49,7 @@ def test_config_creates_storage_engine():
 def test_config_creates_directory():
     config = load_test_config()
 
-    assert list(config.directory.all_users()) == []
+    assert isinstance(config.directory, DummyDirectory)
 
 
 def test_config_can_iterate_over_sections():
