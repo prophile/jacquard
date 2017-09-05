@@ -76,11 +76,7 @@ class ExperimentsOverview(Endpoint):
 
 
 class ExperimentDetail(Endpoint):
-    """
-    Full experiment details.
-
-    Includes all users in each branch.
-    """
+    """Full experiment details."""
 
     url = '/experiments/<experiment>'
 
@@ -109,6 +105,7 @@ class ExperimentPartition(Endpoint):
     url = '/experiments/<experiment>/partition'
 
     def handle(self, experiment):
+        """Dispatch request."""
         if self.request.method != 'POST':
             raise Http404()
 
