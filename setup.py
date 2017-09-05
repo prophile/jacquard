@@ -123,7 +123,6 @@ setup(
         ),
         'jacquard.commands.list': (
             'experiments = jacquard.experiments.commands:ListExperiments',
-            'users = jacquard.directory.commands:ListUsers',
         ),
         'jacquard.commands.show': (
             'user = jacquard.users.commands:Show',
