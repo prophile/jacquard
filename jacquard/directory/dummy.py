@@ -26,4 +26,4 @@ class DummyDirectory(Directory):
 
     def lookup(self, user_id):
         """Look up user by ID."""
-        return self.users.get(user_id)
+        return self.users.get(str(user_id))
