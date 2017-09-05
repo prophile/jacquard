@@ -4,8 +4,8 @@ from jacquard.commands import BaseCommand, CommandError
 
 
 class ShowDirectoryEntry(BaseCommand):
-    """Display queried directory information for a given user ID.
-    """
+    """Display queried directory information for a given user ID."""
+
     help = "show directory entry for user"
 
     def add_arguments(self, parser):
@@ -17,7 +17,6 @@ class ShowDirectoryEntry(BaseCommand):
 
     def handle(self, config, options):
         """Run command."""
-
         entry = config.directory.lookup(options.user_id)
 
         if entry is None:
