@@ -53,7 +53,7 @@ def post(path, form):
     client = get_test_client()
     data, status, headers = client.post(path, data=form)
     assert status == '200 OK'
-    return json.loads(b''.join(data))
+    return json.loads(b''.join(data).decode('utf-8'))
 
 
 def test_root():
