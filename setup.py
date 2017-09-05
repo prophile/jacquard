@@ -139,6 +139,7 @@ setup(
             'user = jacquard.service.endpoints:User',
             'experiments-overview = jacquard.service.endpoints:ExperimentsOverview',
             'experiment = jacquard.service.endpoints:ExperimentDetail',
+            'experiment-partition = jacquard.service.endpoints:ExperimentPartition',
         ),
     },
 )
