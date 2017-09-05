@@ -22,7 +22,7 @@ class DummyDirectory(Directory):
         This is likely only to be useful in tests, given that one cannot
         construct `UserEntry` instances in a config file.
         """
-        self.users = {x.id: x for x in users}
+        self.users = {str(x.id): x for x in users}
 
     def lookup(self, user_id):
         """Look up user by ID."""
