@@ -1,3 +1,19 @@
+0.4.3  2017-09-05
+
+Major features:
+
+* The format of the (temporary) users-by-experiment data has changed.
+
+Bugfixes:
+
+* The dummy directory now always stringifies ID keys.
+
+Removed:
+
+* `jacquard list users`.
+* `all_users` in directories.
+
+
 0.4.2  2017-09-01
 
 Major features:
