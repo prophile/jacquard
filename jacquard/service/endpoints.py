@@ -95,7 +95,10 @@ class ExperimentDetail(Endpoint):
             'launched': str(experiment_config.launched),
             'concluded': str(experiment_config.concluded),
             'branches': branches,
-            'partition': self.reverse('experiment-partition', experiment=experiment),
+            'partition': self.reverse(
+                'experiment-partition',
+                experiment=experiment,
+            ),
         }
 
 
