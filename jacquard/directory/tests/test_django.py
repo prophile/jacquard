@@ -53,16 +53,3 @@ def test_get_missing_user():
     user_zero = directory.lookup('0')
 
     assert user_zero is None
-
-
-@pytest.mark.skipif(
-    sqlalchemy is None,
-    reason="sqlalchemy not installed",
-)
-@unittest.mock.patch('sqlalchemy.create_engine', lambda *args: test_database)
-def test_get_all_users():
-    directory = DjangoDirectory('')
-
-    users = directory.all_users()
-
-    assert [x.id for x in users] == [1, 2, 3]
