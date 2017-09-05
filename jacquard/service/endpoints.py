@@ -1,11 +1,11 @@
 """Built-in, core HTTP endpoints."""
 
+from werkzeug.exceptions import MethodNotAllowed
+
 from jacquard.odm import EMPTY, Session
 from jacquard.users import get_settings
 from jacquard.buckets import NUM_BUCKETS, Bucket, user_bucket
 from jacquard.experiments import Experiment
-
-from werkzeug.exceptions import MethodNotAllowed
 
 from .base import Endpoint
 
