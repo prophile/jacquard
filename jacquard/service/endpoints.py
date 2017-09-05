@@ -5,6 +5,8 @@ from jacquard.users import get_settings
 from jacquard.buckets import NUM_BUCKETS, Bucket, user_bucket
 from jacquard.experiments import Experiment
 
+from werkzeug.exceptions import MethodNotAllowed
+
 from .base import Endpoint
 
 
@@ -107,7 +109,7 @@ class ExperimentPartition(Endpoint):
     def handle(self, experiment):
         """Dispatch request."""
         if self.request.method != 'POST':
-            raise Http404()
+            raise MethodNotAllowed()
 
         user_ids = self.request.form.getlist('u')
 
