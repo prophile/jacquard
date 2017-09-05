@@ -98,22 +98,3 @@ class UnionDirectory(Directory):
                 return user_entry
 
         return None
-
-    def all_users(self):
-        """
-        Iterable over all known users.
-
-        Represented as `UserEntry` instances.
-
-        Where a user is in multiple subdirectories, only the first is
-        returned: that is, the UserEntries generated are unique by ID.
-        """
-        seen_ids = set()
-
-        for subdirectory in self._subdirectories:
-            for user_entry in subdirectory.all_users():
-                if user_entry.id in seen_ids:
-                    continue
-
-                seen_ids.add(user_entry.id)
-                yield user_entry

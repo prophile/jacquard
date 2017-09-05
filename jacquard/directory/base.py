@@ -51,12 +51,3 @@ class Directory(metaclass=abc.ABCMeta):
         corresponding `UserEntry`.
         """
         raise NotImplementedError
-
-    @abc.abstractmethod
-    def all_users(self):
-        """
-        Iterable over all known users.
-
-        Represented as `UserEntry` instances.
-        """
-        raise NotImplementedError

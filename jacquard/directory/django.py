@@ -89,21 +89,3 @@ class DjangoDirectory(Directory):
 
         LOGGER.debug("Got row: %s", row)
         return self.describe_user(row)
-
-    def all_users(self):
-        """
-        Iterate over all users.
-
-        For the sake of consistency this orders by the `id` field. Under most
-        database configurations with Django the `id` field will have a unique
-        BTree or equivalent index, so this shouldn't *drastically* add to the
-        query runtime.
-
-        Results are streamed in rather than forced.
-        """
-        query = self.query + " ORDER BY id ASC"
-
-        result = self.engine.execute(query)
-
-        for row in result.fetchall():
-            yield self.describe_user(row)

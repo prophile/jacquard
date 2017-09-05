@@ -27,10 +27,3 @@ class DummyDirectory(Directory):
     def lookup(self, user_id):
         """Look up user by ID."""
         return self.users.get(user_id)
-
-    def all_users(self):
-        """Iterable over all users."""
-        return sorted(
-            self.users.values(),
-            key=lambda x: x.id,
-        )
