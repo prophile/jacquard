@@ -3,14 +3,14 @@
 - command: list experiments
   expect: |
     hello: Hello!
-- command: list --detailed
+- command: list experiments --detailed
   expect: |
     hello: Hello!
     =============
 
     Not yet launched
 
-- command: show-experiment hello
+- command: show experiment hello
   expect: |
     hello: Hello!
     =============
