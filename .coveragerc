@@ -1,6 +1,6 @@
 [run]
 branch = True
-omit = jacquard/wsgi.py,jacquard/odm/inflection,jacquard/__main__.py
+omit = jacquard/wsgi.py,jacquard/odm/inflection/__init__.py,jacquard/__main__.py
 
 [report]
 exclude_lines =
