@@ -1,25 +1,32 @@
-"""Command-line utilities for user directories."""
+"""Directory-specific user commands."""
 
-from jacquard.commands import BaseCommand
+from jacquard.commands import BaseCommand, CommandError
 
 
-class ListUsers(BaseCommand):
-    """
-    List all users from a directory.
+class ShowDirectoryEntry(BaseCommand):
+    """Display queried directory information for a given user ID."""
 
-    This is primarily a debugging command (hence the `plumbing` flag) when
-    checking whether your directory is correctly configured. Its real-world
-    uses are, uh, limited.
-    """
+    help = "show directory entry for user"
 
-    plumbing = True
-    help = "list all users"
+    def add_arguments(self, parser):
+        """Add command-line arguments."""
+        parser.add_argument(
+            'user_id',
+            help="user ID to show",
+        )
 
     def handle(self, config, options):
         """Run command."""
-        for user in config.directory.all_users():
-            print(('%s %s %s' % (
-                user.id,
-                str(user.join_date),
-                ' '.join(user.tags)
-            )).strip())
+        entry = config.directory.lookup(options.user_id)
+
+        if entry is None:
+            raise CommandError("No directory entry for ID: {0!r}".format(
+                options.user_id,
+            ))
+
+        print("User ID:", entry.id)
+        print("Join date:", entry.join_date)
+        if not entry.tags:
+            print("No tags")
+        else:
+            print("Tags: ", ", ".join(entry.tags))

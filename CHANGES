@@ -1,3 +1,31 @@
+0.4.3  2017-09-05
+
+Major features:
+
+* The format of the (temporary) users-by-experiment data has changed.
+
+Bugfixes:
+
+* The dummy directory now always stringifies ID keys.
+
+Removed:
+
+* `jacquard list users`.
+* `all_users` in directories.
+
+
+0.4.2  2017-09-01
+
+Major features:
+
+* Settings can now overlap, as long as the constraints on those settings
+  constrain to disjoint sets of users.
+
+Bugfixes:
+
+* Fix the Django directory erroring when passed a non-integer ID.
+
+
 0.4.1  2017-08-31
 
 Bugfixes:
