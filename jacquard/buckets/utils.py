@@ -11,7 +11,7 @@ from .constants import NUM_BUCKETS
 
 def user_bucket(user_id):
     """
-    Bucket ID for a given user ID.
+    Find bucket ID for a given user ID.
 
     Based on a hash of the user ID.
     """
@@ -73,7 +73,12 @@ def release(store, name, constraints, branches):
 
 
 def is_valid_bucket(bucket, new_settings, new_constraints):
-    """Is this bucket a valid place for new settings under some constraints."""
+    """
+    Determine if bucket is valid for new settings under constraints.
+
+    Note that this is best-effort only: if it returns True then an overlap
+    _is_ safe; if it does not then an overlap _may_ be unsafe.
+    """
     existing = bucket.affected_settings_by_constraints()
 
     for constraints, settings in existing.items():
