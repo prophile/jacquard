@@ -102,7 +102,7 @@ class StorageFlush(BaseCommand):
             action='store_true',
             help=(
                 "force Jacquard to actually do this despite its being "
-                "obviously a bad idea",
+                "obviously a bad idea"
             ),
         )
 
