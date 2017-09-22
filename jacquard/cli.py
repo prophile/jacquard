@@ -110,6 +110,32 @@ def argument_parser():
     return parser
 
 
+def _configure_process_and_load_config_from_options(
+    options,
+    override_config=None,
+):
+    logging.basicConfig(level=options.log_level)
+
+    if options.func is None:
+        # Print help where there are no other arguments. Rather than using
+        # `print_help` we explicitly use exactly the same mechanism as
+        # --help, which ensures that the exit code, and any extra I/O ops
+        # such as buffer flushes, are identical.
+        argument_parser().parse_args(['--help'])
+        # --help exits the process; something extremely weird has happened if
+        # we reached this point in execution.
+        raise AssertionError("parse_args(--help) returned")
+
+    if override_config is not None:
+        return override_config
+
+    try:
+        return load_config(options.config)
+    except FileNotFoundError:
+        print("Could not read config file '%s'" % options.config)
+        sys.exit(1)
+
+
 def main(args=sys.argv[1:], config=None):
     """
     Run as if from the command line, with the given arguments.
@@ -124,19 +150,10 @@ def main(args=sys.argv[1:], config=None):
     parser = argument_parser()
     options = parser.parse_args(args)
 
-    logging.basicConfig(level=options.log_level)
-
-    if options.func is None:
-        parser.print_help()
-        return
-
-    # Parse options
-    if config is None:
-        try:
-            config = load_config(options.config)
-        except FileNotFoundError:
-            print("Could not read config file '%s'" % options.config)
-            return
+    config = _configure_process_and_load_config_from_options(
+        options=options,
+        override_config=config,
+    )
 
     # Run subcommand
     with contextlib.suppress(KeyboardInterrupt):

@@ -193,23 +193,53 @@ class ListExperiments(BaseCommand):
 
     help = "list all experiments"
 
+    def add_arguments(self, parser):
+        """Add argparse arguments."""
+        parser.add_argument(
+            '--detailed',
+            action='store_true',
+            help="whether to show experiment details in the listing",
+        )
+
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction(read_only=True) as store:
             for experiment in Experiment.enumerate(store):
-                if experiment.name == experiment.id:
-                    title = experiment.id
+                Show.show_experiment(experiment, options.detailed)
+
+
+class Show(BaseCommand):
+    """Show a given experiment."""
+
+    help = "show details about an experiment"
+
+    @staticmethod
+    def show_experiment(experiment, detailed=True):
+        """Print information about the given experiment."""
+        if experiment.name == experiment.id:
+            title = experiment.id
+        else:
+            title = '%s: %s' % (experiment.id, experiment.name)
+        print(title)
+        if detailed:
+            print('=' * len(title))
+            print()
+            if experiment.launched:
+                print('Launched: %s' % experiment.launched)
+                if experiment.concluded:
+                    print('Concluded: %s' % experiment.concluded)
                 else:
-                    title = '%s: %s' % (experiment.id, experiment.name)
-                print(title)
-                print('=' * len(title))
-                print()
-                if experiment.launched:
-                    print('Launched: %s' % experiment.launched)
-                    if experiment.concluded:
-                        print('Concluded: %s' % experiment.concluded)
-                    else:
-                        print('In progress')
-                else:
-                    print('Not yet launched')
-                print()
+                    print('In progress')
+            else:
+                print('Not yet launched')
+            print()
+
+    def add_arguments(self, parser):
+        """Add argparse arguments."""
+        parser.add_argument('experiment', help="experiment to show")
+
+    def handle(self, config, options):
+        """Run command."""
+        with config.storage.transaction(read_only=True) as store:
+            experiment = Experiment.from_store(store, options.experiment)
+            self.show_experiment(experiment)

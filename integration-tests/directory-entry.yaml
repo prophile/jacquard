@@ -1,0 +1,10 @@
+- command: show directory-entry 1
+  expect: |
+    User ID: 1
+    Join date: 2017-01-01 00:00:00+00:00
+    No tags
+- command: show directory-entry 2
+  expect: |
+    User ID: 2
+    Join date: 2017-01-02 00:00:00+00:00
+    Tags:  tag1, tag2

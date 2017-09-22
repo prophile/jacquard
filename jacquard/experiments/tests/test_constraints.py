@@ -184,3 +184,8 @@ def test_not_disjoint_when_sharing_tags():
 
 def test_not_disjoint_if_allow_anonymous():
     assert is_disjoint({'anonymous': True}, {'anonymous': True}) is False
+
+
+def test_constraints_explode_with_vim_and_vigour_if_given_a_dodgy_era():
+    with pytest.raises(ValueError):
+        Constraints(era='bees')

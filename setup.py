@@ -128,6 +128,7 @@ setup(
             'user = jacquard.users.commands:Show',
             'defaults = jacquard.users.commands:Show',
             'directory-entry = jacquard.directory.commands:ShowDirectoryEntry',
+            'experiment = jacquard.experiments.commands:Show',
         ),
         'jacquard.directory_engines': (
             'dummy = jacquard.directory.dummy:DummyDirectory',

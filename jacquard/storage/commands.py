@@ -2,7 +2,7 @@
 
 import pprint
 
-from jacquard.commands import BaseCommand
+from jacquard.commands import BaseCommand, CommandError
 
 from .utils import retrying, copy_data, open_engine
 
@@ -95,8 +95,25 @@ class StorageFlush(BaseCommand):
 
     help = "clear everything in storage"
 
+    def add_arguments(self, parser):
+        """Add argparse arguments."""
+        parser.add_argument(
+            '--force',
+            action='store_true',
+            help=(
+                "force Jacquard to actually do this despite its being "
+                "obviously a bad idea"
+            ),
+        )
+
     @retrying
     def handle(self, config, option):
         """Run command."""
+        if not option.force:
+            raise CommandError(
+                "This command would erase the database. If you are really "
+                "sure this is something you want to do, add --force.",
+            )
+
         with config.storage.transaction() as store:
             store.clear()
