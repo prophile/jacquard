@@ -110,13 +110,3 @@ storage-export
    :func: argument_parser
    :prog: jacquard
    :path: storage-export
-
-storage-flush
-~~~~~~~~~~~~~
-
-.. argparse::
-   :module: jacquard.cli
-   :func: argument_parser
-   :prog: jacquard
-   :path: storage-flush
-
