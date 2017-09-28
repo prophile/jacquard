@@ -89,8 +89,6 @@ class StorageFlush(BaseCommand):
     There is an open question as to whether it would be wise to make this the
     default behaviour of importing, and to hide this command as a plumbing
     command.
-
-    Also some kind of sanity "are you sure" check might be useful.
     """
 
     help = "clear everything in storage"
