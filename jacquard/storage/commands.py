@@ -33,9 +33,6 @@ class StorageImport(BaseCommand):
 
     This is a mechanism to make migrations between storage engines easier,
     when the time comes to upgrade. Also useful for restoring backups.
-
-    Note that this does not flush the current store before importing, it is
-    wise to do so manually.
     """
 
     help = "load stored data from another storage engine"
@@ -44,12 +41,17 @@ class StorageImport(BaseCommand):
         """Add argparse arguments."""
         parser.add_argument('engine', help="storage engine to load from")
         parser.add_argument('url', help="storage URL to load from")
+        parser.add_argument(
+            '--flush',
+            action='store_true',
+            help="flush out the previous data in storage",
+        )
 
     @retrying
     def handle(self, config, option):
         """Run command."""
         src = open_engine(config, option.engine, option.url)
-        copy_data(src, config.storage)
+        copy_data(src, config.storage, flush=option.flush)
 
 
 class StorageExport(BaseCommand):
