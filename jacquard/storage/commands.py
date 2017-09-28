@@ -87,11 +87,11 @@ class StorageFlush(BaseCommand):
     before imports.
 
     There is an open question as to whether it would be wise to make this the
-    default behaviour of importing, and to hide this command as a plumbing
-    command.
+    default behaviour of importing.
     """
 
     help = "clear everything in storage"
+    plumbing = True
 
     def add_arguments(self, parser):
         """Add argparse arguments."""
