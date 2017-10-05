@@ -2,6 +2,7 @@
 
 import argparse
 import datetime
+import collections
 
 import yaml
 import dateutil.tz
@@ -243,3 +244,44 @@ class Show(BaseCommand):
         with config.storage.transaction(read_only=True) as store:
             experiment = Experiment.from_store(store, options.experiment)
             self.show_experiment(experiment)
+
+
+class SettingsUnderActiveExperiments(BaseCommand):
+    """Show all settings which are covered under active experiments."""
+
+    help = "show settings under active experimentation"
+
+    def handle(self, config, options):
+        """Run command."""
+        all_settings = set()
+        experimental_settings = collections.defaultdict(set)
+
+        with config.storage.transaction(read_only=True) as store:
+            all_settings.update(store.get('defaults', {}).keys())
+
+            active_experiments = list(store.get('active-experiments', ()))
+
+            for experiment in active_experiments:
+                experiment_config = store[
+                    'experiments/{slug}'.format(slug=experiment)
+                ]
+
+                for branch in experiment_config['branches']:
+                    all_settings.update(branch['settings'].keys())
+
+                    for setting in branch['settings'].keys():
+                        experimental_settings[setting].add(experiment)
+
+        for setting in sorted(all_settings):
+            relevant_experiments = list(experimental_settings[setting])
+            relevant_experiments.sort()
+
+            if relevant_experiments:
+                print("{setting}: {experiments}".format(
+                    setting=setting,
+                    experiments=", ".join(relevant_experiments),
+                ))
+            else:
+                print("{setting}: NOT UNDER EXPERIMENT".format(
+                    setting=setting,
+                ))
