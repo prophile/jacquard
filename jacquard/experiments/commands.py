@@ -28,6 +28,14 @@ class Launch(BaseCommand):
     def add_arguments(self, parser):
         """Add argparse arguments."""
         parser.add_argument('experiment', help="experiment to launch")
+        parser.add_argument(
+            '--relaunch',
+            action='store_true',
+            help=(
+                "re-launch a previously concluded test, "
+                "discarding previous results"
+            ),
+        )
 
     @retrying
     def handle(self, config, options):
@@ -40,6 +48,13 @@ class Launch(BaseCommand):
             if experiment.id in current_experiments:
                 raise CommandError(
                     "Experiment %r already launched!" % experiment.id,
+                )
+
+            if experiment.concluded is not None and not options.relaunch:
+                raise CommandError(
+                    "Experiment '{id}' already concluded!".format(
+                        id=experiment.id,
+                    )
                 )
 
             release(
