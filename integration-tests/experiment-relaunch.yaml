@@ -1,7 +1,4 @@
 - command: load-experiment test-data/experiment.yaml
 - command: launch hello
 - command: conclude hello test
-- command: launch hello
-- command: show experiment hello
-  expect: |
-    hi!
+- command: launch hello --relaunch # this is expected not to error
