@@ -42,6 +42,25 @@ def _add_subparsers_from_plugins(subparsers, plugin_group):
         command.add_arguments(subparser)
 
 
+def _add_help_command(parser, subparsers):
+    subparser = subparsers.add_parser(
+        'help',
+        description="show this help",
+        help="show this help",
+    )
+
+    def _help(config, options):
+        help_subcommand = list(options.command) + ['--help']
+        parser.parse_args(help_subcommand)
+
+    subparser.set_defaults(func=_help)
+    subparser.add_argument(
+        'command',
+        nargs='*',
+        help='command to ask about',
+    )
+
+
 def argument_parser():
     """
     Generate an argparse `ArgumentParser` for the CLI.
@@ -106,6 +125,8 @@ def argument_parser():
             subparsers=subsubcommands,
             plugin_group='commands.%s' % subcommand,
         )
+
+    _add_help_command(parser, subparsers)
 
     return parser
 
