@@ -234,7 +234,7 @@ class Show(BaseCommand):
     help = "show details about an experiment"
 
     @staticmethod
-    def show_experiment(experiment, detailed=True):
+    def show_experiment(experiment, detailed=True, with_settings=False):
         """Print information about the given experiment."""
         if experiment.name == experiment.id:
             title = experiment.id
@@ -254,15 +254,30 @@ class Show(BaseCommand):
                 print('Not yet launched')
             print()
 
+            if with_settings:
+                settings = set()
+                for branch in experiment.branches:
+                    settings.update(branch['settings'].keys())
+                print("Settings")
+                print("--------")
+                for setting in sorted(settings):
+                    print(" * {setting}".format(setting=setting))
+                print()
+
     def add_arguments(self, parser):
         """Add argparse arguments."""
         parser.add_argument('experiment', help="experiment to show")
+        parser.add_argument(
+            '--settings',
+            action='store_true',
+            help="include which settings this experiment will cover",
+        )
 
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction(read_only=True) as store:
             experiment = Experiment.from_store(store, options.experiment)
-            self.show_experiment(experiment)
+            self.show_experiment(experiment, with_settings=options.settings)
 
 
 class SettingsUnderActiveExperiments(BaseCommand):
