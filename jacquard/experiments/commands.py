@@ -50,12 +50,16 @@ class Launch(BaseCommand):
                     "Experiment %r already launched!" % experiment.id,
                 )
 
-            if experiment.concluded is not None and not options.relaunch:
-                raise CommandError(
-                    "Experiment '{id}' already concluded!".format(
-                        id=experiment.id,
+            if experiment.concluded is not None:
+                if options.relaunch:
+                    experiment.concluded = None
+                    experiment.launched = None
+                else:
+                    raise CommandError(
+                        "Experiment '{id}' already concluded!".format(
+                            id=experiment.id,
+                        )
                     )
-                )
 
             release(
                 store,
