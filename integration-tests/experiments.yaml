@@ -10,12 +10,16 @@
 
     Not yet launched
 
-- command: show experiment hello
+- command: show experiment hello --settings
   expect: |
     hello: Hello!
     =============
 
     Not yet launched
+
+    Settings
+    --------
+     * cta
 
 - command: launch hello
 - command: conclude hello test
