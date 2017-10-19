@@ -10,7 +10,7 @@ class StorageEngine(metaclass=abc.ABCMeta):
     """
     Base storage engine class.
 
-    StorageEngine subclasses are not under any obligation to be thread-safe.
+    StorageEngine subclasses are required to be thread-safe.
     """
 
     @abc.abstractmethod

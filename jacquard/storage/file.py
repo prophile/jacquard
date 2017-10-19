@@ -1,11 +1,12 @@
 """SQLite3-based file storage engine."""
 
 import sqlite3
+import threading
 
 from .base import StorageEngine
 
 
-class FileStore(StorageEngine):
+class FileStore(StorageEngine, threading.local):
     """Flat(ish)-file SQLite3-based storage engine."""
 
     def __init__(self, connection_string):

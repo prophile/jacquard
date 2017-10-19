@@ -1,6 +1,7 @@
 """Redis storage engine."""
 
 import logging
+import threading
 
 import redis
 
@@ -10,7 +11,7 @@ from .exceptions import Retry
 LOGGER = logging.getLogger('jacquard.storage.redis')
 
 
-class RedisStore(StorageEngine):
+class RedisStore(StorageEngine, threading.local):
     """
     Redis storage engine.
 

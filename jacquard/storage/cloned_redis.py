@@ -186,7 +186,7 @@ def resync_all_connections():
             connection.sync_update()
 
 
-class ClonedRedisStore(StorageEngine):
+class ClonedRedisStore(StorageEngine, threading.local):
     """
     Cloned Redis store.
 

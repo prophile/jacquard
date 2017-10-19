@@ -1,6 +1,7 @@
 """Dummy, in-memory storage engine."""
 
 import json
+import threading
 
 from .base import StorageEngine
 
@@ -23,6 +24,7 @@ class DummyStore(StorageEngine):
             }
         else:
             self.data = {}
+        self.lock = threading.Lock()
 
     def __getitem__(self, key):
         """Direct item access. This is for test usage."""
@@ -30,17 +32,18 @@ class DummyStore(StorageEngine):
 
     def begin(self):
         """Begin transaction."""
-        pass
+        self.lock.acquire()
 
     def commit(self, changes, deletions):
         """Commit transaction."""
         self.data.update(changes)
         for deletion in deletions:
             del self.data[deletion]
+        self.lock.release()
 
     def rollback(self):
         """Roll back transaction."""
-        pass
+        self.lock.release()
 
     def keys(self):
         """All keys."""
