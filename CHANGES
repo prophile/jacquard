@@ -1,3 +1,32 @@
+0.5.0  2017-10-19
+
+Major features:
+
+* New command `show experiment` to show extended details of a single
+  experiment. Patch by Peter Law.
+* `jacquard launch` takes a `--relaunch` argument to re-start an experiment as
+  if for the first time.
+
+Minor features:
+
+* Improved test coverage.
+* `storage-flush` is now considered plumbing and needs a `--force` argument.
+* `--flush` argument to `storage-import`.
+* `jacquard help` command as an alias for using `-h`.
+* Storage engines thread-safety refactor.
+
+Experimental features:
+
+* `jacquard settings-under-experiment` shows all settings set by defaults or
+  experiments and which currently running experiments cover those settings.
+  Its intended use-case is to discover settings which are 'stable' which users
+  may want to remove from jacquard and commit to.
+
+Bugfixes:
+
+* Relaunching a test no longer silently corrupts the data store.
+
+
 0.4.3  2017-09-05
 
 Major features:
