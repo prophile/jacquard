@@ -1,7 +1,8 @@
 import re
 import dis
-import pytest
 import pathlib
+
+import pytest
 
 import jacquard
 

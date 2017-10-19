@@ -1,5 +1,6 @@
-import pytest
 import unittest
+
+import pytest
 
 from jacquard.storage.dummy import DummyStore
 from jacquard.storage.testing_utils import StorageGauntlet
