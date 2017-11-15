@@ -18,6 +18,7 @@ DEPENDENCIES = (
     ('buckets', 'commands'),
     ('buckets', 'odm'),
     ('buckets', 'storage'),
+    ('buckets', 'constraints'),
 
     ('cli', 'commands'),
     ('cli', 'plugin'),
@@ -26,6 +27,7 @@ DEPENDENCIES = (
     ('directory', 'commands'),
 
     ('experiments', 'buckets'),
+    ('experiments', 'constraints'),
 
     ('odm', 'storage'),
 
