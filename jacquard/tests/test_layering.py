@@ -60,7 +60,6 @@ def build_dependency_graph():
 
 
 @pytest.mark.skipif(networkx is None, reason="networkx is not installed")
-#@pytest.mark.xfail
 def test_layers_are_acyclic():
     graph = build_dependency_graph()
 
