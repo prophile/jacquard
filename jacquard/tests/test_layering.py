@@ -16,7 +16,6 @@ DEPENDENCIES = (
     ('__main__', 'cli'),
 
     ('buckets', 'commands'),
-    ('buckets', 'experiments'),
     ('buckets', 'odm'),
     ('buckets', 'storage'),
 
