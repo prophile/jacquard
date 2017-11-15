@@ -70,7 +70,7 @@ class Constraints(object):
         self.era = era
 
         if era not in (None, 'old', 'new'):
-            raise ValueError("Invalid era: %s" % era)
+            raise ValueError("Invalid era: {era}".format(era=era))
 
         self.required_tags = tuple(required_tags)
         self.excluded_tags = tuple(excluded_tags)

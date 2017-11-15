@@ -47,7 +47,9 @@ class Launch(BaseCommand):
 
             if experiment.id in current_experiments:
                 raise CommandError(
-                    "Experiment %r already launched!" % experiment.id,
+                    "Experiment '{experiment_id}' already launched!".format(
+                        experiment_id=experiment.id,
+                    ),
                 )
 
             if experiment.concluded is not None:
@@ -115,7 +117,9 @@ class Conclude(BaseCommand):
 
             if options.experiment not in current_experiments:
                 raise CommandError(
-                    "Experiment %r not launched!" % options.experiment,
+                    "Experiment '{experiment_id}' not launched!".format(
+                        experiment_id=options.experiment,
+                    ),
                 )
 
             current_experiments.remove(options.experiment)
@@ -187,8 +191,10 @@ class Load(BaseCommand):
 
                     else:
                         raise CommandError(
-                            "Experiment %r is live, refusing to edit" %
-                            experiment.id,
+                            "Experiment '{experiment_id}' is live, "
+                            "refusing to edit".format(
+                                experiment_id=experiment.id,
+                            ),
                         )
 
                 elif experiment.id in concluded_experiments:
@@ -197,8 +203,10 @@ class Load(BaseCommand):
 
                     else:
                         raise CommandError(
-                            "Experiment %r has concluded, refusing to edit" %
-                            experiment.id,
+                            "Experiment '{experiment_id}' has concluded, "
+                            "refusing to edit".format(
+                                experiment_id=experiment.id,
+                            ),
                         )
 
                 experiment.save(store)
@@ -239,19 +247,26 @@ class Show(BaseCommand):
         if experiment.name == experiment.id:
             title = experiment.id
         else:
-            title = '%s: %s' % (experiment.id, experiment.name)
+            title = "{experiment_id}: {name}".format(
+                experiment_id=experiment.id,
+                name=experiment.name,
+            )
         print(title)
         if detailed:
-            print('=' * len(title))
+            print("=" * len(title))
             print()
             if experiment.launched:
-                print('Launched: %s' % experiment.launched)
+                print("Launched: {launch_date}".format(
+                    launch_date=experiment.launched,
+                ))
                 if experiment.concluded:
-                    print('Concluded: %s' % experiment.concluded)
+                    print("Concluded: {concluded_date}".format(
+                        concluded_date=experiment.concluded,
+                    ))
                 else:
-                    print('In progress')
+                    print("In progress")
             else:
-                print('Not yet launched')
+                print("Not yet launched")
             print()
 
             if with_settings:
