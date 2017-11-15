@@ -6,3 +6,4 @@ flake8-debugger
 flake8-comprehensions
 flake8-todo
 flake8-pep3101
+flake8-string-format
