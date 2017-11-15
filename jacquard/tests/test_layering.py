@@ -75,8 +75,9 @@ def test_layers_are_acyclic():
 
     if cycle:
         raise AssertionError(
-            "Cycle in component graph: %s" %
-            ' → '.join([x[0] for x in cycle] + [cycle[-1][1]]),
+            "Cycle in component graph: {cycle}".format(
+                cycle=' → '.join([x[0] for x in cycle] + [cycle[-1][1]]),
+            ),
         )
 
 
@@ -144,11 +145,12 @@ def test_layers():
             )
         except networkx.NetworkXNoPath:
             raise AssertionError(
-                "Layering violation: %s cannot depend on %s (%s currently "
-                "imports %s)" % (
-                    importer_component,
-                    importee_component,
-                    importer,
-                    importee,
+                "Layering violation: {importer_component} cannot depend on "
+                "{importee_component} ({importer_module} currently imports "
+                "{importee_module})".format(
+                    importer_component=importer_component,
+                    importee_component=importee_component,
+                    importer_module=importer,
+                    importee_module=importee,
                 ),
             )

@@ -40,8 +40,9 @@ _INTEGRATION_TEST_FILES = [
 
 if not _INTEGRATION_TEST_FILES:
     raise AssertionError(
-        "Found no integration tests, at root %s" %
-        INTEGRATION_TESTS_ROOT.absolute(),
+        "Found no integration tests, at root {path}".format(
+            path=INTEGRATION_TESTS_ROOT.absolute(),
+        ),
     )
 
 
