@@ -21,28 +21,20 @@ DEPENDENCIES = (
     ('buckets', 'storage'),
 
     ('cli', 'commands'),
-    ('cli', 'config'),
     ('cli', 'plugin'),
 
-    ('config', 'directory'),
-    ('config', 'plugin'),
-    ('config', 'storage'),
-
-    ('directory', 'config'),
     ('directory', 'plugin'),
+    ('directory', 'commands'),
 
     ('experiments', 'buckets'),
 
     ('odm', 'storage'),
-
-    ('plugin', 'config'),
 
     ('service', 'buckets'),
     ('service', 'odm'),
     ('service', 'users'),
 
     ('storage', 'commands'),
-    ('storage', 'config'),
     ('storage', 'plugin'),
 
     ('users', 'buckets'),
@@ -50,6 +42,11 @@ DEPENDENCIES = (
     ('users', 'storage'),
 
     ('wsgi', 'service'),
+)
+
+EXCLUDED_MODULES = (
+    'utils',
+    'config',
 )
 
 
@@ -64,7 +61,7 @@ def build_dependency_graph():
 
 
 @pytest.mark.skipif(networkx is None, reason="networkx is not installed")
-@pytest.mark.xfail
+#@pytest.mark.xfail
 def test_layers_are_acyclic():
     graph = build_dependency_graph()
 
@@ -133,8 +130,10 @@ def test_layers():
         importer_component = importer_match.group(1)
         importee_component = importee_match.group(1)
 
-        if importee_component == 'utils':
-            # Utils is allowed to be imported globally
+        if importer_component in EXCLUDED_MODULES:
+            continue
+
+        if importee_component in EXCLUDED_MODULES:
             continue
 
         try:
