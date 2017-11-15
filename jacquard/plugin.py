@@ -27,16 +27,19 @@ def plug_all(group, config=None):
         sys.path.append(DEFAULT_PLUGIN_DIRECTORY)
         pkg_resources.working_set.add_entry(DEFAULT_PLUGIN_DIRECTORY)
 
-    entry_points_group = 'jacquard.%s' % group
+    entry_points_group = 'jacquard.{group}'.format(group=group)
 
     for entry_point in pkg_resources.iter_entry_points(entry_points_group):
         yield entry_point.name, entry_point.load
 
     if config is not None:
-        config_section = config.get('plugins:%s' % group, {})
+        config_section = config.get('plugins:{group}'.format(group=group), {})
 
         for key, value in config_section.items():
-            entry_point_line = '%s = %s' % (key, value)
+            entry_point_line = '{key} = {value}'.format(
+                key=key,
+                value=value,
+            )
 
             entry_point = pkg_resources.EntryPoint.parse(entry_point_line)
             yield entry_point.name, entry_point.resolve
@@ -63,7 +66,9 @@ def plug(group, name, config=None):
         candidate = resolver
 
     if candidate is None:
-        raise RuntimeError("Could not find plugin for '%s'" % name)
+        raise RuntimeError("Could not find plugin for '{plugin_name}'".format(
+            plugin_name=name,
+        ))
 
     @functools.wraps(candidate)
     def wrapped_loader(*args, **kwargs):
