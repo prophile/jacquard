@@ -2,7 +2,7 @@
 
 import collections
 
-from jacquard.experiments.constraints import Constraints
+from jacquard.constraints import Constraints
 
 _Entry = collections.namedtuple(
     '_Entry',

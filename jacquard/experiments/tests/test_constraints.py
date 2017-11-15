@@ -3,8 +3,8 @@ import datetime
 import pytest
 import dateutil.tz
 
+from jacquard.constraints import Constraints, ConstraintContext
 from jacquard.directory.base import UserEntry
-from jacquard.experiments.constraints import Constraints, ConstraintContext
 
 UTC = dateutil.tz.tzutc()
 
