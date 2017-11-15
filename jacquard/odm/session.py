@@ -64,7 +64,9 @@ class Session(object):
             return
 
         if previous_instance is not None:
-            raise RuntimeError("Multiple instances for pk: %r" % instance.pk)
+            raise RuntimeError("Multiple instances for pk: {pk!r}".format(
+                pk=instance.pk,
+            ))
 
         model_instances[instance.pk] = instance
         instance.session = self
