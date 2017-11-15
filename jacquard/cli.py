@@ -123,7 +123,9 @@ def argument_parser():
 
         _add_subparsers_from_plugins(
             subparsers=subsubcommands,
-            plugin_group='commands.%s' % subcommand,
+            plugin_group='commands.{subcommand}'.format(
+                subcommand=subcommand,
+            ),
         )
 
     _add_help_command(parser, subparsers)
@@ -153,7 +155,9 @@ def _configure_process_and_load_config_from_options(
     try:
         return load_config(options.config)
     except FileNotFoundError:
-        print("Could not read config file '%s'" % options.config)
+        print("Could not read config file '{path}'".format(
+            path=options.config,
+        ))
         sys.exit(1)
 
 
