@@ -74,14 +74,17 @@ class RedisStore(StorageEngine, threading.local):
         """All keys."""
         return [
             x.decode('utf-8')
-            for x in self.redis.keys('{}*'.format(self.prefix))
+            for x in self.redis.keys('{prefix}*'.format(prefix=self.prefix))
         ]
 
     def encode_key(self, key):
         """Encode key."""
         if ':' in key:
-            raise ValueError("Invalid key %r" % key)
-        return '{}{}'.format(self.prefix, key.replace('/', ':'))
+            raise ValueError("Invalid key {key!r}".format(key=key))
+        return '{prefix}{key}'.format(
+            prefix=self.prefix,
+            key=key.replace('/', ':'),
+        )
 
     def decode_key(self, key):
         """Decode key."""
