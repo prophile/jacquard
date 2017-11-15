@@ -150,4 +150,4 @@ def test_layers():
                     importer_module=importer,
                     importee_module=importee,
                 ),
-            )
+            ) from None
