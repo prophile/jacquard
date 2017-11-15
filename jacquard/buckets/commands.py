@@ -61,7 +61,7 @@ class Rollout(BaseCommand):
 
     def handle(self, config, options):
         """Run command."""
-        rollout_key = 'rollout:%s' % options.setting
+        rollout_key = 'rollout:{setting}'.format(setting=options.setting)
 
         constraints = Constraints(
             required_tags=options.with_tag,

@@ -22,7 +22,8 @@ def user_bucket(user_id):
 
     key = int.from_bytes(hasher.digest(), byteorder='big')
 
-    return key % NUM_BUCKETS
+    # Marked noqa because the zealous pep3101 checker thinks `key` is a string
+    return key % NUM_BUCKETS  # noqa
 
 
 def release(store, name, constraints, branches):
