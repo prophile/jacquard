@@ -140,7 +140,10 @@ class ExperimentPartition(Endpoint):
                 if not experiment_config.includes_user(user_entry):
                     continue
 
-                user_overrides = store.get('overrides/%s' % user_id, {})
+                user_overrides = store.get(
+                    'overrides/{user_id}'.format(user_id=user_id),
+                    {},
+                )
 
                 if any(x in relevant_settings for x in user_overrides.keys()):
                     continue
