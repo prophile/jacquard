@@ -82,7 +82,9 @@ class FileStore(StorageEngine, threading.local):
         if len(rows) == 0:
             return None
         elif len(rows) > 1:
-            raise RuntimeError("Duplicate config for key %r" % key)
+            raise RuntimeError("Duplicate config for key {key!r}".format(
+                key=key,
+            ))
         else:
             return rows[0][0]
 
