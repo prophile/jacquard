@@ -34,6 +34,7 @@ DEPENDENCIES = (
     ('service', 'buckets'),
     ('service', 'odm'),
     ('service', 'users'),
+    ('service', 'experiments'),
 
     ('storage', 'commands'),
     ('storage', 'plugin'),
