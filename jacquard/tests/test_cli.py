@@ -5,7 +5,7 @@ import unittest.mock
 
 import pytest
 
-from jacquard.cli import CommandError, main
+from jacquard.cli import CommandError, main, argument_parser
 from jacquard.storage.dummy import DummyStore
 
 
@@ -86,3 +86,37 @@ def test_erroring_command():
             main(['command'], config=config)
 
     assert stderr.getvalue() == ERROR_MESSAGE + "\n"
+
+
+def test_argument_parser_has_description():
+    parser = argument_parser()
+
+    assert parser.description is not None
+
+
+def test_jacquard_help_without_args_gives_dash_dash_help():
+    config = unittest.mock.Mock()
+
+    stdout_reference = io.StringIO()
+    stdout_actual = io.StringIO()
+
+    with contextlib.redirect_stdout(stdout_reference), pytest.raises(SystemExit):
+        main(['--help'], config=config)
+    with contextlib.redirect_stdout(stdout_actual), pytest.raises(SystemExit):
+        main(['help'], config=config)
+
+    assert stdout_reference.getvalue() == stdout_actual.getvalue()
+
+
+def test_jacquard_help_with_args_is_subcommand_help():
+    config = unittest.mock.Mock()
+
+    stdout_reference = io.StringIO()
+    stdout_actual = io.StringIO()
+
+    with contextlib.redirect_stdout(stdout_reference), pytest.raises(SystemExit):
+        main(['launch', '--help'], config=config)
+    with contextlib.redirect_stdout(stdout_actual), pytest.raises(SystemExit):
+        main(['help', 'launch'], config=config)
+
+    assert stdout_reference.getvalue() == stdout_actual.getvalue()
