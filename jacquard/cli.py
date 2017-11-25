@@ -188,7 +188,3 @@ def main(args=sys.argv[1:], config=None):
             (message,) = exc.args
             print(message, file=sys.stderr)
             exit(1)
-
-
-if '__name__' == '__main__':
-    main()
