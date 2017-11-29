@@ -7,9 +7,9 @@ import collections
 import yaml
 import dateutil.tz
 
-from jacquard.commands import BaseCommand, CommandError
 from jacquard.buckets import close, release
 from jacquard.storage import retrying
+from jacquard.commands import BaseCommand, CommandError
 from jacquard.experiments.experiment import Experiment
 
 

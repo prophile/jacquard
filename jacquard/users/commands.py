@@ -6,8 +6,8 @@ import contextlib
 import yaml
 
 from jacquard.users import get_settings
-from jacquard.commands import BaseCommand, CommandError
 from jacquard.storage import retrying
+from jacquard.commands import BaseCommand, CommandError
 
 
 class SetDefault(BaseCommand):

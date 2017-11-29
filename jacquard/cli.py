@@ -1,6 +1,5 @@
 """`jacquard` command-line tool handling."""
 
-import os
 import sys
 import logging
 import pathlib
@@ -10,9 +9,9 @@ import contextlib
 import pkg_resources
 
 from jacquard.config import load_config
-from jacquard.constants import DEFAULT_CONFIG_FILE_PATH
 from jacquard.plugin import plug_all
 from jacquard.commands import CommandError
+from jacquard.constants import DEFAULT_CONFIG_FILE_PATH
 
 SUBCOMMAND_GROUPS = (
     ('list', "show lists of various topics"),
