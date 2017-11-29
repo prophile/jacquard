@@ -3,7 +3,7 @@
 import time
 import uuid
 import pickle
-import typing
+import typing  # noqa: F401
 import logging
 import warnings
 import threading
