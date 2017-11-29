@@ -10,5 +10,6 @@ system configuration and returns a WSGI callable.
 """
 
 from jacquard.service.wsgi import get_wsgi_app
+from jacquard.service.endpoints import Endpoint
 
-__all__ = ('get_wsgi_app',)
+__all__ = ('get_wsgi_app', 'Endpoint')
