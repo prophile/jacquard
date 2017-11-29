@@ -9,7 +9,7 @@ import dateutil.tz
 
 from jacquard.commands import BaseCommand, CommandError
 from jacquard.buckets import close, release
-from jacquard.storage.utils import retrying
+from jacquard.storage import retrying
 from jacquard.experiments.experiment import Experiment
 
 
