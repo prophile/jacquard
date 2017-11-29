@@ -176,5 +176,3 @@ def test_layers():
                     importee_module=importee,
                 ),
             ) from None
-
-    raise AssertionError("Bees")
