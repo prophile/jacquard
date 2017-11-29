@@ -10,13 +10,9 @@ import contextlib
 import pkg_resources
 
 from jacquard.config import load_config
+from jacquard.constants import DEFAULT_CONFIG_FILE_PATH
 from jacquard.plugin import plug_all
 from jacquard.commands import CommandError
-
-DEFAULT_CONFIG_FILE_PATH = pathlib.Path(os.environ.get(
-    'JACQUARD_CONFIG',
-    '/etc/jacquard/config.cfg',
-))
 
 SUBCOMMAND_GROUPS = (
     ('list', "show lists of various topics"),

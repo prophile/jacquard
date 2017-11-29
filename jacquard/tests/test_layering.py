@@ -49,6 +49,7 @@ DEPENDENCIES = (
 EXCLUDED_MODULES = (
     'utils',
     'config',
+    'constants',
 )
 
 

@@ -13,7 +13,7 @@ current working directory is assumed.
 import os
 import logging
 
-from jacquard.cli import DEFAULT_CONFIG_FILE_PATH
+from jacquard.constants import DEFAULT_CONFIG_FILE_PATH
 from jacquard.utils import check_keys
 from jacquard.config import load_config
 from jacquard.service import get_wsgi_app
