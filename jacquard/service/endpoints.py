@@ -23,6 +23,7 @@ class Root(Endpoint):
         return {
             'users': self.reverse('user', user=':user'),
             'experiments': self.reverse('experiments-overview'),
+            'defaults': self.reverse('defaults'),
         }
 
 
@@ -154,3 +155,18 @@ class ExperimentPartition(Endpoint):
                         members.append(user_id)
 
         return {'branches': branches}
+
+
+class Defaults(Endpoint):
+    """
+    Global defaults lookup.
+
+    Potentially useful for archival.
+    """
+
+    url = '/defaults'
+
+    def handle(self):
+        """Dispatch request."""
+        with self.config.storage.transaction(read_only=True) as store:
+            return store.get('defaults', {})

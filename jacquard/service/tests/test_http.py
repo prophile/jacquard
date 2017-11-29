@@ -60,6 +60,7 @@ def test_root():
     assert get('/') == {
         'experiments': '/experiments',
         'users': '/users/:user',
+        'defaults': '/defaults',
     }
 
 
