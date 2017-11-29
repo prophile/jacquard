@@ -5,8 +5,8 @@ import threading
 
 import redis
 
-from .base import StorageEngine
-from .exceptions import Retry
+from jacquard.storage.base import StorageEngine
+from jacquard.storage.exceptions import Retry
 
 LOGGER = logging.getLogger('jacquard.storage.redis')
 

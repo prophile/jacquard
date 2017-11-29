@@ -3,7 +3,7 @@
 import json
 import threading
 
-from .base import StorageEngine
+from jacquard.storage.base import StorageEngine
 
 
 class DummyStore(StorageEngine):

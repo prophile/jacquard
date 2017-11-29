@@ -8,7 +8,7 @@ For projects which are not relying on constraints in experiments, this may be
 sufficient.
 """
 
-from .base import Directory
+from jacquard.directory.base import Directory
 
 
 class DummyDirectory(Directory):

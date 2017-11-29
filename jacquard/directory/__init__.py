@@ -12,6 +12,6 @@ table. It has a single tag for superusers.
 The system is pluggable by adding new entry points into the
 `jacquard.directory_engines` group.
 """
-from .utils import open_directory
+from jacquard.directory.utils import open_directory
 
 __all__ = ('open_directory',)

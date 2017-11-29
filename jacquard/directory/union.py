@@ -12,8 +12,8 @@ looked up in distinct ways but where both are targets for testing.
 import re
 import collections
 
-from .base import Directory
-from .utils import open_directory
+from jacquard.directory.base import Directory
+from jacquard.directory.utils import open_directory
 
 INDEXED_KEY_RE = re.compile(r'^([^\[]+)\[([0-9]+)]$')
 

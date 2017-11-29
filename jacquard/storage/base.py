@@ -3,7 +3,7 @@
 import abc
 import contextlib
 
-from .utils import TransactionMap
+from jacquard.storage.utils import TransactionMap
 
 
 class StorageEngine(metaclass=abc.ABCMeta):

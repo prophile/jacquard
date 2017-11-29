@@ -3,7 +3,7 @@
 import sqlite3
 import threading
 
-from .base import StorageEngine
+from jacquard.storage.base import StorageEngine
 
 
 class FileStore(StorageEngine, threading.local):

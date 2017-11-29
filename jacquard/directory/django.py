@@ -17,7 +17,7 @@ import functools
 import sqlalchemy
 import sqlalchemy.sql
 
-from .base import Directory, UserEntry
+from jacquard.directory.base import Directory, UserEntry
 
 LOGGER = logging.getLogger('jacquard.directory.django')
 

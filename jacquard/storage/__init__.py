@@ -23,6 +23,6 @@ redis
   little tinkering to be able to run in multi-machine setups.
 """
 
-from .utils import open_engine
+from jacquard.storage.utils import open_engine
 
 __all__ = ('open_engine',)

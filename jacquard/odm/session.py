@@ -4,8 +4,8 @@ import contextlib
 import collections
 import collections.abc
 
-from .utils import method_dispatch
-from .fields import BaseField
+from jacquard.odm.utils import method_dispatch
+from jacquard.odm.fields import BaseField
 
 RAISE = object()
 EMPTY = object()

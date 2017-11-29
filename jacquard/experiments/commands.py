@@ -11,7 +11,7 @@ from jacquard.commands import BaseCommand, CommandError
 from jacquard.buckets.utils import close, release
 from jacquard.storage.utils import retrying
 
-from .experiment import Experiment
+from jacquard.experiments.experiment import Experiment
 
 
 class Launch(BaseCommand):

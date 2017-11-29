@@ -6,7 +6,7 @@ Types in the ODM should derive from `Model`.
 
 import sys
 
-from . import inflection
+from jacquard.odm import inflection
 
 
 class ModelMeta(type):

@@ -2,7 +2,7 @@
 
 from jacquard.odm import Model, ListField, EncodeDecodeField
 
-from .entry import _Entry, _decode_entry, _encode_entry
+from jacquard.buckets.entry import _Entry, _decode_entry, _encode_entry
 
 
 class Bucket(Model):

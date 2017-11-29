@@ -4,6 +4,8 @@ import collections
 
 from jacquard.constraints import Constraints
 
+# TODO: De-underscore these
+
 _Entry = collections.namedtuple(
     '_Entry',
     ('key', 'settings', 'constraints'),

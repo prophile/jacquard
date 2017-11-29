@@ -9,6 +9,6 @@ The only user-facing API from this subsystem is `get_wsgi_app`, which takes a
 system configuration and returns a WSGI callable.
 """
 
-from .wsgi import get_wsgi_app
+from jacquard.service.wsgi import get_wsgi_app
 
 __all__ = ('get_wsgi_app',)

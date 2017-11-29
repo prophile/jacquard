@@ -17,7 +17,7 @@ from jacquard.utils import check_keys
 from jacquard.config import load_config
 from jacquard.service import get_wsgi_app
 
-from .cli import DEFAULT_CONFIG_FILE_PATH
+from jacquard.cli import DEFAULT_CONFIG_FILE_PATH
 
 LOG_LEVEL = os.environ.get('JACQUARD_LOG_LEVEL', 'info').lower()
 KNOWN_LOG_LEVELS = {

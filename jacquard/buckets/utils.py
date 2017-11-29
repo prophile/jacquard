@@ -5,8 +5,8 @@ import hashlib
 
 from jacquard.odm import CREATE, Session
 
-from .models import Bucket
-from .constants import NUM_BUCKETS
+from jacquard.buckets.models import Bucket
+from jacquard.buckets.constants import NUM_BUCKETS
 
 
 def user_bucket(user_id):

@@ -7,7 +7,7 @@ import collections.abc
 
 from jacquard.plugin import plug
 
-from .exceptions import Retry
+from jacquard.storage.exceptions import Retry
 
 
 def retrying(fn):
