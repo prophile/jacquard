@@ -6,7 +6,6 @@ import functools
 import collections.abc
 
 from jacquard.plugin import plug
-
 from jacquard.storage.exceptions import Retry
 
 

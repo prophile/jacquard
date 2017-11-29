@@ -3,7 +3,6 @@
 import pprint
 
 from jacquard.commands import BaseCommand, CommandError
-
 from jacquard.storage.utils import retrying, copy_data, open_engine
 
 

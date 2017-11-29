@@ -6,7 +6,6 @@ from jacquard.odm import EMPTY, Session
 from jacquard.users import get_settings
 from jacquard.buckets import NUM_BUCKETS, Bucket, user_bucket
 from jacquard.experiments import Experiment
-
 from jacquard.service.base import Endpoint
 
 

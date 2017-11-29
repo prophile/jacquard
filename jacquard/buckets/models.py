@@ -1,7 +1,6 @@
 """The actual Bucket ODM model itself."""
 
 from jacquard.odm import Model, ListField, EncodeDecodeField
-
 from jacquard.buckets.entry import _Entry, _decode_entry, _encode_entry
 
 

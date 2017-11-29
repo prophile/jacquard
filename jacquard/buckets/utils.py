@@ -4,7 +4,6 @@ import random
 import hashlib
 
 from jacquard.odm import CREATE, Session
-
 from jacquard.buckets.models import Bucket
 from jacquard.buckets.constants import NUM_BUCKETS
 
