@@ -113,6 +113,8 @@ def test_layers():
 
         code = compile(contents, module_name, 'exec')
 
+        last_import_source = None
+
         for instruction in dis.get_instructions(code):
             if instruction.opname == 'IMPORT_NAME':
                 import_target = instruction.argval
@@ -129,6 +131,18 @@ def test_layers():
                     forbidden_imports.append((module_name, import_target))
 
                 imports.add((module_name, import_target))
+
+                last_import_source = import_target
+            elif instruction.opname == 'IMPORT_FROM':
+                if instruction.argval.startswith('_'):
+                    raise AssertionError(
+                        "Private-scope import: {importer} imports {symbol} "
+                        "from {importee}".format(
+                            importer=module_name,
+                            symbol=instruction.argval,
+                            importee=last_import_source,
+                        ),
+                    )
 
     if forbidden_imports:
         raise AssertionError("{count} forbidden import(s): {illegals}".format(
