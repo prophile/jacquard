@@ -1,2 +1,2 @@
 #!/bin/sh
-exec flake8 --exclude=tests,inflection --ignore=D401 jacquard
+exec flake8 jacquard
