@@ -4,7 +4,7 @@ machine:
 
 dependencies:
   pre:
-    - pip install pytest pytest-cov fakeredis hypothesis networkx
+    - pip install pytest pytest-cov fakeredis hypothesis networkx mypy
     - pip install -r script/linting/requirements.txt
     - sudo apt-get update ; sudo apt-get install python3 python3-setuptools
     - gem install fpm
@@ -19,6 +19,7 @@ test:
     - mkdir -p $CIRCLE_TEST_REPORTS/pytest
     - py.test -v --cov=jacquard --junit-xml=$CIRCLE_TEST_REPORTS/pytest/junit.xml jacquard
     - script/linting/lint
+    - mypy -p jacquard --ignore-missing-imports --strict-optional
   post:
     - ./hax_debian.sh
     - mv *.deb $CIRCLE_ARTIFACTS/
