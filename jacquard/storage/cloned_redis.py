@@ -3,6 +3,7 @@
 import time
 import uuid
 import pickle
+import typing
 import logging
 import warnings
 import threading
@@ -15,7 +16,7 @@ from jacquard.storage.exceptions import Retry
 LOGGER = logging.getLogger('jacquard.storage.cloned_redis')
 
 
-_REDIS_POOL = {}
+_REDIS_POOL = {}  # type: typing.Dict[str, _RedisDataPool]
 _REDIS_POOL_LOCK = threading.Lock()
 
 
