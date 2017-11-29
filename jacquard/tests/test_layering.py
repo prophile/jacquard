@@ -88,6 +88,8 @@ def test_layers():
 
     imports = set()
 
+    forbidden_imports = []
+
     for source_file in root.glob('**/*.py'):
         if 'tests' in source_file.parts:
             continue
@@ -117,7 +119,27 @@ def test_layers():
                 if not import_target.startswith('jacquard'):
                     continue
 
+                target_elements = import_target.split('.')
+
+                if (
+                    len(target_elements) > 2 and
+                    target_elements[1] != relative_parts[1]
+                ):
+                    forbidden_imports.append((module_name, import_target))
+
                 imports.add((module_name, import_target))
+
+    if forbidden_imports:
+        raise AssertionError("{count} forbidden import(s): {illegals}".format(
+            count=len(forbidden_imports),
+            illegals=', '.join(
+                '{importer} → {importee}'.format(
+                    importer=importer,
+                    importee=importee,
+                )
+                for importer, importee in forbidden_imports
+            ),
+        ))
 
     dependency_graph = build_dependency_graph()
 
@@ -154,3 +176,5 @@ def test_layers():
                     importee_module=importee,
                 ),
             ) from None
+
+    raise AssertionError("Bees")
