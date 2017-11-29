@@ -11,6 +11,7 @@ Entry = collections.namedtuple(
 
 
 def decode_entry(json):
+    """Convert from a JSON-representation to an Entry."""
     key, settings, constraints = json
     return Entry(
         key=key,
@@ -20,6 +21,7 @@ def decode_entry(json):
 
 
 def encode_entry(entry):
+    """Convert from an entry to a JSON-representation."""
     return [
         entry.key,
         entry.settings,
