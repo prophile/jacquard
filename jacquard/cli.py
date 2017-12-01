@@ -38,10 +38,6 @@ def _add_subparsers_from_plugins(subparsers, plugin_group):
         command.add_arguments(subparser)
 
 
-<<<<<<< HEAD
-@functools.lru_cache()
-def _build_argument_parser(cwd=None):
-=======
 def _add_help_command(parser, subparsers):
     subparser = subparsers.add_parser(
         'help',
@@ -62,7 +58,6 @@ def _add_help_command(parser, subparsers):
 
 
 def argument_parser():
->>>>>>> master
     """
     Generate an argparse `ArgumentParser` for the CLI.
 
@@ -136,17 +131,6 @@ def argument_parser():
     return parser
 
 
-<<<<<<< HEAD
-def argument_parser():
-    """
-    Generate an argparse `ArgumentParser` for the CLI.
-
-    This will look through all defined `jacquard.commands` entry points for
-    subcommands; these are subclasses of `jacquard.commands.BaseCommand`.
-    Using this mechanism, plugins can add their own subcommands.
-    """
-    return _build_argument_parser(os.getcwd())
-=======
 def _configure_process_and_load_config_from_options(
     options,
     override_config=None,
@@ -173,7 +157,6 @@ def _configure_process_and_load_config_from_options(
             path=options.config,
         ))
         sys.exit(1)
->>>>>>> master
 
 
 def main(args=sys.argv[1:], config=None):
