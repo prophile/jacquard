@@ -142,7 +142,7 @@ class Bugpoint(BaseCommand):
 
         any_changes = True
         while any_changes:
-            print("Pass {}".format(next(pass_number)))
+            print("Pass {number}".format(number=next(pass_number)))
             any_changes = False
 
             # Get list of keys
@@ -166,7 +166,7 @@ class Bugpoint(BaseCommand):
             storage.commit({key: old_value}, ())
             return False
         else:
-            print("Dropped key {}".format(key))
+            print("Dropped key {key}".format(key=key))
             return True
 
     def _try_simplifying_key(self, storage, key, predicate):
@@ -189,7 +189,7 @@ class Bugpoint(BaseCommand):
         storage.commit({key: json.dumps(shrunk_value)}, ())
 
         if shrunk_value != parsed_old_value:
-            print("Shrunk key: {}".format(key))
+            print("Shrunk key: {key}".format(key=key))
             return True
         else:
             return False
@@ -230,7 +230,9 @@ class Bugpoint(BaseCommand):
                 status_class = str(result.status_code)[0]
 
                 if status_class in ('4', '5'):
-                    raise ValueError("Status: {}".format(result.status_code))
+                    raise ValueError("Status: {code}".format(
+                        code=result.status_code,
+                    ))
         else:
             raise AssertionError("No target type")
 
