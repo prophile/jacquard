@@ -4,14 +4,13 @@ import random
 import hashlib
 
 from jacquard.odm import CREATE, Session
-
-from .models import Bucket
-from .constants import NUM_BUCKETS
+from jacquard.buckets.models import Bucket
+from jacquard.buckets.constants import NUM_BUCKETS
 
 
 def user_bucket(user_id):
     """
-    Bucket ID for a given user ID.
+    Find bucket ID for a given user ID.
 
     Based on a hash of the user ID.
     """
@@ -22,7 +21,8 @@ def user_bucket(user_id):
 
     key = int.from_bytes(hasher.digest(), byteorder='big')
 
-    return key % NUM_BUCKETS
+    # Marked noqa because the zealous pep3101 checker thinks `key` is a string
+    return key % NUM_BUCKETS  # noqa
 
 
 def release(store, name, constraints, branches):
@@ -50,7 +50,7 @@ def release(store, name, constraints, branches):
     valid_bucket_indices = [
         idx
         for idx, bucket in enumerate(all_buckets)
-        if edited_settings.isdisjoint(bucket.affected_settings())
+        if is_valid_bucket(bucket, edited_settings, constraints)
     ]
 
     random.shuffle(valid_bucket_indices)
@@ -70,6 +70,27 @@ def release(store, name, constraints, branches):
             bucket.add(key, settings, constraints)
 
     session.flush()
+
+
+def is_valid_bucket(bucket, new_settings, new_constraints):
+    """
+    Determine if bucket is valid for new settings under constraints.
+
+    Note that this is best-effort only: if it returns True then an overlap
+    _is_ safe; if it does not then an overlap _may_ be unsafe.
+    """
+    existing = bucket.affected_settings_by_constraints()
+
+    for constraints, settings in existing.items():
+
+        settings_disjoint = frozenset.isdisjoint(settings, new_settings)
+        constraints_disjoint = \
+            constraints.is_provably_disjoint_from_constraints(new_constraints)
+
+        if not (constraints_disjoint or settings_disjoint):
+            return False
+
+    return True
 
 
 def close(store, name, constraints, branches):

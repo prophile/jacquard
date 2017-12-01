@@ -21,7 +21,9 @@ def check_keys(passed_keys, known_keys, exception=ValueError):
         return
 
     if len(unknown_keys) > 1:
-        raise exception("Unknown keys: %s" % ", ".join(sorted(unknown_keys)))
+        raise exception("Unknown keys: {keys}".format(
+            keys=", ".join(sorted(unknown_keys)),
+        ))
 
     (unknown_key,) = unknown_keys
 
@@ -33,17 +35,21 @@ def check_keys(passed_keys, known_keys, exception=ValueError):
         close_matches_string = "choices"
 
     if not close_matches:
-        raise exception("Unknown key: %s" % unknown_key)
+        raise exception("Unknown key: {key}".format(key=unknown_key))
 
     if len(close_matches) == 1:
         (close_match,) = close_matches
-        raise exception("Unknown key: %s (did you mean %s?)" % (
-            unknown_key,
-            close_match,
-        ))
+        raise exception(
+            "Unknown key: {key} (did you mean {suggestion}?)".format(
+                key=unknown_key,
+                suggestion=close_match,
+            ),
+        )
 
-    raise exception("Unknown key: %s (%s: %s)" % (
-        unknown_key,
-        close_matches_string,
-        ", ".join(close_matches),
-    ))
+    raise exception(
+        "Unknown key: {key} ({suggestions_heading}: {suggestions})".format(
+            key=unknown_key,
+            suggestions_heading=close_matches_string,
+            suggestions=", ".join(close_matches),
+        ),
+    )

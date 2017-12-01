@@ -40,8 +40,9 @@ _INTEGRATION_TEST_FILES = [
 
 if not _INTEGRATION_TEST_FILES:
     raise AssertionError(
-        "Found no integration tests, at root %s" %
-        INTEGRATION_TESTS_ROOT.absolute(),
+        "Found no integration tests, at root {path}".format(
+            path=INTEGRATION_TESTS_ROOT.absolute(),
+        ),
     )
 
 
@@ -83,17 +84,21 @@ def test_integration(test_file):
     for step in test_config:
         if 'command' in step:
             stdout = io.StringIO()
+            stderr = io.StringIO()
 
             args = shlex.split(step['command'])
 
             try:
                 with contextlib.redirect_stdout(stdout):
-                    with _temporary_working_directory(JACQUARD_ROOT):
-                        main(args, config=config)
+                    with contextlib.redirect_stderr(stderr):
+                        with _temporary_working_directory(JACQUARD_ROOT):
+                            main(args, config=config)
             except SystemExit:
                 pass
 
             output = stdout.getvalue()
+
+            assert not stderr.getvalue()
 
         elif 'get' in step:
             path = step['get']

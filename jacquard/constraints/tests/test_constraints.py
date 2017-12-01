@@ -3,8 +3,8 @@ import datetime
 import pytest
 import dateutil.tz
 
+from jacquard.constraints import Constraints, ConstraintContext
 from jacquard.directory.base import UserEntry
-from jacquard.experiments.constraints import Constraints, ConstraintContext
 
 UTC = dateutil.tz.tzutc()
 
@@ -34,6 +34,12 @@ def tagged_user(*tags):
 
 def constraint_match(description, user):
     return Constraints.from_json(description).matches_user(user, CONTEXT)
+
+
+def is_disjoint(c1, c2):
+    return Constraints.from_json(c1).is_provably_disjoint_from_constraints(
+        Constraints.from_json(c2),
+    )
 
 
 def test_constraints_from_empty_dict_raises_no_errors():
@@ -135,3 +141,51 @@ def test_constraints_exclude_with_any_tags():
 def test_constraints_raise_valueerror_for_unknown_keys():
     with pytest.raises(ValueError):
         Constraints.from_json({'foo': 'bar'})
+
+
+def test_not_disjoint_when_empty():
+    assert is_disjoint({}, {}) is False
+
+
+def test_disjoint_basic():
+    assert is_disjoint(
+        {'required_tags': ('foo',), 'anonymous': False},
+        {'excluded_tags': ('foo',), 'anonymous': False},
+    )
+
+
+def test_disjoint_swapped():
+    assert is_disjoint(
+        {'excluded_tags': ('foo',), 'anonymous': False},
+        {'required_tags': ('foo',), 'anonymous': False},
+    )
+
+
+def test_disjoint_when_shared_tag():
+    assert is_disjoint(
+        {'excluded_tags': ('foo',), 'required_tags': ('bar',), 'anonymous': False},
+        {'required_tags': ('foo', 'bar'), 'anonymous': False},
+    )
+
+
+def test_disjoint_when_shared_excluded_tag():
+    assert is_disjoint(
+        {'excluded_tags': ('foo', 'bar'), 'anonymous': False},
+        {'required_tags': ('foo',), 'excluded_tags': ('bar',), 'anonymous': False},
+    )
+
+
+def test_not_disjoint_when_sharing_tags():
+    assert is_disjoint(
+        {'required_tags': ('foo',), 'excluded_tags': ('bar',), 'anonymous': False},
+        {'required_tags': ('foo',), 'excluded_tags': ('bar',), 'anonymous': False},
+    ) is False
+
+
+def test_not_disjoint_if_allow_anonymous():
+    assert is_disjoint({'anonymous': True}, {'anonymous': True}) is False
+
+
+def test_constraints_explode_with_vim_and_vigour_if_given_a_dodgy_era():
+    with pytest.raises(ValueError):
+        Constraints(era='bees')

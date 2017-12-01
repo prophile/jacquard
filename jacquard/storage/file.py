@@ -1,11 +1,12 @@
 """SQLite3-based file storage engine."""
 
 import sqlite3
+import threading
 
-from .base import StorageEngine
+from jacquard.storage.base import StorageEngine
 
 
-class FileStore(StorageEngine):
+class FileStore(StorageEngine, threading.local):
     """Flat(ish)-file SQLite3-based storage engine."""
 
     def __init__(self, connection_string):
@@ -81,7 +82,9 @@ class FileStore(StorageEngine):
         if len(rows) == 0:
             return None
         elif len(rows) > 1:
-            raise RuntimeError("Duplicate config for key %r" % key)
+            raise RuntimeError("Duplicate config for key {key!r}".format(
+                key=key,
+            ))
         else:
             return rows[0][0]
 

@@ -1,0 +1,8 @@
+- command: set-default test1 value1
+- command: load-experiment test-data/experiment.yaml
+
+- command: launch hello
+- command: settings-under-experiment
+  expect: |
+    cta: hello
+    test1: NOT UNDER EXPERIMENT

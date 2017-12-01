@@ -1,3 +1,60 @@
+0.5.0  2017-10-19
+
+Major features:
+
+* New command `show experiment` to show extended details of a single
+  experiment. Patch by Peter Law.
+* `jacquard launch` takes a `--relaunch` argument to re-start an experiment as
+  if for the first time.
+
+Minor features:
+
+* Improved test coverage.
+* `storage-flush` is now considered plumbing and needs a `--force` argument.
+* `--flush` argument to `storage-import`.
+* `jacquard help` command as an alias for using `-h`.
+* Storage engines thread-safety refactor.
+
+Experimental features:
+
+* `jacquard settings-under-experiment` shows all settings set by defaults or
+  experiments and which currently running experiments cover those settings.
+  Its intended use-case is to discover settings which are 'stable' which users
+  may want to remove from jacquard and commit to.
+
+Bugfixes:
+
+* Relaunching a test no longer silently corrupts the data store.
+
+
+0.4.3  2017-09-05
+
+Major features:
+
+* The format of the (temporary) users-by-experiment data has changed.
+
+Bugfixes:
+
+* The dummy directory now always stringifies ID keys.
+
+Removed:
+
+* `jacquard list users`.
+* `all_users` in directories.
+
+
+0.4.2  2017-09-01
+
+Major features:
+
+* Settings can now overlap, as long as the constraints on those settings
+  constrain to disjoint sets of users.
+
+Bugfixes:
+
+* Fix the Django directory erroring when passed a non-integer ID.
+
+
 0.4.1  2017-08-31
 
 Bugfixes:

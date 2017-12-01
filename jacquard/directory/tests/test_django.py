@@ -47,6 +47,19 @@ def test_get_extant_user():
     reason="sqlalchemy not installed",
 )
 @unittest.mock.patch('sqlalchemy.create_engine', lambda *args: test_database)
+def test_get_extant_non_superuser():
+    directory = DjangoDirectory('')
+
+    user_two = directory.lookup('2')
+
+    assert list(user_two.tags) == []
+
+
+@pytest.mark.skipif(
+    sqlalchemy is None,
+    reason="sqlalchemy not installed",
+)
+@unittest.mock.patch('sqlalchemy.create_engine', lambda *args: test_database)
 def test_get_missing_user():
     directory = DjangoDirectory('')
 
@@ -60,9 +73,9 @@ def test_get_missing_user():
     reason="sqlalchemy not installed",
 )
 @unittest.mock.patch('sqlalchemy.create_engine', lambda *args: test_database)
-def test_get_all_users():
+def test_get_non_numeric_key_gives_none():
     directory = DjangoDirectory('')
 
-    users = directory.all_users()
+    user_hats = directory.lookup('hats')
 
-    assert [x.id for x in users] == [1, 2, 3]
+    assert user_hats is None

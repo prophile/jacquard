@@ -70,7 +70,7 @@ class Constraints(object):
         self.era = era
 
         if era not in (None, 'old', 'new'):
-            raise ValueError("Invalid era: %s" % era)
+            raise ValueError("Invalid era: {era}".format(era=era))
 
         self.required_tags = tuple(required_tags)
         self.excluded_tags = tuple(excluded_tags)
@@ -216,3 +216,21 @@ class Constraints(object):
             return False
 
         return True
+
+    def is_provably_disjoint_from_constraints(self, other_constraints):
+        """
+        Test whether constraints are provably disjoint.
+
+        Currently only constraints on anonymity and tags are supported, era,
+        and ``joined_before``/``joined_after`` constraints are not supported.
+        """
+        if self.include_anonymous and other_constraints.include_anonymous:
+            return False
+
+        if (
+            set(self.required_tags) & set(other_constraints.excluded_tags) or
+            set(self.excluded_tags) & set(other_constraints.required_tags)
+        ):
+            return True
+
+        return False

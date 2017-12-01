@@ -4,6 +4,7 @@ from unittest.mock import Mock
 
 import dateutil.tz
 import werkzeug.test
+from werkzeug.datastructures import MultiDict
 
 from jacquard.service import get_wsgi_app
 from jacquard.storage.dummy import DummyStore
@@ -11,7 +12,7 @@ from jacquard.directory.base import UserEntry
 from jacquard.directory.dummy import DummyDirectory
 
 
-def get_status(path):
+def get_test_client():
     config = Mock()
     config.storage = DummyStore('', data={
         'defaults': {'pony': 'gravity'},
@@ -33,9 +34,11 @@ def get_status(path):
     ))
 
     wsgi = get_wsgi_app(config)
-    test_client = werkzeug.test.Client(wsgi)
+    return werkzeug.test.Client(wsgi)
 
-    data, status, headers = test_client.get(path)
+
+def get_status(path):
+    data, status, headers = get_test_client().get(path)
     all_data = b''.join(data)
     return status, all_data
 
@@ -46,10 +49,18 @@ def get(path):
     return json.loads(all_data.decode('utf-8'))
 
 
+def post(path, form):
+    client = get_test_client()
+    data, status, headers = client.post(path, data=form)
+    assert status == '200 OK'
+    return json.loads(b''.join(data).decode('utf-8'))
+
+
 def test_root():
     assert get('/') == {
         'experiments': '/experiments',
         'users': '/users/:user',
+        'defaults': '/defaults',
     }
 
 
@@ -82,9 +93,27 @@ def test_experiment_get_smoke():
     assert get('/experiments/foo')['name'] == 'foo'
 
 
-def test_experiment_get_membership():
-    assert set(get('/experiments/foo')['branches'].keys()) == {'bar'}
+def test_experiment_get_branches():
+    assert set(get('/experiments/foo')['branches']) == {'bar'}
 
 
 def test_missing_paths_get_404():
     assert get_status('/missing')[0] == '404 NOT FOUND'
+
+
+def test_get_on_experiment_partition_gets_405():
+    assert (
+        get_status('/experiments/foo/partition')[0] ==
+        '405 METHOD NOT ALLOWED'
+    )
+
+
+def test_experiment_partition():
+    params = MultiDict([
+        ('u', '1'),
+        ('u', '2'),
+        ('u', '3'),
+        ('u', '4'),
+    ])
+    result = post('/experiments/foo/partition', params)
+    assert set(result['branches'].keys()) == {'bar'}

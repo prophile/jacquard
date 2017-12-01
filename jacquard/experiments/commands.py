@@ -2,15 +2,15 @@
 
 import argparse
 import datetime
+import collections
 
 import yaml
 import dateutil.tz
 
+from jacquard.buckets import close, release
+from jacquard.storage import retrying
 from jacquard.commands import BaseCommand, CommandError
-from jacquard.buckets.utils import close, release
-from jacquard.storage.utils import retrying
-
-from .experiment import Experiment
+from jacquard.experiments.experiment import Experiment
 
 
 class Launch(BaseCommand):
@@ -27,6 +27,14 @@ class Launch(BaseCommand):
     def add_arguments(self, parser):
         """Add argparse arguments."""
         parser.add_argument('experiment', help="experiment to launch")
+        parser.add_argument(
+            '--relaunch',
+            action='store_true',
+            help=(
+                "re-launch a previously concluded test, "
+                "discarding previous results"
+            ),
+        )
 
     @retrying
     def handle(self, config, options):
@@ -38,8 +46,21 @@ class Launch(BaseCommand):
 
             if experiment.id in current_experiments:
                 raise CommandError(
-                    "Experiment %r already launched!" % experiment.id,
+                    "Experiment '{experiment_id}' already launched!".format(
+                        experiment_id=experiment.id,
+                    ),
                 )
+
+            if experiment.concluded is not None:
+                if options.relaunch:
+                    experiment.concluded = None
+                    experiment.launched = None
+                else:
+                    raise CommandError(
+                        "Experiment '{id}' already concluded!".format(
+                            id=experiment.id,
+                        )
+                    )
 
             release(
                 store,
@@ -95,7 +116,9 @@ class Conclude(BaseCommand):
 
             if options.experiment not in current_experiments:
                 raise CommandError(
-                    "Experiment %r not launched!" % options.experiment,
+                    "Experiment '{experiment_id}' not launched!".format(
+                        experiment_id=options.experiment,
+                    ),
                 )
 
             current_experiments.remove(options.experiment)
@@ -167,8 +190,10 @@ class Load(BaseCommand):
 
                     else:
                         raise CommandError(
-                            "Experiment %r is live, refusing to edit" %
-                            experiment.id,
+                            "Experiment '{experiment_id}' is live, "
+                            "refusing to edit".format(
+                                experiment_id=experiment.id,
+                            ),
                         )
 
                 elif experiment.id in concluded_experiments:
@@ -177,8 +202,10 @@ class Load(BaseCommand):
 
                     else:
                         raise CommandError(
-                            "Experiment %r has concluded, refusing to edit" %
-                            experiment.id,
+                            "Experiment '{experiment_id}' has concluded, "
+                            "refusing to edit".format(
+                                experiment_id=experiment.id,
+                            ),
                         )
 
                 experiment.save(store)
@@ -193,23 +220,116 @@ class ListExperiments(BaseCommand):
 
     help = "list all experiments"
 
+    def add_arguments(self, parser):
+        """Add argparse arguments."""
+        parser.add_argument(
+            '--detailed',
+            action='store_true',
+            help="whether to show experiment details in the listing",
+        )
+
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction(read_only=True) as store:
             for experiment in Experiment.enumerate(store):
-                if experiment.name == experiment.id:
-                    title = experiment.id
+                Show.show_experiment(experiment, options.detailed)
+
+
+class Show(BaseCommand):
+    """Show a given experiment."""
+
+    help = "show details about an experiment"
+
+    @staticmethod
+    def show_experiment(experiment, detailed=True, with_settings=False):
+        """Print information about the given experiment."""
+        if experiment.name == experiment.id:
+            title = experiment.id
+        else:
+            title = "{experiment_id}: {name}".format(
+                experiment_id=experiment.id,
+                name=experiment.name,
+            )
+        print(title)
+        if detailed:
+            print("=" * len(title))
+            print()
+            if experiment.launched:
+                print("Launched: {launch_date}".format(
+                    launch_date=experiment.launched,
+                ))
+                if experiment.concluded:
+                    print("Concluded: {concluded_date}".format(
+                        concluded_date=experiment.concluded,
+                    ))
                 else:
-                    title = '%s: %s' % (experiment.id, experiment.name)
-                print(title)
-                print('=' * len(title))
+                    print("In progress")
+            else:
+                print("Not yet launched")
+            print()
+
+            if with_settings:
+                settings = set()
+                for branch in experiment.branches:
+                    settings.update(branch['settings'].keys())
+                print("Settings")
+                print("--------")
+                for setting in sorted(settings):
+                    print(" * {setting}".format(setting=setting))
                 print()
-                if experiment.launched:
-                    print('Launched: %s' % experiment.launched)
-                    if experiment.concluded:
-                        print('Concluded: %s' % experiment.concluded)
-                    else:
-                        print('In progress')
-                else:
-                    print('Not yet launched')
-                print()
+
+    def add_arguments(self, parser):
+        """Add argparse arguments."""
+        parser.add_argument('experiment', help="experiment to show")
+        parser.add_argument(
+            '--settings',
+            action='store_true',
+            help="include which settings this experiment will cover",
+        )
+
+    def handle(self, config, options):
+        """Run command."""
+        with config.storage.transaction(read_only=True) as store:
+            experiment = Experiment.from_store(store, options.experiment)
+            self.show_experiment(experiment, with_settings=options.settings)
+
+
+class SettingsUnderActiveExperiments(BaseCommand):
+    """Show all settings which are covered under active experiments."""
+
+    help = "show settings under active experimentation"
+
+    def handle(self, config, options):
+        """Run command."""
+        all_settings = set()
+        experimental_settings = collections.defaultdict(set)
+
+        with config.storage.transaction(read_only=True) as store:
+            all_settings.update(store.get('defaults', {}).keys())
+
+            active_experiments = list(store.get('active-experiments', ()))
+
+            for experiment in active_experiments:
+                experiment_config = store[
+                    'experiments/{slug}'.format(slug=experiment)
+                ]
+
+                for branch in experiment_config['branches']:
+                    all_settings.update(branch['settings'].keys())
+
+                    for setting in branch['settings'].keys():
+                        experimental_settings[setting].add(experiment)
+
+        for setting in sorted(all_settings):
+            relevant_experiments = list(experimental_settings[setting])
+            relevant_experiments.sort()
+
+            if relevant_experiments:
+                print("{setting}: {experiments}".format(
+                    setting=setting,
+                    experiments=", ".join(relevant_experiments),
+                ))
+            else:
+                print("{setting}: NOT UNDER EXPERIMENT".format(
+                    setting=setting,
+                ))

@@ -1,0 +1,9 @@
+- command: set-default test_key value_default
+- command: rollout --percent 100 --with-tag tag1 test_key value_test
+- command: rollout test_key value_test --commit
+- command: show user 1
+  expect_yaml:
+    test_key: value_test
+- command: show user 2
+  expect_yaml:
+    test_key: value_test

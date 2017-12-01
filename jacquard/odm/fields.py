@@ -43,7 +43,7 @@ class BaseField(object, metaclass=abc.ABCMeta):
         i.e. post JSON-encoding.
         """
         if not self.null and raw_value is None:
-            raise ValueError("%s is not nullable" % self.name)
+            raise ValueError("{field} is not nullable".format(field=self.name))
 
     def __get__(self, obj, owner):
         """Read descriptor."""

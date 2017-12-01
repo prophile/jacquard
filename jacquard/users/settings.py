@@ -28,6 +28,9 @@ def get_settings(user_id, storage, directory=None):
 
         bucket_settings = bucket.get_settings(user_entry)
 
-        overrides = store.get('overrides/%s' % user_id, {})
+        overrides = store.get(
+            'overrides/{user_id}'.format(user_id=user_id),
+            {},
+        )
 
     return {**defaults, **bucket_settings, **overrides}

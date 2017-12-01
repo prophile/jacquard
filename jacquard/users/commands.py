@@ -6,8 +6,8 @@ import contextlib
 import yaml
 
 from jacquard.users import get_settings
+from jacquard.storage import retrying
 from jacquard.commands import BaseCommand, CommandError
-from jacquard.storage.utils import retrying
 
 
 class SetDefault(BaseCommand):
@@ -58,7 +58,9 @@ class SetDefault(BaseCommand):
                 try:
                     value = yaml.safe_load(options.value)
                 except ValueError:
-                    raise CommandError("Could not decode %r" % options.value)
+                    raise CommandError("Could not decode {value!r}".format(
+                        value=options.value,
+                    ))
 
                 if not options.add or options.setting not in defaults:
                     defaults[options.setting] = value
@@ -101,7 +103,7 @@ class Override(BaseCommand):
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction() as store:
-            key = 'overrides/%s' % options.user
+            key = 'overrides/{user_id}'.format(user_id=options.user)
 
             overrides = dict(store.get(key, {}))
 
@@ -119,7 +121,9 @@ class Override(BaseCommand):
                 try:
                     value = yaml.safe_load(options.value)
                 except ValueError:
-                    raise CommandError("Could not decode %r" % options.value)
+                    raise CommandError("Could not decode {value!r}".format(
+                        value=options.value,
+                    ))
 
                 overrides[options.setting] = value
                 store[key] = overrides
@@ -148,7 +152,7 @@ class OverrideClear(BaseCommand):
         )
 
     def _clear_overrides_for_user(self, store, user):
-        key = 'overrides/%s' % user
+        key = 'overrides/{user_id}'.format(user_id=user)
 
         with contextlib.suppress(KeyError):
             del store[key]

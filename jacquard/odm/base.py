@@ -6,7 +6,7 @@ Types in the ODM should derive from `Model`.
 
 import sys
 
-from . import inflection
+from jacquard.odm import inflection
 
 
 class ModelMeta(type):
@@ -91,21 +91,21 @@ class Model(object, metaclass=ModelMeta):
     @classmethod
     def storage_key(cls, pk):
         """Key within the document store for a particular pk."""
-        return '%s/%s' % (
-            cls.storage_name,
-            pk,
+        return '{storage_name}/{pk}'.format(
+            storage_name=cls.storage_name,
+            pk=pk,
         )
 
     def __repr__(self):  # noqa: D400
         """Python reproducer. Handy for debugging!"""
         cls = type(self)
-        return "%s(pk=%r, %s)" % (
-            cls.__name__,
-            self.pk,
-            ', '.join(
-                '%s=%r' % (
-                    field_name,
-                    getattr(cls, field_name).transform_from_storage(
+        return "{class_name}(pk={pk!r}, {args})".format(
+            class_name=cls.__name__,
+            pk=self.pk,
+            args=', '.join(
+                '{field}={value!r}'.format(
+                    field=field_name,
+                    value=getattr(cls, field_name).transform_from_storage(
                         field_raw_value,
                     ),
                 )

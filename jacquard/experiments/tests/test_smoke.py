@@ -175,3 +175,63 @@ def test_load_after_conclude_with_skip_launched():
 
     stderr_content = stderr.getvalue()
     assert '' == stderr_content
+
+
+def test_launch_experiment_with_overlapping_settings_errors():
+    config = Mock()
+    config.storage = DummyStore('', data={
+        'experiments/foo': {
+            'branches': [
+                {'id': 'foo', 'settings': BRANCH_SETTINGS},
+            ],
+        },
+        'experiments/bar': {
+            'branches': [
+                {'id': 'bar', 'settings': BRANCH_SETTINGS},
+            ],
+        },
+    })
+
+    main(('launch', 'foo'), config=config)
+
+    with pytest.raises(ValueError):
+        main(('launch', 'bar'), config=config)
+
+    assert 'launched' not in config.storage['experiments/bar']
+    assert 'concluded' not in config.storage['experiments/bar']
+    assert 'bar' not in config.storage['active-experiments']
+
+
+def test_overlapping_settings_allowed_if_disjoint_constraints():
+    config = Mock()
+    config.storage = DummyStore('', data={
+        'experiments/foo': {
+            'branches': [
+                {'id': 'foo', 'settings': BRANCH_SETTINGS},
+            ],
+            'constraints': {
+                'required_tags': ['baz'],
+                'anonymous': False,
+            },
+        },
+        'experiments/bar': {
+            'branches': [
+                {'id': 'bar', 'settings': BRANCH_SETTINGS},
+            ],
+            'constraints': {
+                'excluded_tags': ['baz'],
+                'anonymous': False,
+            },
+        },
+    })
+
+    main(('launch', 'foo'), config=config)
+    main(('launch', 'bar'), config=config)
+
+    assert 'launched' in config.storage['experiments/foo']
+    assert 'concluded' not in config.storage['experiments/foo']
+    assert 'foo' in config.storage['active-experiments']
+
+    assert 'launched' in config.storage['experiments/bar']
+    assert 'concluded' not in config.storage['experiments/bar']
+    assert 'bar' in config.storage['active-experiments']

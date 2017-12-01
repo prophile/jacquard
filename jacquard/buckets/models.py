@@ -1,16 +1,15 @@
 """The actual Bucket ODM model itself."""
 
 from jacquard.odm import Model, ListField, EncodeDecodeField
-
-from .entry import _Entry, _decode_entry, _encode_entry
+from jacquard.buckets.entry import Entry, decode_entry, encode_entry
 
 
 class Bucket(Model):
     """A single partition of user space, with associated settings."""
 
     entries = ListField(null=False, field=EncodeDecodeField(
-        encode=_encode_entry,
-        decode=_decode_entry,
+        encode=encode_entry,
+        decode=decode_entry,
         null=False,
         default=[],
     ), default=())
@@ -37,13 +36,17 @@ class Bucket(Model):
 
         return settings
 
-    def affected_settings(self):
-        """All settings determined in this bucket."""
-        return frozenset(
-            y
+    def affected_settings_by_constraints(self):
+        """
+        Get constraints and the settings under them in this bucket.
+
+        All settings determined in this bucket, by the constraints that they
+        apply under.
+        """
+        return {
+            x.constraints: frozenset(x.settings.keys())
             for x in self.entries
-            for y in x.settings.keys()
-        )
+        }
 
     def needs_constraints(self):
         """Whether any settings in this bucket involve constraint lookups."""
@@ -51,7 +54,7 @@ class Bucket(Model):
 
     def add(self, key, settings, constraints):
         """Add a new, keyed entry."""
-        self.entries = self.entries + (_Entry(
+        self.entries = self.entries + (Entry(
             key=key,
             settings=settings,
             constraints=constraints,

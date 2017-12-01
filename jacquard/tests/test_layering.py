@@ -1,7 +1,8 @@
 import re
 import dis
-import pytest
 import pathlib
+
+import pytest
 
 import jacquard
 
@@ -15,33 +16,27 @@ DEPENDENCIES = (
     ('__main__', 'cli'),
 
     ('buckets', 'commands'),
-    ('buckets', 'experiments'),
     ('buckets', 'odm'),
     ('buckets', 'storage'),
+    ('buckets', 'constraints'),
 
     ('cli', 'commands'),
-    ('cli', 'config'),
     ('cli', 'plugin'),
 
-    ('config', 'directory'),
-    ('config', 'plugin'),
-    ('config', 'storage'),
-
-    ('directory', 'config'),
     ('directory', 'plugin'),
+    ('directory', 'commands'),
 
     ('experiments', 'buckets'),
+    ('experiments', 'constraints'),
 
     ('odm', 'storage'),
-
-    ('plugin', 'config'),
 
     ('service', 'buckets'),
     ('service', 'odm'),
     ('service', 'users'),
+    ('service', 'experiments'),
 
     ('storage', 'commands'),
-    ('storage', 'config'),
     ('storage', 'plugin'),
 
     ('users', 'buckets'),
@@ -55,6 +50,8 @@ EXCLUDED_COMPONENTS = (
     'utils',  # Allowed to be included from anywhere
     'commands_dev',  # Allowed to do whatever it wants
     'utils_dev',  # Allowed to be included from wherever
+    'config',  # Excluded due to necessary cyclical behaviour
+    'constants',  # Allowed to be included from anywhere
 )
 
 
@@ -69,7 +66,6 @@ def build_dependency_graph():
 
 
 @pytest.mark.skipif(networkx is None, reason="networkx is not installed")
-@pytest.mark.xfail
 def test_layers_are_acyclic():
     graph = build_dependency_graph()
 
@@ -80,8 +76,9 @@ def test_layers_are_acyclic():
 
     if cycle:
         raise AssertionError(
-            "Cycle in component graph: %s" %
-            ' → '.join([x[0] for x in cycle] + [cycle[-1][1]]),
+            "Cycle in component graph: {cycle}".format(
+                cycle=' → '.join([x[0] for x in cycle] + [cycle[-1][1]]),
+            ),
         )
 
 
@@ -93,6 +90,8 @@ def test_layers():
     root = pathlib.Path(jacquard.__file__).parent
 
     imports = set()
+
+    forbidden_imports = []
 
     for source_file in root.glob('**/*.py'):
         if 'tests' in source_file.parts:
@@ -116,6 +115,8 @@ def test_layers():
 
         code = compile(contents, module_name, 'exec')
 
+        last_import_source = None
+
         for instruction in dis.get_instructions(code):
             if instruction.opname == 'IMPORT_NAME':
                 import_target = instruction.argval
@@ -123,7 +124,39 @@ def test_layers():
                 if not import_target.startswith('jacquard'):
                     continue
 
+                target_elements = import_target.split('.')
+
+                if (
+                    len(target_elements) > 2 and
+                    target_elements[1] != relative_parts[1]
+                ):
+                    forbidden_imports.append((module_name, import_target))
+
                 imports.add((module_name, import_target))
+
+                last_import_source = import_target
+            elif instruction.opname == 'IMPORT_FROM':
+                if instruction.argval.startswith('_'):
+                    raise AssertionError(
+                        "Private-scope import: {importer} imports {symbol} "
+                        "from {importee}".format(
+                            importer=module_name,
+                            symbol=instruction.argval,
+                            importee=last_import_source,
+                        ),
+                    )
+
+    if forbidden_imports:
+        raise AssertionError("{count} forbidden import(s): {illegals}".format(
+            count=len(forbidden_imports),
+            illegals=', '.join(
+                '{importer} → {importee}'.format(
+                    importer=importer,
+                    importee=importee,
+                )
+                for importer, importee in forbidden_imports
+            ),
+        ))
 
     dependency_graph = build_dependency_graph()
 
@@ -151,11 +184,12 @@ def test_layers():
             )
         except networkx.NetworkXNoPath:
             raise AssertionError(
-                "Layering violation: %s cannot depend on %s (%s currently "
-                "imports %s)" % (
-                    importer_component,
-                    importee_component,
-                    importer,
-                    importee,
+                "Layering violation: {importer_component} cannot depend on "
+                "{importee_component} ({importer_module} currently imports "
+                "{importee_module})".format(
+                    importer_component=importer_component,
+                    importee_component=importee_component,
+                    importer_module=importer,
+                    importee_module=importee,
                 ),
-            )
+            ) from None

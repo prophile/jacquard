@@ -5,9 +5,8 @@ import contextlib
 import dateutil.parser
 
 from jacquard.utils import check_keys
-from jacquard.buckets.constants import NUM_BUCKETS
-
-from .constraints import Constraints, ConstraintContext
+from jacquard.buckets import NUM_BUCKETS
+from jacquard.constraints import Constraints, ConstraintContext
 
 
 class Experiment(object):
@@ -40,7 +39,9 @@ class Experiment(object):
                 raise ValueError("Branch without ID")
             branch_id = branch['id']
             if branch_id in branch_ids:
-                raise ValueError("Duplicate branch ID: %r" % branch_id)
+                raise ValueError("Duplicate branch ID: '{branch_id}'".format(
+                    branch_id=branch_id,
+                ))
             branch_ids.add(branch_id)
             if 'settings' not in branch:
                 raise ValueError("No settings given")
@@ -94,7 +95,9 @@ class Experiment(object):
     @classmethod
     def from_store(cls, store, experiment_id):
         """Create instance from a store lookup by ID."""
-        json_repr = dict(store['experiments/%s' % experiment_id])
+        json_repr = dict(store[
+            'experiments/{experiment_id}'.format(experiment_id=experiment_id)
+        ])
         # Be resilient to missing ID
         if 'id' not in json_repr:
             json_repr['id'] = experiment_id
@@ -143,7 +146,9 @@ class Experiment(object):
 
     def save(self, store):
         """Save into the given store using the ID as the key."""
-        store['experiments/%s' % self.id] = self.to_json()
+        store[
+            'experiments/{experiment_id}'.format(experiment_id=self.id)
+        ] = self.to_json()
 
     def branch(self, branch_id):
         """

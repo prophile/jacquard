@@ -3,9 +3,9 @@
 import yaml
 
 from jacquard.commands import BaseCommand
+from jacquard.constraints import Constraints
 from jacquard.buckets.utils import close, release
 from jacquard.buckets.constants import NUM_BUCKETS
-from jacquard.experiments.constraints import Constraints
 
 
 class Rollout(BaseCommand):
@@ -61,7 +61,7 @@ class Rollout(BaseCommand):
 
     def handle(self, config, options):
         """Run command."""
-        rollout_key = 'rollout:%s' % options.setting
+        rollout_key = 'rollout:{setting}'.format(setting=options.setting)
 
         constraints = Constraints(
             required_tags=options.with_tag,

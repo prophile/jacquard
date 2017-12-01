@@ -3,19 +3,20 @@
 import time
 import uuid
 import pickle
+import typing  # noqa: F401
 import logging
 import warnings
 import threading
 
 import redis
 
-from .base import StorageEngine
-from .exceptions import Retry
+from jacquard.storage.base import StorageEngine
+from jacquard.storage.exceptions import Retry
 
 LOGGER = logging.getLogger('jacquard.storage.cloned_redis')
 
 
-_REDIS_POOL = {}
+_REDIS_POOL = {}  # type: typing.Dict[str, _RedisDataPool]
 _REDIS_POOL_LOCK = threading.Lock()
 
 
@@ -27,7 +28,9 @@ class _RedisDataPool(object):
         self.pubsub_semaphore = threading.Semaphore(0)
 
         pubsub_thread = threading.Thread(
-            name="Redis-PubSub:%s" % self.connection_string,
+            name="Redis-PubSub:{connection_string}".format(
+                connection_string=self.connection_string,
+            ),
             target=self.pubsub_thread,
             daemon=True,
         )
@@ -54,7 +57,9 @@ class _RedisDataPool(object):
             if raw_data is None:
                 warnings.warn(
                     "Mysteriously found no data associated with state key: "
-                    "%s" % self.state_key,
+                    "{state_key}".format(
+                        state_key=self.state_key,
+                    ),
                 )
                 self.current_data = {}
             else:
@@ -123,17 +128,20 @@ class _RedisDataPool(object):
                     if message['type'] != 'message':
                         raise RuntimeError(
                             "Received unexpected Redis pub/sub message "
-                            "of type %r (full data: %r)" % (
-                                message['type'],
-                                message,
+                            "of type '{message_type}' "
+                            "(full data: {data!r})".format(
+                                message_type=message['type'],
+                                data=message,
                             ),
                         )
 
                     if message['channel'] != b'jacquard-store:state-key':
                         raise RuntimeError(
                             "Unexpectedly received Redis pub/sub message "
-                            "for channel '%s' (should only be received on "
-                            "'jacquard-store:state-key')" % message['channel'],
+                            "for channel '{channel}' (should only be received "
+                            "on 'jacquard-store:state-key')".format(
+                                channel=message['channel'],
+                            ),
                         )
 
                     with self.lock:
@@ -186,7 +194,7 @@ def resync_all_connections():
             connection.sync_update()
 
 
-class ClonedRedisStore(StorageEngine):
+class ClonedRedisStore(StorageEngine, threading.local):
     """
     Cloned Redis store.
 

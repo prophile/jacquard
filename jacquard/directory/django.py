@@ -17,7 +17,7 @@ import functools
 import sqlalchemy
 import sqlalchemy.sql
 
-from .base import Directory, UserEntry
+from jacquard.directory.base import Directory, UserEntry
 
 LOGGER = logging.getLogger('jacquard.directory.django')
 
@@ -69,10 +69,16 @@ class DjangoDirectory(Directory):
         """
         query = self.query + " WHERE id = :user"
 
+        try:
+            user_id = int(user_id)
+        except ValueError:
+            LOGGER.debug("Invalid ID")
+            return None
+
         LOGGER.debug("Lookup user %s", user_id)
         result = self.engine.execute(
             sqlalchemy.sql.text(query),
-            user=int(user_id),
+            user=user_id,
         )
 
         try:
@@ -83,21 +89,3 @@ class DjangoDirectory(Directory):
 
         LOGGER.debug("Got row: %s", row)
         return self.describe_user(row)
-
-    def all_users(self):
-        """
-        Iterate over all users.
-
-        For the sake of consistency this orders by the `id` field. Under most
-        database configurations with Django the `id` field will have a unique
-        BTree or equivalent index, so this shouldn't *drastically* add to the
-        query runtime.
-
-        Results are streamed in rather than forced.
-        """
-        query = self.query + " ORDER BY id ASC"
-
-        result = self.engine.execute(query)
-
-        for row in result.fetchall():
-            yield self.describe_user(row)

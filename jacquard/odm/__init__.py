@@ -1,15 +1,15 @@
 """Object-Document mapper. Like an ORM but for key-value stores."""
 
 
-from .base import Model
-from .fields import (
+from jacquard.odm.base import Model
+from jacquard.odm.fields import (
     BaseField,
     EncodeDecodeField,
     JSONField,
     ListField,
     TextField,
 )
-from .session import (
+from jacquard.odm.session import (
     CREATE,
     EMPTY,
     RAISE,

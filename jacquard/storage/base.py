@@ -3,14 +3,14 @@
 import abc
 import contextlib
 
-from .utils import TransactionMap
+from jacquard.storage.utils import TransactionMap
 
 
 class StorageEngine(metaclass=abc.ABCMeta):
     """
     Base storage engine class.
 
-    StorageEngine subclasses are not under any obligation to be thread-safe.
+    StorageEngine subclasses are required to be thread-safe.
     """
 
     @abc.abstractmethod
@@ -147,13 +147,14 @@ class StorageEngine(metaclass=abc.ABCMeta):
         ) and read_only:
             self.rollback()
             raise RuntimeError(
-                "Commit in read-only transaction (keys: %s)" %
-                ', '.join(
-                    repr(x)
-                    for x in (
-                        set(transaction_map.changes.keys()) |
-                        set(transaction_map.deletions)
-                    )
+                "Commit in read-only transaction (keys: {keys})".format(
+                    keys=", ".join(
+                        repr(x)
+                        for x in (
+                            set(transaction_map.changes.keys()) |
+                            set(transaction_map.deletions)
+                        )
+                    ),
                 )
             )
         else:

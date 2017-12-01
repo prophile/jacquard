@@ -40,7 +40,7 @@ with open('README.rst', 'r', encoding='utf-8') as f:
 
 setup(
     name='jacquard-split',
-    version='0.4.1',
+    version='0.5.0',
     url='https://github.com/prophile/jacquard',
     description="Split testing server",
     long_description=long_description,
@@ -120,15 +120,17 @@ setup(
             'conclude = jacquard.experiments.commands:Conclude',
             'load-experiment = jacquard.experiments.commands:Load',
             'rollout = jacquard.buckets.commands:Rollout',
+            'settings-under-experiment = jacquard.experiments.commands:SettingsUnderActiveExperiments',
             'bugpoint = jacquard.commands_dev:Bugpoint',
         ),
         'jacquard.commands.list': (
             'experiments = jacquard.experiments.commands:ListExperiments',
-            'users = jacquard.directory.commands:ListUsers',
         ),
         'jacquard.commands.show': (
             'user = jacquard.users.commands:Show',
             'defaults = jacquard.users.commands:Show',
+            'directory-entry = jacquard.directory.commands:ShowDirectoryEntry',
+            'experiment = jacquard.experiments.commands:Show',
         ),
         'jacquard.directory_engines': (
             'dummy = jacquard.directory.dummy:DummyDirectory',
@@ -140,6 +142,8 @@ setup(
             'user = jacquard.service.endpoints:User',
             'experiments-overview = jacquard.service.endpoints:ExperimentsOverview',
             'experiment = jacquard.service.endpoints:ExperimentDetail',
+            'experiment-partition = jacquard.service.endpoints:ExperimentPartition',
+            'defaults = jacquard.service.endpoints:Defaults',
         ),
     },
 )

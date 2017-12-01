@@ -1,6 +1,5 @@
 """`jacquard` command-line tool handling."""
 
-import os
 import sys
 import logging
 import pathlib
@@ -13,11 +12,7 @@ import pkg_resources
 from jacquard.config import load_config
 from jacquard.plugin import plug_all
 from jacquard.commands import CommandError
-
-DEFAULT_CONFIG_FILE_PATH = pathlib.Path(os.environ.get(
-    'JACQUARD_CONFIG',
-    '/etc/jacquard/config.cfg',
-))
+from jacquard.constants import DEFAULT_CONFIG_FILE_PATH
 
 SUBCOMMAND_GROUPS = (
     ('list', "show lists of various topics"),
@@ -43,8 +38,31 @@ def _add_subparsers_from_plugins(subparsers, plugin_group):
         command.add_arguments(subparser)
 
 
+<<<<<<< HEAD
 @functools.lru_cache()
 def _build_argument_parser(cwd=None):
+=======
+def _add_help_command(parser, subparsers):
+    subparser = subparsers.add_parser(
+        'help',
+        description="show this help",
+        help="show this help",
+    )
+
+    def _help(config, options):
+        help_subcommand = list(options.command) + ['--help']
+        parser.parse_args(help_subcommand)
+
+    subparser.set_defaults(func=_help)
+    subparser.add_argument(
+        'command',
+        nargs='*',
+        help='command to ask about',
+    )
+
+
+def argument_parser():
+>>>>>>> master
     """
     Generate an argparse `ArgumentParser` for the CLI.
 
@@ -108,12 +126,17 @@ def _build_argument_parser(cwd=None):
 
         _add_subparsers_from_plugins(
             subparsers=subsubcommands,
-            plugin_group='commands.%s' % subcommand,
+            plugin_group='commands.{subcommand}'.format(
+                subcommand=subcommand,
+            ),
         )
+
+    _add_help_command(parser, subparsers)
 
     return parser
 
 
+<<<<<<< HEAD
 def argument_parser():
     """
     Generate an argparse `ArgumentParser` for the CLI.
@@ -123,6 +146,34 @@ def argument_parser():
     Using this mechanism, plugins can add their own subcommands.
     """
     return _build_argument_parser(os.getcwd())
+=======
+def _configure_process_and_load_config_from_options(
+    options,
+    override_config=None,
+):
+    logging.basicConfig(level=options.log_level)
+
+    if options.func is None:
+        # Print help where there are no other arguments. Rather than using
+        # `print_help` we explicitly use exactly the same mechanism as
+        # --help, which ensures that the exit code, and any extra I/O ops
+        # such as buffer flushes, are identical.
+        argument_parser().parse_args(['--help'])
+        # --help exits the process; something extremely weird has happened if
+        # we reached this point in execution.
+        raise AssertionError("parse_args(--help) returned")
+
+    if override_config is not None:
+        return override_config
+
+    try:
+        return load_config(options.config)
+    except FileNotFoundError:
+        print("Could not read config file '{path}'".format(
+            path=options.config,
+        ))
+        sys.exit(1)
+>>>>>>> master
 
 
 def main(args=sys.argv[1:], config=None):
@@ -139,19 +190,10 @@ def main(args=sys.argv[1:], config=None):
     parser = argument_parser()
     options = parser.parse_args(args)
 
-    logging.basicConfig(level=options.log_level)
-
-    if options.func is None:
-        parser.print_help()
-        return
-
-    # Parse options
-    if config is None:
-        try:
-            config = load_config(options.config)
-        except FileNotFoundError:
-            print("Could not read config file '%s'" % options.config)
-            return
+    config = _configure_process_and_load_config_from_options(
+        options=options,
+        override_config=config,
+    )
 
     # Run subcommand
     with contextlib.suppress(KeyboardInterrupt):
@@ -161,7 +203,3 @@ def main(args=sys.argv[1:], config=None):
             (message,) = exc.args
             print(message, file=sys.stderr)
             exit(1)
-
-
-if '__name__' == '__main__':
-    main()
