@@ -1,5 +1,6 @@
 """`jacquard` command-line tool handling."""
 
+import os
 import sys
 import logging
 import pathlib
@@ -57,16 +58,8 @@ def _add_help_command(parser, subparsers):
     )
 
 
-def argument_parser():
-    """
-    Generate an argparse `ArgumentParser` for the CLI.
-
-    This will look through all defined `jacquard.commands` entry points for
-    subcommands; these are subclasses of `jacquard.commands.BaseCommand`.
-    Using this mechanism, plugins can add their own subcommands.
-    """
-    # We parameterise this by cwd to persuade `lru_cache` that this is
-    # important.
+@functools.lru_cache()
+def _build_argument_parser(cwd=None):
     parser = argparse.ArgumentParser(description="Split testing server")
     parser.add_argument(
         '-v',
@@ -129,6 +122,19 @@ def argument_parser():
     _add_help_command(parser, subparsers)
 
     return parser
+
+
+def argument_parser():
+    """
+    Generate an argparse `ArgumentParser` for the CLI.
+
+    This will look through all defined `jacquard.commands` entry points for
+    subcommands; these are subclasses of `jacquard.commands.BaseCommand`.
+    Using this mechanism, plugins can add their own subcommands.
+    """
+    # We parameterise this by cwd to persuade `lru_cache` that this is
+    # important.
+    return _build_argument_parser(os.getcwd())
 
 
 def _configure_process_and_load_config_from_options(
