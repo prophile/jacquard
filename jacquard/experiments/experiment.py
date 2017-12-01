@@ -28,6 +28,9 @@ class Experiment(object):
         concluded=None
     ):
         """Base constructor. Takes all the arguments."""
+        if not experiment_id:
+            raise ValueError("Experiment ID must be non-empty")
+
         self.id = experiment_id
 
         if not branches:
