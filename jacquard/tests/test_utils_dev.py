@@ -1,5 +1,6 @@
 from jacquard.utils_dev import shrink
 
+
 def test_shrink_none_produces_none():
     assert shrink(None, lambda x: True) is None
 
