@@ -1,5 +1,9 @@
 """Utilities for dev commands."""
 
+import dateutil.tz
+import dateutil.parser
+import datetime
+
 
 # These individual shrinkers define how to shrink by an individual type. They
 # return a 2-tuple, (shrunk value, continue). If the second parameter is True
@@ -34,9 +38,42 @@ def _shrink_number(data, is_valid):
         return data, False
 
 
+def _shrink_date(date, is_valid):
+    # Instead try to zero out components
+    simplifiable_components = [
+        ('microsecond', 0),
+        ('month', 1),
+        ('day', 1),
+        ('hour', 0),
+        ('minute', 0),
+        ('second', 0),
+        ('year', 2000),
+        ('tzinfo', None),
+    ]
+
+    for component, simplest_value in simplifiable_components:
+        if getattr(date, component) != simplest_value:
+            substituted = date.replace(**{component: simplest_value})
+            if is_valid(substituted):
+                return substituted, True
+
+    return date, False
+
 def _shrink_string(data, is_valid):
     if len(data) == 0:
         return data, False  # as minimal as it gets
+    # If it's a date, shrink it as a date
+    try:
+        date_value = dateutil.parser.parse(data)
+    except ValueError:
+        # Not a date, continue on
+        pass
+    else:
+        if is_valid(str(date_value)):
+            # This is shrinkable as a date, do so
+            shrunk, reduce_further = _shrink_date(date_value, lambda x: is_valid(str(x)))
+            return str(shrunk), reduce_further
+
     # Try the empty string
     if is_valid(''):
         return '', False
