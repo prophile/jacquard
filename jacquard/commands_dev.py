@@ -11,10 +11,9 @@ from werkzeug.wrappers import BaseResponse
 
 from jacquard.cli import main as run_command
 from jacquard.service import get_wsgi_app
+from jacquard.storage import DummyStore, copy_data
 from jacquard.commands import BaseCommand, CommandError
 from jacquard.utils_dev import shrink
-from jacquard.storage.dummy import DummyStore
-from jacquard.storage.utils import copy_data
 
 
 class _DuplicateStorageConfig(object):

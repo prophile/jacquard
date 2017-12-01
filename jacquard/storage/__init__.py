@@ -23,7 +23,16 @@ redis
   little tinkering to be able to run in multi-machine setups.
 """
 
-from jacquard.storage.utils import open_engine, retrying
+from jacquard.storage.base import StorageEngine
+from jacquard.storage.dummy import DummyStore
+from jacquard.storage.utils import open_engine, retrying, copy_data
 from jacquard.storage.exceptions import Retry
 
-__all__ = ('open_engine', 'retrying', 'Retry')
+__all__ = (
+    'open_engine',
+    'retrying',
+    'Retry',
+    'DummyStore',
+    'copy_data',
+    'StorageEngine',
+)
