@@ -72,7 +72,7 @@ def test_conclude_before_launch_not_allowed():
 
     stderr = io.StringIO()
     with contextlib.redirect_stderr(stderr), pytest.raises(SystemExit):
-            main(('conclude', 'foo', 'bar'), config=config)
+        main(('conclude', 'foo', 'bar'), config=config)
 
     assert 'concluded' not in config.storage['experiments/foo']
     assert config.storage['active-experiments'] is None
