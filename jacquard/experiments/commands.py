@@ -115,11 +115,22 @@ class Conclude(BaseCommand):
             concluded_experiments = store.get('concluded-experiments', [])
 
             if options.experiment not in current_experiments:
-                raise CommandError(
-                    "Experiment '{experiment_id}' not launched!".format(
+                if experiment.concluded is None:
+                    message = (
+                        "Experiment '{experiment_id}' not launched!"
+                    ).format(
                         experiment_id=options.experiment,
-                    ),
-                )
+                    )
+                else:
+                    message = (
+                        "Experiment '{experiment_id}' already concluded (at "
+                        "{concluded})!"
+                    ).format(
+                        experiment_id=options.experiment,
+                        concluded=experiment.concluded,
+                    )
+
+                raise CommandError(message)
 
             current_experiments.remove(options.experiment)
             concluded_experiments.append(options.experiment)
