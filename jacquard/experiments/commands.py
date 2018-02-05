@@ -116,11 +116,16 @@ class Conclude(BaseCommand):
 
             if options.experiment not in current_experiments:
                 if experiment.concluded is None:
-                    message = "Experiment '{experiment_id}' not launched!".format(
+                    message = (
+                        "Experiment '{experiment_id}' not launched!"
+                    ).format(
                         experiment_id=options.experiment,
                     )
                 else:
-                    message = "Experiment '{experiment_id}' already concluded (at {concluded})!".format(
+                    message = (
+                        "Experiment '{experiment_id}' already concluded (at "
+                        "{concluded})!"
+                    ).format(
                         experiment_id=options.experiment,
                         concluded=experiment.concluded,
                     )
