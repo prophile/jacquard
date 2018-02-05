@@ -62,3 +62,4 @@ jacquard.db
 config.cfg
 doc/_build
 .mypy_cache
+.pytest_cache
