@@ -82,6 +82,26 @@ def test_conclude_before_launch_not_allowed():
     assert stderr.getvalue() == "Experiment 'foo' not launched!\n"
 
 
+def test_conclude_twice_not_allowed():
+    config = Mock()
+    config.storage = DummyStore('', data=DUMMY_DATA_POST_LAUNCH)
+
+    # first conclude works fine
+    main(('conclude', 'foo', 'bar'), config=config)
+
+    # second conclude should error
+    stderr = io.StringIO()
+    with contextlib.redirect_stderr(stderr), pytest.raises(SystemExit):
+        main(('conclude', 'foo', 'other'), config=config)
+
+    assert 'concluded' in config.storage['experiments/foo']
+    assert 'foo' not in config.storage['active-experiments']
+    assert 'foo' in config.storage['concluded-experiments']
+    assert config.storage['defaults'] == BRANCH_SETTINGS
+
+    assert stderr.getvalue().startswith("Experiment 'foo' already concluded")
+
+
 def test_load_after_launch_errors():
     config = Mock()
     config.storage = DummyStore('', data=DUMMY_DATA_POST_LAUNCH)
