@@ -66,6 +66,22 @@ def test_conclude_updates_defaults():
     assert config.storage['defaults'] == BRANCH_SETTINGS
 
 
+def test_conclude_before_launch_not_allowed():
+    config = Mock()
+    config.storage = DummyStore('', data=DUMMY_DATA_PRE_LAUNCH)
+
+    stderr = io.StringIO()
+    with contextlib.redirect_stderr(stderr), pytest.raises(SystemExit):
+            main(('conclude', 'foo', 'bar'), config=config)
+
+    assert 'concluded' not in config.storage['experiments/foo']
+    assert config.storage['active-experiments'] is None
+    assert config.storage['concluded-experiments'] is None
+    assert config.storage['defaults'] is None
+
+    assert stderr.getvalue() == "Experiment 'foo' not launched!\n"
+
+
 def test_load_after_launch_errors():
     config = Mock()
     config.storage = DummyStore('', data=DUMMY_DATA_POST_LAUNCH)
