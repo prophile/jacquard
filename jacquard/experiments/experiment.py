@@ -85,6 +85,24 @@ class Experiment(object):
         """
         kwargs = {}
 
+        if not isinstance(obj, dict):
+            raise ValueError(
+                "Experiment definition is not valid – "
+                "top level is not a dict",
+            )
+
+        if 'id' not in obj:
+            raise ValueError(
+                "Experiment definition is not valid – "
+                "no `id` is given.",
+            )
+
+        if 'branches' not in obj:
+            raise ValueError(
+                "Experiment definition is not valid - "
+                "no `branches` given.",
+            )
+
         with contextlib.suppress(KeyError):
             kwargs['name'] = obj['name']
 
