@@ -1,0 +1,3 @@
+- command: conclude foo bar
+  expect_error: >
+    No such experiment: "foo"

@@ -40,7 +40,12 @@ class Launch(BaseCommand):
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction() as store:
-            experiment = Experiment.from_store(store, options.experiment)
+            try:
+                experiment = Experiment.from_store(store, options.experiment)
+            except LookupError:
+                raise CommandError("No such experiment: \"{id}\"".format(
+                    id=options.experiment,
+                ))
 
             current_experiments = store.get('active-experiments', [])
 
@@ -114,7 +119,12 @@ class Conclude(BaseCommand):
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction() as store:
-            experiment = Experiment.from_store(store, options.experiment)
+            try:
+                experiment = Experiment.from_store(store, options.experiment)
+            except LookupError:
+                raise CommandError("No such experiment: \"{id}\"".format(
+                    id=options.experiment,
+                ))
 
             current_experiments = store.get('active-experiments', [])
             concluded_experiments = store.get('concluded-experiments', [])
