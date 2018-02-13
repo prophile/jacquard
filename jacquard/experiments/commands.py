@@ -313,7 +313,12 @@ class Show(BaseCommand):
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction(read_only=True) as store:
-            experiment = Experiment.from_store(store, options.experiment)
+            try:
+                experiment = Experiment.from_store(store, options.experiment)
+            except LookupError:
+                raise CommandError("No such experiment: \"{id}\"".format(
+                    id=options.experiment,
+                ))
             self.show_experiment(experiment, with_settings=options.settings)
 
 

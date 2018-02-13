@@ -1,0 +1,3 @@
+- command: show experiment foo
+  expect_error: >
+    No such experiment: "foo"
