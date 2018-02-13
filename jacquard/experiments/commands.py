@@ -7,6 +7,7 @@ import collections
 import yaml
 import dateutil.tz
 
+from jacquard.utils import is_recursive
 from jacquard.buckets import NotEnoughBucketsException, close, release
 from jacquard.storage import retrying
 from jacquard.commands import BaseCommand, CommandError
@@ -210,6 +211,11 @@ class Load(BaseCommand):
                     definition = yaml.safe_load(file)
                 except (yaml.YAMLError, UnicodeError) as e:
                     raise CommandError(str(e))
+
+                if is_recursive(definition):
+                    raise CommandError(
+                        "Recursive structure in experiment definition",
+                    )
 
                 try:
                     experiment = Experiment.from_json(definition)
