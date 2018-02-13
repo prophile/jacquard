@@ -6,15 +6,16 @@ jobs:
       - image: &docker-image circleci/python:3.5-jessie-node-browsers
     steps:
       - checkout
-      - run: pip install --upgrade setuptools
-      - run: pip install pytest pytest-cov fakeredis hypothesis networkx mypy
-      - run: pip install -r script/linting/requirements.txt
+      - run: python3 -m venv venv
+      - run: venv/bin/pip install --upgrade setuptools
+      - run: venv/bin/pip install pytest pytest-cov fakeredis hypothesis networkx mypy
+      - run: venv/bin/pip install -r script/linting/requirements.txt
       - run: gem install fpm
       - run: rm -rf jacquard_split.egg-info
-      - run: pip install -e .
+      - run: venv/bin/pip install -e .
       - run: find . -name '__pycache__' -or -name '*.pyc' | xargs rm -rf
       - run: mkdir -p $CIRCLE_TEST_REPORTS/pytest
-      - run: py.test -v --cov=jacquard --junit-xml=$CIRCLE_TEST_REPORTS/pytest/junit.xml jacquard
+      - run: venv/bin/py.test -v --cov=jacquard --junit-xml=$CIRCLE_TEST_REPORTS/pytest/junit.xml jacquard
       - run: script/linting/lint
       - run: mypy -p jacquard --ignore-missing-imports --strict-optional
       - run: ./hax_debian.sh
