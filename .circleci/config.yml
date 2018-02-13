@@ -1,39 +1,36 @@
-version: 1
+version: 2
 
-machine:
-  python:
-    version: "3.5.2"
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.5.2
+    steps:
+      - checkout
+      - run: pip install --upgrade setuptools
+      - run: pip install pytest pytest-cov fakeredis hypothesis networkx mypy
+      - run: pip install -r script/linting/requirements.txt
+      - run: gem install fpm
+      - run: rm -rf jacquard_split.egg-info
+      - run: pip install -e .
+      - run: find . -name '__pycache__' -or -name '*.pyc' | xargs rm -rf
+      - run: mkdir -p $CIRCLE_TEST_REPORTS/pytest
+      - run: py.test -v --cov=jacquard --junit-xml=$CIRCLE_TEST_REPORTS/pytest/junit.xml jacquard
+      - run: script/linting/lint
+      - run: mypy -p jacquard --ignore-missing-imports --strict-optional
+      - run: ./hax_debian.sh
+      - run: mkdir -p debs
+      - run: mv *.deb debs/
+      - store_artifacts:
+          path: debs
+          prefix: debs
 
-dependencies:
-  pre:
-    - pip install --upgrade setuptools
-    - pip install pytest pytest-cov fakeredis hypothesis networkx mypy
-    - pip install -r script/linting/requirements.txt
-    - sudo apt-get update ; sudo apt-get install python3 python3-setuptools
-    - gem install fpm
-  override:
-    - rm -rf jacquard_split.egg-info
-    - pip install -e .
-
-test:
-  pre:
-    - find . -name '__pycache__' -or -name '*.pyc' | xargs rm -rf
-  override:
-    - mkdir -p $CIRCLE_TEST_REPORTS/pytest
-    - py.test -v --cov=jacquard --junit-xml=$CIRCLE_TEST_REPORTS/pytest/junit.xml jacquard
-    - script/linting/lint
-    - mypy -p jacquard --ignore-missing-imports --strict-optional
-  post:
-    - ./hax_debian.sh
-    - mv *.deb $CIRCLE_ARTIFACTS/
-
-deployment:
-  release:
-    tag: /[0-9]+(\.[0-9]+)*/
-    owner: prophile
-    commands:
-      - pip install twine wheel
-      - rm -rf dist
-      - python setup.py sdist bdist_wheel
-      - twine upload dist/*
+# deployment:
+#   release:
+#     tag: /[0-9]+(\.[0-9]+)*/
+#     owner: prophile
+#     commands:
+#       - pip install twine wheel
+#       - rm -rf dist
+#       - python setup.py sdist bdist_wheel
+#       - twine upload dist/*
 
