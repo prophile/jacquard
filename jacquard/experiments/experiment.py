@@ -70,6 +70,10 @@ class Experiment(object):
         if self.concluded and self.launched and self.launched > self.concluded:
             raise ValueError("Experiment concluded before launch")
 
+    def is_live(self):
+        """Establish whether this experiment is running."""
+        return self.launched is not None and self.concluded is None
+
     @classmethod
     def from_json(cls, obj):
         """

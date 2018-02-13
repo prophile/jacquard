@@ -243,11 +243,18 @@ class ListExperiments(BaseCommand):
             action='store_true',
             help="whether to show experiment details in the listing",
         )
+        parser.add_argument(
+            '--active',
+            action='store_true',
+            help="only show active experiments",
+        )
 
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction(read_only=True) as store:
             for experiment in Experiment.enumerate(store):
+                if options.active and not experiment.is_live():
+                    continue
                 Show.show_experiment(experiment, options.detailed)
 
 

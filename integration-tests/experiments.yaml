@@ -9,6 +9,8 @@
     =============
 
     Not yet launched
+- command: list experiments --active
+  expect: ""
 
 - command: show experiment hello --settings
   expect: |
@@ -22,6 +24,9 @@
      * cta
 
 - command: launch hello
+- command: list experiments --active
+  expect: |
+    hello: Hello!
 - command: conclude hello test
 - command: show defaults
   expect: |
