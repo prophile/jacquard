@@ -6,6 +6,7 @@ import hashlib
 from jacquard.odm import CREATE, Session
 from jacquard.buckets.models import Bucket
 from jacquard.buckets.constants import NUM_BUCKETS
+from jacquard.buckets.exceptions import NotEnoughBucketsException
 
 
 def user_bucket(user_id):
@@ -60,7 +61,7 @@ def release(store, name, constraints, branches):
         bucket_indices = valid_bucket_indices[:n_buckets]
 
         if len(bucket_indices) < n_buckets:
-            raise ValueError("Not enough usable buckets")
+            raise NotEnoughBucketsException(conflicts=set())
 
         valid_bucket_indices = valid_bucket_indices[n_buckets:]
 
