@@ -55,7 +55,12 @@ def release(store, name, constraints, branches):
         if is_valid_bucket(bucket, edited_settings, constraints):
             valid_bucket_indices.append(idx)
         else:
-            conflicting_experiments.add('foo')
+            for entry in bucket.entries:
+                # Determine if this entry is a potential conflict
+                if set(entry.settings.keys()).isdisjoint(edited_settings):
+                    continue
+                conflicting_experiment_id, _ = entry.key
+                conflicting_experiments.add(conflicting_experiment_id)
 
     random.shuffle(valid_bucket_indices)
 
@@ -64,7 +69,7 @@ def release(store, name, constraints, branches):
         bucket_indices = valid_bucket_indices[:n_buckets]
 
         if len(bucket_indices) < n_buckets:
-            raise NotEnoughBucketsException(conflicts=set())
+            raise NotEnoughBucketsException(conflicts=conflicting_experiments)
 
         valid_bucket_indices = valid_bucket_indices[n_buckets:]
 
