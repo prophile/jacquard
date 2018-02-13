@@ -208,7 +208,7 @@ class Load(BaseCommand):
             for file in options.files:
                 try:
                     definition = yaml.safe_load(file)
-                except yaml.YAMLError as e:
+                except (yaml.YAMLError, UnicodeError) as e:
                     raise CommandError(str(e))
 
                 try:
