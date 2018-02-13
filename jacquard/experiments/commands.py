@@ -208,7 +208,10 @@ class Load(BaseCommand):
             for file in options.files:
                 definition = yaml.safe_load(file)
 
-                experiment = Experiment.from_json(definition)
+                try:
+                    experiment = Experiment.from_json(definition)
+                except ValueError as e:
+                    raise CommandError(str(e)) from None
 
                 if experiment.id in live_experiments:
                     if options.skip_launched:
