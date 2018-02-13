@@ -206,7 +206,10 @@ class Load(BaseCommand):
             concluded_experiments = store.get('concluded-experiments', ())
 
             for file in options.files:
-                definition = yaml.safe_load(file)
+                try:
+                    definition = yaml.safe_load(file)
+                except yaml.YAMLError as e:
+                    raise CommandError(str(e))
 
                 try:
                     experiment = Experiment.from_json(definition)
