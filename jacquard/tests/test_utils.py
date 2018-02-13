@@ -2,7 +2,7 @@ import pytest
 import hypothesis
 import hypothesis.strategies
 
-from jacquard.utils import check_keys
+from jacquard.utils import check_keys, is_recursive
 
 
 def get_error(passed_keys, known_keys):
@@ -82,3 +82,23 @@ def test_offers_correction_for_minor_error_with_many_possible_keys(
 
     assert incorrect_key in error_message
     assert actual_key in error_message
+
+
+def test_primitive_types_are_non_recursive():
+    assert not is_recursive(True)
+    assert not is_recursive(None)
+    assert not is_recursive(4)
+    assert not is_recursive("string")
+
+def test_dicts_can_be_detected_as_non_recursive():
+    assert not is_recursive({'foo': {'bar': 'bazz'}})
+
+def test_recursive_structures_are_detected():
+    elements = ['foo', 'bar']
+    elements.append(elements)
+    assert is_recursive(elements)
+
+def test_deep_recursive_structures_are_detected():
+    elements = ['foo', 'bar']
+    elements.append({'bazz': {'quux': elements}})
+    assert is_recursive(elements)

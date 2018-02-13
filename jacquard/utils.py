@@ -4,6 +4,34 @@
 import difflib
 
 
+def is_recursive(json_structure):
+    """Check whether a given JSON-like structure is recursive."""
+    seen_ids = set()
+
+    worklist = [json_structure]
+
+    while worklist:
+        this = worklist.pop()
+
+        if not isinstance(this, (dict, list, tuple)):
+            # Any JSON primitives cannot be self-referential
+            continue
+
+        this_id = id(this)
+
+        if this_id in seen_ids:
+            return True
+
+        seen_ids.add(this_id)
+
+        if isinstance(this, dict):
+            worklist.extend(this.values())
+        else:
+            worklist.extend(this)
+
+    return False
+
+
 def check_keys(passed_keys, known_keys, exception=ValueError):
     """
     Validate that all elements of passed_keys are in known_keys.
