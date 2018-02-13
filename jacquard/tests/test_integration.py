@@ -98,7 +98,10 @@ def test_integration(test_file):
 
             output = stdout.getvalue()
 
-            assert not stderr.getvalue()
+            if 'expect_error' in step:
+                error_message = stderr.getvalue()
+            else:
+                assert not stderr.getvalue()
 
         elif 'get' in step:
             path = step['get']
@@ -126,3 +129,9 @@ def test_integration(test_file):
             actual_output = yaml.safe_load(output)
 
             assert set(actual_output.keys()) == set(expected_keys)
+
+        if 'expect_error' in step:
+            expected_error = textwrap.dedent(step['expect_error'].strip())
+            actual_error = textwrap.dedent(error_message).strip()
+
+            assert actual_error == expected_error

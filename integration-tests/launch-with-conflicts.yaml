@@ -1,0 +1,5 @@
+- command: load-experiment test-data/experiment.yaml
+- command: rollout --percent 1 cta test-value
+- command: launch hello
+  expect_error: >
+    Conflicts: rollout on key "cta"

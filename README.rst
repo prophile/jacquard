@@ -97,3 +97,11 @@ The docs are hosted on `readthedocs <https://readthedocs.org>`_ and built using
 
     pip install sphinx sphinx-argparse
     python setup.py build_sphinx
+
+Pronounciating
+~~~~~~~~~~~~~~
+
+Jacquard is usually pronounced in a typical English munging of the French:
+`/'dʒæ kɑːd/` (Jack-ard). It can also be pronounced `/'ʒa kaʁ/`.
+
+

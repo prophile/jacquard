@@ -6,6 +6,7 @@ import hashlib
 from jacquard.odm import CREATE, Session
 from jacquard.buckets.models import Bucket
 from jacquard.buckets.constants import NUM_BUCKETS
+from jacquard.buckets.exceptions import NotEnoughBucketsException
 
 
 def user_bucket(user_id):
@@ -47,11 +48,19 @@ def release(store, name, constraints, branches):
 
     edited_settings = set.union(*[set(x[2].keys()) for x in branches])
 
-    valid_bucket_indices = [
-        idx
-        for idx, bucket in enumerate(all_buckets)
-        if is_valid_bucket(bucket, edited_settings, constraints)
-    ]
+    conflicting_experiments = set()
+    valid_bucket_indices = []
+
+    for idx, bucket in enumerate(all_buckets):
+        if is_valid_bucket(bucket, edited_settings, constraints):
+            valid_bucket_indices.append(idx)
+        else:
+            for entry in bucket.entries:
+                # Determine if this entry is a potential conflict
+                if set(entry.settings.keys()).isdisjoint(edited_settings):
+                    continue
+                conflicting_experiment_id, _ = entry.key
+                conflicting_experiments.add(conflicting_experiment_id)
 
     random.shuffle(valid_bucket_indices)
 
@@ -60,7 +69,7 @@ def release(store, name, constraints, branches):
         bucket_indices = valid_bucket_indices[:n_buckets]
 
         if len(bucket_indices) < n_buckets:
-            raise ValueError("Not enough usable buckets")
+            raise NotEnoughBucketsException(conflicts=conflicting_experiments)
 
         valid_bucket_indices = valid_bucket_indices[n_buckets:]
 

@@ -7,7 +7,7 @@ import collections
 import yaml
 import dateutil.tz
 
-from jacquard.buckets import close, release
+from jacquard.buckets import NotEnoughBucketsException, close, release
 from jacquard.storage import retrying
 from jacquard.commands import BaseCommand, CommandError
 from jacquard.experiments.experiment import Experiment
@@ -62,12 +62,17 @@ class Launch(BaseCommand):
                         )
                     )
 
-            release(
-                store,
-                experiment.id,
-                experiment.constraints,
-                experiment.branch_launch_configuration(),
-            )
+            try:
+                release(
+                    store,
+                    experiment.id,
+                    experiment.constraints,
+                    experiment.branch_launch_configuration(),
+                )
+            except NotEnoughBucketsException as e:
+                raise CommandError("Conflicts: {conflicts}".format(
+                    conflicts=e.human_readable_conflicts(),
+                ))
 
             store['active-experiments'] = (
                 current_experiments + [options.experiment]
@@ -115,11 +120,22 @@ class Conclude(BaseCommand):
             concluded_experiments = store.get('concluded-experiments', [])
 
             if options.experiment not in current_experiments:
-                raise CommandError(
-                    "Experiment '{experiment_id}' not launched!".format(
+                if experiment.concluded is None:
+                    message = (
+                        "Experiment '{experiment_id}' not launched!"
+                    ).format(
                         experiment_id=options.experiment,
-                    ),
-                )
+                    )
+                else:
+                    message = (
+                        "Experiment '{experiment_id}' already concluded (at "
+                        "{concluded})!"
+                    ).format(
+                        experiment_id=options.experiment,
+                        concluded=experiment.concluded,
+                    )
+
+                raise CommandError(message)
 
             current_experiments.remove(options.experiment)
             concluded_experiments.append(options.experiment)
