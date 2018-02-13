@@ -46,6 +46,22 @@ if not _INTEGRATION_TEST_FILES:
     )
 
 
+def test_no_underscores_in_integration_test_names():
+    underscored_names = {
+        x
+        for x in _INTEGRATION_TEST_FILES
+        if '_' in x
+    }
+
+    if underscored_names:
+        raise AssertionError(
+            "Integration tests should be named with dash separators "
+            "(problem tests: {tests})".format(
+                tests=', '.join(sorted(underscored_names))
+            ),
+        )
+
+
 @contextlib.contextmanager
 def _temporary_working_directory(pwd):
     new_pwd = str(pwd)
