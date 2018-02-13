@@ -48,11 +48,14 @@ def release(store, name, constraints, branches):
 
     edited_settings = set.union(*[set(x[2].keys()) for x in branches])
 
-    valid_bucket_indices = [
-        idx
-        for idx, bucket in enumerate(all_buckets)
-        if is_valid_bucket(bucket, edited_settings, constraints)
-    ]
+    conflicting_experiments = set()
+    valid_bucket_indices = []
+
+    for idx, bucket in enumerate(all_buckets):
+        if is_valid_bucket(bucket, edited_settings, constraints):
+            valid_bucket_indices.append(idx)
+        else:
+            conflicting_experiments.add('foo')
 
     random.shuffle(valid_bucket_indices)
 
