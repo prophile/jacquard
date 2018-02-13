@@ -2,7 +2,6 @@
 
 import dateutil.tz
 import dateutil.parser
-import datetime
 
 
 # These individual shrinkers define how to shrink by an individual type. They
@@ -59,6 +58,7 @@ def _shrink_date(date, is_valid):
 
     return date, False
 
+
 def _shrink_string(data, is_valid):
     if len(data) == 0:
         return data, False  # as minimal as it gets
@@ -71,7 +71,10 @@ def _shrink_string(data, is_valid):
     else:
         if is_valid(str(date_value)):
             # This is shrinkable as a date, do so
-            shrunk, reduce_further = _shrink_date(date_value, lambda x: is_valid(str(x)))
+            shrunk, reduce_further = _shrink_date(
+                date_value,
+                lambda x: is_valid(str(x)),
+            )
             return str(shrunk), reduce_further
 
     # Try the empty string
