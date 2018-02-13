@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.5.2
+      - image: &docker-image circleci/python:3.5-jessie-node-browsers
     steps:
       - checkout
       - run: pip install --upgrade setuptools
