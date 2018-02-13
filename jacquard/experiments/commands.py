@@ -7,7 +7,7 @@ import collections
 import yaml
 import dateutil.tz
 
-from jacquard.buckets import close, release
+from jacquard.buckets import NotEnoughBucketsException, close, release
 from jacquard.storage import retrying
 from jacquard.commands import BaseCommand, CommandError
 from jacquard.experiments.experiment import Experiment
@@ -62,12 +62,17 @@ class Launch(BaseCommand):
                         )
                     )
 
-            release(
-                store,
-                experiment.id,
-                experiment.constraints,
-                experiment.branch_launch_configuration(),
-            )
+            try:
+                release(
+                    store,
+                    experiment.id,
+                    experiment.constraints,
+                    experiment.branch_launch_configuration(),
+                )
+            except NotEnoughBucketsException as e:
+                raise CommandError("Conflicts: {conflicts}".format(
+                    conflicts=e.human_readable_conflicts(),
+                ))
 
             store['active-experiments'] = (
                 current_experiments + [options.experiment]

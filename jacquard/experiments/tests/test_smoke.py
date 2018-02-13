@@ -221,8 +221,9 @@ def test_launch_experiment_with_overlapping_settings_errors():
 
     main(('launch', 'foo'), config=config)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(SystemExit) as e:
         main(('launch', 'bar'), config=config)
+    assert e.value.args == (1,)
 
     assert 'launched' not in config.storage['experiments/bar']
     assert 'concluded' not in config.storage['experiments/bar']
