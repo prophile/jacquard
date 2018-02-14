@@ -23,7 +23,8 @@ SUBCOMMAND_GROUPS = (
 
 def _add_subparsers_from_plugins(subparsers, plugin_group):
     for name, plugin in plug_all(plugin_group):
-        command = plugin()()
+        command_class = plugin()
+        command = command_class()
 
         command_help = getattr(command, 'help', name)
         is_plumbing = getattr(command, 'plumbing', False)
