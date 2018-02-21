@@ -16,14 +16,14 @@ def get_error(passed_keys, known_keys):
 
 @hypothesis.given(
     keys=hypothesis.strategies.lists(hypothesis.strategies.text()),
-    included=hypothesis.strategies.streaming(hypothesis.strategies.booleans()),
+    included=hypothesis.strategies.data(),
 )
 def test_accepts_with_all_known_keys(keys, included):
     known_keys = keys
     used_keys = [
         key
-        for key, should_include in zip(keys, included)
-        if should_include
+        for key in keys
+        if included.draw(hypothesis.strategies.booleans())
     ]
     check_keys(used_keys, known_keys)
 
