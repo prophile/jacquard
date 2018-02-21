@@ -45,6 +45,7 @@ class ClonedRedisGauntletTest(StorageGauntlet, unittest.TestCase):
 
 
 @pytest.mark.skipif(fakeredis is None, reason="fakeredis is not installed")
+@pytest.mark.filterwarnings('ignore:Mysteriously found')
 #@hypothesis.given(
 #    key=arbitrary_key,
 #    value1=arbitrary_json,
