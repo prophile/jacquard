@@ -1,12 +1,12 @@
 """Utilities for dev commands."""
 
-import dateutil.tz
-import dateutil.parser
-
-
 # These individual shrinkers define how to shrink by an individual type. They
 # return a 2-tuple, (shrunk value, continue). If the second parameter is True
 # it means further passes may be necessary.
+
+import dateutil.tz
+import dateutil.parser
+
 
 def _shrink_bool(data, is_valid):
     # Attempt to reduce to False, if valid
