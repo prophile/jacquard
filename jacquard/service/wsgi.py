@@ -3,6 +3,7 @@
 import json
 import logging
 
+import werkzeug.http
 import werkzeug.routing
 import werkzeug.wrappers
 import werkzeug.exceptions
@@ -46,6 +47,21 @@ def get_wsgi_app(config):
             def reverse(name, **kwargs):
                 endpoint = endpoints[name]
                 return urls.build(endpoint, values=kwargs)
+
+            content_type = werkzeug.http.parse_accept_header(
+                environ.get('HTTP_ACCEPT', '*/*'),
+                werkzeug.http.MIMEAccept,
+            ).best_match([
+                'application/json',
+            ])
+
+            if content_type is None:
+                response_text = b'Cannot satisfy the given MIME type.\n'
+                start_response('406 Not Acceptable', [
+                    ('Content-Type', 'text/plain; charset=ascii'),
+                    ('Content-Length', len(response_text)),
+                ])
+                return [response_text]
 
             request = werkzeug.wrappers.Request(environ)
 

@@ -64,6 +64,25 @@ def test_root():
     }
 
 
+def test_root_accept_json():
+    client = get_test_client()
+    data, status, headers = client.get(
+        '/',
+        headers={'Accept': 'application/json'},
+    )
+    assert status == '200 OK'
+    assert headers.get('Content-Type') == 'application/json'
+
+
+def test_root_invalid_accept():
+    client = get_test_client()
+    data, status, headers = client.get(
+        '/',
+        headers={'Accept': 'text/plain'},
+    )
+    assert status == '406 Not Acceptable'
+
+
 def test_user_lookup():
     assert get('/users/1') == {
         'user': '1',
