@@ -224,6 +224,9 @@ def get_wsgi_app(config):
                 ('Content-Type', content_type),
                 ('Content-Length', str(len(encoded_response))),
             ])
+            # Don't send the body for a HEAD request
+            if request.method == 'HEAD':
+                return []
             return [encoded_response]
         except werkzeug.exceptions.HTTPException as e:
             return e(environ, start_response)
