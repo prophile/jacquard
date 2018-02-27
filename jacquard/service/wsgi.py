@@ -1,8 +1,12 @@
 """Main WSGI application."""
 
+import enum
 import json
+import pprint
 import logging
+import collections
 
+import yaml
 import werkzeug.http
 import werkzeug.routing
 import werkzeug.wrappers
@@ -28,6 +32,102 @@ def _get_url_map(endpoints):
     return werkzeug.routing.Map(urls)
 
 
+@enum.unique
+class RepresentationType(enum.Enum):
+    """Whether a representation is binary or text-based."""
+
+    BINARY = 'binary'
+    TEXT = 'text'
+
+
+Representation = collections.namedtuple('Representation', (
+    'mime_type',
+    'type',
+    'generate',
+))
+
+
+def generate_json_representation(data):
+    """
+    Represent the given data as JSON.
+
+    Note that the JSON representation is binary. JSON can only be represented
+    in UTF-8, UTF-16, or UTF-32 (see RFC 7159), and we stick to UTF-8 here
+    unconditionally because:
+
+    * The application/* MIME family doesn't suggest charset negotation will be
+      necessary (and some clients can be assumed to probably be checking for
+      the exact application/json string),
+    * UTF-8 is the 'de facto' standard for JSON,
+    * UTF-8 can be detected from the first 4 bytes by RFC 4627 compliant
+      clients,
+    * UTF-8 avoids endian-ness issues.
+    """
+    return json.dumps(data).encode('utf-8') + b'\n'
+
+
+def generate_plaintext_representation(data):
+    """
+    Represent the given data in plain text.
+
+    This uses Python's built-in pretty formatting. This is not a format
+    designed for easy parsing, but that would not be implied by the text/plain
+    MIME type anyway. It is, however, generally pretty readable.
+    """
+    return pprint.pformat(data) + '\n'
+
+
+def generate_yaml_text_representation(data):
+    """
+    Represent the given data in textual YAML.
+
+    YAML is not a good interchange format so this is primarily for quick
+    hackery purposes.
+
+    Unfortunately YAML does not have a standard MIME type. This textual format
+    is for the text/x-yaml MIME type.
+    """
+    return yaml.safe_dump(data, default_flow_style=False)
+
+
+def generate_yaml_binary_representation(data):
+    """
+    Represent the given data in binary YAML.
+
+    YAML is not a good interchange format so this is primarily for quick
+    hackery purposes.
+
+    Unfortunately YAML does not have a standard MIME type. This binary format
+    is for the application/x-yaml MIME type. It uses UTF-8 for much the same
+    reasons as we use UTF-8 for the JSON representation.
+    """
+    return generate_yaml_text_representation(data).encode('utf-8')
+
+
+REPRESENTATIONS = [
+    Representation(
+        mime_type='application/json',
+        type=RepresentationType.BINARY,
+        generate=generate_json_representation,
+    ),
+    Representation(
+        mime_type='application/x-yaml',
+        type=RepresentationType.BINARY,
+        generate=generate_yaml_binary_representation,
+    ),
+    Representation(
+        mime_type='text/x-yaml',
+        type=RepresentationType.TEXT,
+        generate=generate_yaml_text_representation,
+    ),
+    Representation(
+        mime_type='text/plain',
+        type=RepresentationType.TEXT,
+        generate=generate_plaintext_representation,
+    ),
+]
+
+
 def get_wsgi_app(config):
     """Get the main WSGI handler, by config."""
     endpoints = _get_endpoints(config)
@@ -48,20 +148,49 @@ def get_wsgi_app(config):
                 endpoint = endpoints[name]
                 return urls.build(endpoint, values=kwargs)
 
-            content_type = werkzeug.http.parse_accept_header(
+            negotiated_content_type = werkzeug.http.parse_accept_header(
                 environ.get('HTTP_ACCEPT', '*/*'),
                 werkzeug.http.MIMEAccept,
-            ).best_match([
-                'application/json',
-            ])
+            ).best_match([x.mime_type for x in REPRESENTATIONS])
 
-            if content_type is None:
+            if negotiated_content_type is None:
                 response_text = b'Cannot satisfy the given MIME type.\n'
                 start_response('406 Not Acceptable', [
                     ('Content-Type', 'text/plain; charset=ascii'),
                     ('Content-Length', len(response_text)),
                 ])
                 return [response_text]
+
+            for selected_representation in REPRESENTATIONS:
+                if (
+                    selected_representation.mime_type ==
+                    negotiated_content_type
+                ):
+                    break
+            else:
+                raise AssertionError(
+                    "Selected a MIME type without a representation",
+                )
+
+            # If the representation is a text representation, we also need to
+            # negotiate an encoding.
+            if selected_representation.type == RepresentationType.TEXT:
+                negotiated_charset = werkzeug.http.parse_accept_header(
+                    environ.get('HTTP_ACCEPT_CHARSET', '*'),
+                    werkzeug.http.CharsetAccept,
+                ).best_match([
+                    'utf-8',
+                    'iso-8859-1',
+                    'ascii',
+                ])
+
+                if negotiated_charset is None:
+                    response_text = b'Cannot satisfy the given charsets.\n'
+                    start_response('406 Not Acceptable', [
+                        ('Content-Type', 'text/plain; charset=ascii'),
+                        ('Content-Length', len(response_text)),
+                    ])
+                    return [response_text]
 
             request = werkzeug.wrappers.Request(environ)
 
@@ -74,9 +203,25 @@ def get_wsgi_app(config):
 
             response = endpoint.handle(**kwargs)
 
-            encoded_response = (json.dumps(response) + '\n').encode('utf-8')
+            represented_response = selected_representation.generate(response)
+
+            if selected_representation.type == RepresentationType.TEXT:
+                # If this is a text-based representation we also need to
+                # encode it.
+                encoded_response = represented_response.encode(
+                    negotiated_charset,
+                )
+                content_type = '{mime}; charset={charset}'.format(
+                    mime=selected_representation.mime_type,
+                    charset=negotiated_charset,
+                )
+            else:
+                # For binary representations we just return directly.
+                encoded_response = represented_response
+                content_type = selected_representation.mime_type
+
             start_response('200 OK', [
-                ('Content-Type', 'application/json'),
+                ('Content-Type', content_type),
                 ('Content-Length', str(len(encoded_response))),
             ])
             return [encoded_response]
