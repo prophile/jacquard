@@ -208,9 +208,17 @@ def get_wsgi_app(config):
             if selected_representation.type == RepresentationType.TEXT:
                 # If this is a text-based representation we also need to
                 # encode it.
-                encoded_response = represented_response.encode(
-                    negotiated_charset,
-                )
+                try:
+                    encoded_response = represented_response.encode(
+                        negotiated_charset,
+                    )
+                except UnicodeEncodeError:
+                    response_text = b'This charset cannot encode the data.\n'
+                    start_response('406 Not Acceptable', [
+                        ('Content-Type', 'text/plain; charset=ascii'),
+                        ('Content-Length', len(response_text)),
+                    ])
+                    return [response_text]
                 content_type = '{mime}; charset={charset}'.format(
                     mime=selected_representation.mime_type,
                     charset=negotiated_charset,
