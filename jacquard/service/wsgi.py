@@ -46,7 +46,20 @@ Representation = collections.namedtuple('Representation', (
     'generate',
 ))
 
+REPRESENTATIONS = []
 
+def representation(mime_type, rep_type):
+    """Decorator for declaring representations."""
+    def wrap(fn):
+        REPRESENTATIONS.append(Representation(
+            mime_type=mime_type,
+            type=rep_type,
+            generate=fn,
+        ))
+    return wrap
+
+
+@representation('application/json', RepresentationType.BINARY)
 def generate_json_representation(data):
     """
     Represent the given data as JSON.
@@ -67,6 +80,7 @@ def generate_json_representation(data):
     return json.dumps(data).encode('utf-8') + b'\n'
 
 
+@representation('text/plain', RepresentationType.TEXT)
 def generate_plaintext_representation(data):
     """
     Represent the given data in plain text.
@@ -78,6 +92,7 @@ def generate_plaintext_representation(data):
     return pprint.pformat(data) + '\n'
 
 
+@representation('text/x-yaml', RepresentationType.TEXT)
 def generate_yaml_text_representation(data):
     """
     Represent the given data in textual YAML.
@@ -91,6 +106,7 @@ def generate_yaml_text_representation(data):
     return yaml.safe_dump(data, default_flow_style=False)
 
 
+@representation('application/x-yaml', RepresentationType.BINARY)
 def generate_yaml_binary_representation(data):
     """
     Represent the given data in binary YAML.
@@ -103,30 +119,6 @@ def generate_yaml_binary_representation(data):
     reasons as we use UTF-8 for the JSON representation.
     """
     return generate_yaml_text_representation(data).encode('utf-8')
-
-
-REPRESENTATIONS = [
-    Representation(
-        mime_type='application/json',
-        type=RepresentationType.BINARY,
-        generate=generate_json_representation,
-    ),
-    Representation(
-        mime_type='application/x-yaml',
-        type=RepresentationType.BINARY,
-        generate=generate_yaml_binary_representation,
-    ),
-    Representation(
-        mime_type='text/x-yaml',
-        type=RepresentationType.TEXT,
-        generate=generate_yaml_text_representation,
-    ),
-    Representation(
-        mime_type='text/plain',
-        type=RepresentationType.TEXT,
-        generate=generate_plaintext_representation,
-    ),
-]
 
 
 def get_wsgi_app(config):
