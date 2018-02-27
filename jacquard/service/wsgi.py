@@ -12,6 +12,14 @@ import werkzeug.routing
 import werkzeug.wrappers
 import werkzeug.exceptions
 
+try:
+    # If pygments is installed, add HTML pretty-printing.
+    import pygments
+    import pygments.lexers
+    import pygments.formatters
+except ImportError:
+    pygments = None
+
 from jacquard.plugin import plug_all
 
 LOGGER = logging.getLogger('jacquard.service.wsgi')
@@ -82,6 +90,27 @@ def generate_json_representation(data, context):
     * JSON is mostly going to be unicode-escaping anyway.
     """
     return json.dumps(data).encode('utf-8') + b'\n'
+
+
+if pygments is not None:
+    @representation('text/html', RepresentationType.TEXT)
+    def generate_html_representation(data, context):
+        """
+        Represent the given data in HTML.
+
+        This is the JSON format, but pretty-printed and with syntax
+        highlighting due to pygments.
+        """
+        json_dump = json.dumps(data, indent=2, ensure_ascii=False)
+        json_lexer = pygments.lexers.get_lexer_by_name('json')
+        html_formatter = pygments.formatters.HtmlFormatter(
+            title="Jacquard: {path}".format(
+                path=context.path
+            ),
+            full=True,
+        )
+
+        return pygments.highlight(json_dump, json_lexer, html_formatter)
 
 
 @representation('text/plain', RepresentationType.TEXT)
