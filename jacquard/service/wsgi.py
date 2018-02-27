@@ -12,6 +12,8 @@ import werkzeug.routing
 import werkzeug.wrappers
 import werkzeug.exceptions
 
+from jacquard.plugin import plug_all
+
 try:
     # If pygments is installed, add HTML pretty-printing.
     import pygments
@@ -20,7 +22,6 @@ try:
 except ImportError:
     pygments = None
 
-from jacquard.plugin import plug_all
 
 LOGGER = logging.getLogger('jacquard.service.wsgi')
 
@@ -59,6 +60,7 @@ RepresentationContext = collections.namedtuple('RepresentationContext', (
 ))
 
 REPRESENTATIONS = []
+
 
 def representation(mime_type, rep_type):
     """Decorator for declaring representations."""
