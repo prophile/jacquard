@@ -46,6 +46,10 @@ Representation = collections.namedtuple('Representation', (
     'generate',
 ))
 
+RepresentationContext = collections.namedtuple('RepresentationContext', (
+    'path',
+))
+
 REPRESENTATIONS = []
 
 def representation(mime_type, rep_type):
@@ -60,7 +64,7 @@ def representation(mime_type, rep_type):
 
 
 @representation('application/json', RepresentationType.BINARY)
-def generate_json_representation(data):
+def generate_json_representation(data, context):
     """
     Represent the given data as JSON.
 
@@ -81,7 +85,7 @@ def generate_json_representation(data):
 
 
 @representation('text/plain', RepresentationType.TEXT)
-def generate_plaintext_representation(data):
+def generate_plaintext_representation(data, context):
     """
     Represent the given data in plain text.
 
@@ -93,7 +97,7 @@ def generate_plaintext_representation(data):
 
 
 @representation('text/x-yaml', RepresentationType.TEXT)
-def generate_yaml_text_representation(data):
+def generate_yaml_text_representation(data, context):
     """
     Represent the given data in textual YAML.
 
@@ -107,7 +111,7 @@ def generate_yaml_text_representation(data):
 
 
 @representation('application/x-yaml', RepresentationType.BINARY)
-def generate_yaml_binary_representation(data):
+def generate_yaml_binary_representation(data, context):
     """
     Represent the given data in binary YAML.
 
@@ -118,7 +122,7 @@ def generate_yaml_binary_representation(data):
     is for the application/x-yaml MIME type. It uses UTF-8 for much the same
     reasons as we use UTF-8 for the JSON representation.
     """
-    return generate_yaml_text_representation(data).encode('utf-8')
+    return generate_yaml_text_representation(data, context).encode('utf-8')
 
 
 def get_wsgi_app(config):
@@ -202,7 +206,13 @@ def get_wsgi_app(config):
 
             response = endpoint.handle(**kwargs)
 
-            represented_response = selected_representation.generate(response)
+            representation_context = RepresentationContext(
+                path=request.path,
+            )
+            represented_response = selected_representation.generate(
+                response,
+                representation_context,
+            )
 
             if selected_representation.type == RepresentationType.TEXT:
                 # If this is a text-based representation we also need to
