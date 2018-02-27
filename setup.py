@@ -85,6 +85,7 @@ setup(
         'python-dateutil',
         'pyyaml',
         'sqlalchemy',
+        'pygments >=2',
     ),
 
     setup_requires=(

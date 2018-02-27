@@ -20,6 +20,7 @@ fpm -s python \
     -d python3-sqlalchemy \
     -d python3-yaml \
     -d python3-waitress \
+    -d python3-pygments \
     --config-files /etc/jacquard \
     --deb-systemd jacquard.service \
     --after-install deb-jacquard-install.sh \
