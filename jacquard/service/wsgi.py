@@ -61,7 +61,8 @@ def generate_json_representation(data):
     * UTF-8 is the 'de facto' standard for JSON,
     * UTF-8 can be detected from the first 4 bytes by RFC 4627 compliant
       clients,
-    * UTF-8 avoids endian-ness issues.
+    * UTF-8 avoids endian-ness issues,
+    * JSON is mostly going to be unicode-escaping anyway.
     """
     return json.dumps(data).encode('utf-8') + b'\n'
 
