@@ -2,7 +2,9 @@ import json
 import datetime
 from unittest.mock import Mock
 
+import pytest
 import dateutil.tz
+import werkzeug.http
 import werkzeug.test
 from werkzeug.datastructures import MultiDict
 
@@ -74,13 +76,43 @@ def test_root_accept_json():
     assert headers.get('Content-Type') == 'application/json'
 
 
-def test_root_invalid_accept():
+def test_root_invalid_accept_returns_406():
     client = get_test_client()
     data, status, headers = client.get(
         '/',
         headers={'Accept': 'text/not-a-real-mime-type'},
     )
     assert status == '406 Not Acceptable'
+
+
+def test_root_accept_with_bad_charset_returns_406():
+    client = get_test_client()
+    data, status, headers = client.get(
+        '/',
+        headers={'Accept': 'text/plain', 'Accept-Charset': 'not-a-real-charset'},
+    )
+    assert status == '406 Not Acceptable'
+
+
+@pytest.mark.parametrize('mime', [
+    'text/plain',
+    'application/x-yaml',
+    'text/x-yaml',
+    'text/html',
+])
+def test_root_accept_on_alternative_content_type(mime):
+    client = get_test_client()
+    data, status, headers = client.head(
+        '/',
+        headers={'Accept': mime},
+    )
+
+    assert status == '200 OK'
+
+    content_type, _ = werkzeug.http.parse_options_header(
+        headers['Content-Type'],
+    )
+    assert content_type == mime
 
 
 def test_user_lookup():
