@@ -78,7 +78,7 @@ def test_root_invalid_accept():
     client = get_test_client()
     data, status, headers = client.get(
         '/',
-        headers={'Accept': 'text/plain'},
+        headers={'Accept': 'text/not-a-real-mime-type'},
     )
     assert status == '406 Not Acceptable'
 
