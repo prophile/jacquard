@@ -70,6 +70,7 @@ def representation(mime_type, rep_type):
             type=rep_type,
             generate=fn,
         ))
+        return fn
     return wrap
 
 
