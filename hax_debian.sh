@@ -1,5 +1,7 @@
 #!/bin/bash
 set -e
+# pytest-runner breaks FPM
+sed -i '/pytest-runner/d' setup.py
 export JACQUARD_DEBIAN_HACK=1
 fpm -s python \
     -t deb \
