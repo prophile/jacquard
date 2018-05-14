@@ -1,3 +1,11 @@
+0.6.1  2018-05-14
+
+Bugfixes:
+
+* Launching a test with an `era` constraint now properly specialises;
+  previously was only used in reporting but ignored for setting selection.
+
+
 0.6.0  2018-02-21
 
 Minor features:
