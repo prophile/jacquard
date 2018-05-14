@@ -11,6 +11,7 @@ from jacquard.utils import is_recursive
 from jacquard.buckets import NotEnoughBucketsException, close, release
 from jacquard.storage import retrying
 from jacquard.commands import BaseCommand, CommandError
+from jacquard.constraints import ConstraintContext
 from jacquard.experiments.experiment import Experiment
 
 
@@ -68,11 +69,19 @@ class Launch(BaseCommand):
                         )
                     )
 
+            experiment.launched = datetime.datetime.now(dateutil.tz.tzutc())
+
+            specialised_constraints = experiment.constraints.specialise(
+                ConstraintContext(
+                    era_start_date=experiment.launched,
+                ),
+            )
+
             try:
                 release(
                     store,
                     experiment.id,
-                    experiment.constraints,
+                    specialised_constraints,
                     experiment.branch_launch_configuration(),
                 )
             except NotEnoughBucketsException as e:
@@ -84,7 +93,6 @@ class Launch(BaseCommand):
                 current_experiments + [options.experiment]
             )
 
-            experiment.launched = datetime.datetime.now(dateutil.tz.tzutc())
             experiment.save(store)
 
 
