@@ -1,0 +1,4 @@
+#!/bin/bash
+set -e
+isort -rc jacquard
+exec black --line-length 79 jacquard
