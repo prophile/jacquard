@@ -27,21 +27,13 @@ class RunServer(BaseCommand):
     def add_arguments(self, parser):
         """Add argparse arguments."""
         parser.add_argument(
-            '-p',
-            '--port',
-            type=int,
-            default=1212,
-            help="port to bind to",
+            "-p", "--port", type=int, default=1212, help="port to bind to"
         )
         parser.add_argument(
-            '-b',
-            '--bind',
-            type=str,
-            default='::1',
-            help="address to bind to",
+            "-b", "--bind", type=str, default="::1", help="address to bind to"
         )
         parser.add_argument(
-            '--profile',
+            "--profile",
             type=pathlib.Path,
             help="record profiles to the given path",
         )
@@ -56,8 +48,7 @@ class RunServer(BaseCommand):
             options.profile.mkdir(parents=True, exist_ok=True)
             reload_and_debug = False
             app = werkzeug.contrib.profiler.ProfilerMiddleware(
-                app=app,
-                profile_dir=str(options.profile),
+                app=app, profile_dir=str(options.profile)
             )
 
         werkzeug.serving.run_simple(

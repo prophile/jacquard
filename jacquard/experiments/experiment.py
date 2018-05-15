@@ -38,15 +38,17 @@ class Experiment(object):
 
         branch_ids = set()
         for branch in branches:
-            if 'id' not in branch:
+            if "id" not in branch:
                 raise ValueError("Branch without ID")
-            branch_id = branch['id']
+            branch_id = branch["id"]
             if branch_id in branch_ids:
-                raise ValueError("Duplicate branch ID: '{branch_id}'".format(
-                    branch_id=branch_id,
-                ))
+                raise ValueError(
+                    "Duplicate branch ID: '{branch_id}'".format(
+                        branch_id=branch_id
+                    )
+                )
             branch_ids.add(branch_id)
-            if 'settings' not in branch:
+            if "settings" not in branch:
                 raise ValueError("No settings given")
 
         self.branches = branches
@@ -88,44 +90,46 @@ class Experiment(object):
         if not isinstance(obj, dict):
             raise ValueError(
                 "Experiment definition is not valid – "
-                "top level is not a dict",
+                "top level is not a dict"
             )
 
-        if 'id' not in obj:
+        if "id" not in obj:
             raise ValueError(
-                "Experiment definition is not valid – "
-                "no `id` is given.",
+                "Experiment definition is not valid – " "no `id` is given."
             )
 
-        if 'branches' not in obj:
+        if "branches" not in obj:
             raise ValueError(
-                "Experiment definition is not valid - "
-                "no `branches` given.",
+                "Experiment definition is not valid - " "no `branches` given."
             )
 
         with contextlib.suppress(KeyError):
-            kwargs['name'] = obj['name']
+            kwargs["name"] = obj["name"]
 
         with contextlib.suppress(KeyError):
-            kwargs['constraints'] = Constraints.from_json(obj['constraints'])
+            kwargs["constraints"] = Constraints.from_json(obj["constraints"])
 
         with contextlib.suppress(KeyError):
-            kwargs['launched'] = dateutil.parser.parse(obj['launched'])
+            kwargs["launched"] = dateutil.parser.parse(obj["launched"])
 
         with contextlib.suppress(KeyError):
-            kwargs['concluded'] = dateutil.parser.parse(obj['concluded'])
+            kwargs["concluded"] = dateutil.parser.parse(obj["concluded"])
 
-        return cls(obj['id'], obj['branches'], **kwargs)
+        return cls(obj["id"], obj["branches"], **kwargs)
 
     @classmethod
     def from_store(cls, store, experiment_id):
         """Create instance from a store lookup by ID."""
-        json_repr = dict(store[
-            'experiments/{experiment_id}'.format(experiment_id=experiment_id)
-        ])
+        json_repr = dict(
+            store[
+                "experiments/{experiment_id}".format(
+                    experiment_id=experiment_id
+                )
+            ]
+        )
         # Be resilient to missing ID
-        if 'id' not in json_repr:
-            json_repr['id'] = experiment_id
+        if "id" not in json_repr:
+            json_repr["id"] = experiment_id
         return cls.from_json(json_repr)
 
     @classmethod
@@ -135,7 +139,7 @@ class Experiment(object):
 
         Includes inactive experiments.
         """
-        prefix = 'experiments/'
+        prefix = "experiments/"
 
         for key in store:
             if not key.startswith(prefix):
@@ -147,32 +151,32 @@ class Experiment(object):
     def to_json(self):
         """Serialise as canonical JSON."""
         representation = {
-            'id': self.id,
-            'branches': self.branches,
-            'constraints': self.constraints.to_json(),
-            'name': self.name,
-            'launched': str(self.launched),
-            'concluded': str(self.concluded),
+            "id": self.id,
+            "branches": self.branches,
+            "constraints": self.constraints.to_json(),
+            "name": self.name,
+            "launched": str(self.launched),
+            "concluded": str(self.concluded),
         }
 
-        if not representation['constraints']:
-            del representation['constraints']
+        if not representation["constraints"]:
+            del representation["constraints"]
 
-        if representation['name'] == self.id:
-            del representation['name']
+        if representation["name"] == self.id:
+            del representation["name"]
 
-        if representation['launched'] == 'None':
-            del representation['launched']
+        if representation["launched"] == "None":
+            del representation["launched"]
 
-        if representation['concluded'] == 'None':
-            del representation['concluded']
+        if representation["concluded"] == "None":
+            del representation["concluded"]
 
         return representation
 
     def save(self, store):
         """Save into the given store using the ID as the key."""
         store[
-            'experiments/{experiment_id}'.format(experiment_id=self.id)
+            "experiments/{experiment_id}".format(experiment_id=self.id)
         ] = self.to_json()
 
     def branch(self, branch_id):
@@ -184,7 +188,7 @@ class Experiment(object):
 
         If there is no such branch, LookupErrors will materialise.
         """
-        branches_by_id = {x['id']: x for x in self.branches}
+        branches_by_id = {x["id"]: x for x in self.branches}
 
         check_keys((branch_id,), branches_by_id.keys(), exception=LookupError)
         return branches_by_id[branch_id]
@@ -196,17 +200,13 @@ class Experiment(object):
         This is the format expected for the `branches` argument of `release`
         and `close`, to actually decide which buckets see this experiment.
         """
+
         def num_buckets(x):
-            percent = x.get('percent', 100 // len(self.branches))
+            percent = x.get("percent", 100 // len(self.branches))
             return (NUM_BUCKETS * percent) // 100
 
         return [
-            (
-                x['id'],
-                num_buckets(x),
-                x['settings'],
-            )
-            for x in self.branches
+            (x["id"], num_buckets(x), x["settings"]) for x in self.branches
         ]
 
     def includes_user(self, user_entry):
@@ -219,9 +219,7 @@ class Experiment(object):
             specialised_constraints = self._specialised_constraints
         except AttributeError:
             specialised_constraints = self.constraints.specialise(
-                ConstraintContext(
-                    era_start_date=self.launched,
-                ),
+                ConstraintContext(era_start_date=self.launched)
             )
             self._specialised_constraints = specialised_constraints
 

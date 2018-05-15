@@ -28,10 +28,10 @@ class Launch(BaseCommand):
 
     def add_arguments(self, parser):
         """Add argparse arguments."""
-        parser.add_argument('experiment', help="experiment to launch")
+        parser.add_argument("experiment", help="experiment to launch")
         parser.add_argument(
-            '--relaunch',
-            action='store_true',
+            "--relaunch",
+            action="store_true",
             help=(
                 "re-launch a previously concluded test, "
                 "discarding previous results"
@@ -45,17 +45,17 @@ class Launch(BaseCommand):
             try:
                 experiment = Experiment.from_store(store, options.experiment)
             except LookupError:
-                raise CommandError("No such experiment: \"{id}\"".format(
-                    id=options.experiment,
-                ))
+                raise CommandError(
+                    'No such experiment: "{id}"'.format(id=options.experiment)
+                )
 
-            current_experiments = store.get('active-experiments', [])
+            current_experiments = store.get("active-experiments", [])
 
             if experiment.id in current_experiments:
                 raise CommandError(
                     "Experiment '{experiment_id}' already launched!".format(
-                        experiment_id=experiment.id,
-                    ),
+                        experiment_id=experiment.id
+                    )
                 )
 
             if experiment.concluded is not None:
@@ -65,16 +65,14 @@ class Launch(BaseCommand):
                 else:
                     raise CommandError(
                         "Experiment '{id}' already concluded!".format(
-                            id=experiment.id,
+                            id=experiment.id
                         )
                     )
 
             experiment.launched = datetime.datetime.now(dateutil.tz.tzutc())
 
             specialised_constraints = experiment.constraints.specialise(
-                ConstraintContext(
-                    era_start_date=experiment.launched,
-                ),
+                ConstraintContext(era_start_date=experiment.launched)
             )
 
             try:
@@ -85,11 +83,13 @@ class Launch(BaseCommand):
                     experiment.branch_launch_configuration(),
                 )
             except NotEnoughBucketsException as e:
-                raise CommandError("Conflicts: {conflicts}".format(
-                    conflicts=e.human_readable_conflicts(),
-                ))
+                raise CommandError(
+                    "Conflicts: {conflicts}".format(
+                        conflicts=e.human_readable_conflicts()
+                    )
+                )
 
-            store['active-experiments'] = (
+            store["active-experiments"] = (
                 current_experiments + [options.experiment]
             )
 
@@ -110,18 +110,16 @@ class Conclude(BaseCommand):
 
     def add_arguments(self, parser):
         """Add argparse arguments."""
-        parser.add_argument('experiment', help="experiment to conclude")
+        parser.add_argument("experiment", help="experiment to conclude")
         mutex_group = parser.add_mutually_exclusive_group(required=True)
         mutex_group.add_argument(
-            'branch',
-            help="branch to promote to default",
-            nargs='?',
+            "branch", help="branch to promote to default", nargs="?"
         )
         mutex_group.add_argument(
-            '--no-promote-branch',
+            "--no-promote-branch",
             help="do not promote a branch to default",
-            action='store_false',
-            dest='promote_branch',
+            action="store_false",
+            dest="promote_branch",
         )
 
     @retrying
@@ -131,19 +129,19 @@ class Conclude(BaseCommand):
             try:
                 experiment = Experiment.from_store(store, options.experiment)
             except LookupError:
-                raise CommandError("No such experiment: \"{id}\"".format(
-                    id=options.experiment,
-                ))
+                raise CommandError(
+                    'No such experiment: "{id}"'.format(id=options.experiment)
+                )
 
-            current_experiments = store.get('active-experiments', [])
-            concluded_experiments = store.get('concluded-experiments', [])
+            current_experiments = store.get("active-experiments", [])
+            concluded_experiments = store.get("concluded-experiments", [])
 
             if options.experiment not in current_experiments:
                 if experiment.concluded is None:
                     message = (
                         "Experiment '{experiment_id}' not launched!"
                     ).format(
-                        experiment_id=options.experiment,
+                        experiment_id=options.experiment
                     )
                 else:
                     message = (
@@ -167,18 +165,18 @@ class Conclude(BaseCommand):
             )
 
             if options.promote_branch:
-                defaults = store.get('defaults', {})
+                defaults = store.get("defaults", {})
 
                 # Find branch matching ID
-                defaults.update(experiment.branch(options.branch)['settings'])
+                defaults.update(experiment.branch(options.branch)["settings"])
 
-                store['defaults'] = defaults
+                store["defaults"] = defaults
 
             experiment.concluded = datetime.datetime.now(dateutil.tz.tzutc())
             experiment.save(store)
 
-            store['active-experiments'] = current_experiments
-            store['concluded-experiments'] = concluded_experiments
+            store["active-experiments"] = current_experiments
+            store["concluded-experiments"] = concluded_experiments
 
 
 class Load(BaseCommand):
@@ -195,15 +193,15 @@ class Load(BaseCommand):
     def add_arguments(self, parser):
         """Add argparse arguments."""
         parser.add_argument(
-            'files',
-            nargs='+',
-            type=argparse.FileType('r'),
-            metavar='file',
+            "files",
+            nargs="+",
+            type=argparse.FileType("r"),
+            metavar="file",
             help="experiment definition",
         )
         parser.add_argument(
-            '--skip-launched',
-            action='store_true',
+            "--skip-launched",
+            action="store_true",
             help="do not load or error on launched experiments",
         )
 
@@ -211,8 +209,8 @@ class Load(BaseCommand):
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction() as store:
-            live_experiments = store.get('active-experiments', ())
-            concluded_experiments = store.get('concluded-experiments', ())
+            live_experiments = store.get("active-experiments", ())
+            concluded_experiments = store.get("concluded-experiments", ())
 
             for file in options.files:
                 try:
@@ -222,7 +220,7 @@ class Load(BaseCommand):
 
                 if is_recursive(definition):
                     raise CommandError(
-                        "Recursive structure in experiment definition",
+                        "Recursive structure in experiment definition"
                     )
 
                 try:
@@ -238,8 +236,8 @@ class Load(BaseCommand):
                         raise CommandError(
                             "Experiment '{experiment_id}' is live, "
                             "refusing to edit".format(
-                                experiment_id=experiment.id,
-                            ),
+                                experiment_id=experiment.id
+                            )
                         )
 
                 elif experiment.id in concluded_experiments:
@@ -250,8 +248,8 @@ class Load(BaseCommand):
                         raise CommandError(
                             "Experiment '{experiment_id}' has concluded, "
                             "refusing to edit".format(
-                                experiment_id=experiment.id,
-                            ),
+                                experiment_id=experiment.id
+                            )
                         )
 
                 experiment.save(store)
@@ -269,13 +267,13 @@ class ListExperiments(BaseCommand):
     def add_arguments(self, parser):
         """Add argparse arguments."""
         parser.add_argument(
-            '--detailed',
-            action='store_true',
+            "--detailed",
+            action="store_true",
             help="whether to show experiment details in the listing",
         )
         parser.add_argument(
-            '--active',
-            action='store_true',
+            "--active",
+            action="store_true",
             help="only show active experiments",
         )
 
@@ -300,21 +298,24 @@ class Show(BaseCommand):
             title = experiment.id
         else:
             title = "{experiment_id}: {name}".format(
-                experiment_id=experiment.id,
-                name=experiment.name,
+                experiment_id=experiment.id, name=experiment.name
             )
         print(title)
         if detailed:
             print("=" * len(title))
             print()
             if experiment.launched:
-                print("Launched: {launch_date}".format(
-                    launch_date=experiment.launched,
-                ))
+                print(
+                    "Launched: {launch_date}".format(
+                        launch_date=experiment.launched
+                    )
+                )
                 if experiment.concluded:
-                    print("Concluded: {concluded_date}".format(
-                        concluded_date=experiment.concluded,
-                    ))
+                    print(
+                        "Concluded: {concluded_date}".format(
+                            concluded_date=experiment.concluded
+                        )
+                    )
                 else:
                     print("In progress")
             else:
@@ -324,7 +325,7 @@ class Show(BaseCommand):
             if with_settings:
                 settings = set()
                 for branch in experiment.branches:
-                    settings.update(branch['settings'].keys())
+                    settings.update(branch["settings"].keys())
                 print("Settings")
                 print("--------")
                 for setting in sorted(settings):
@@ -333,10 +334,10 @@ class Show(BaseCommand):
 
     def add_arguments(self, parser):
         """Add argparse arguments."""
-        parser.add_argument('experiment', help="experiment to show")
+        parser.add_argument("experiment", help="experiment to show")
         parser.add_argument(
-            '--settings',
-            action='store_true',
+            "--settings",
+            action="store_true",
             help="include which settings this experiment will cover",
         )
 
@@ -346,9 +347,9 @@ class Show(BaseCommand):
             try:
                 experiment = Experiment.from_store(store, options.experiment)
             except LookupError:
-                raise CommandError("No such experiment: \"{id}\"".format(
-                    id=options.experiment,
-                ))
+                raise CommandError(
+                    'No such experiment: "{id}"'.format(id=options.experiment)
+                )
             self.show_experiment(experiment, with_settings=options.settings)
 
 
@@ -363,19 +364,19 @@ class SettingsUnderActiveExperiments(BaseCommand):
         experimental_settings = collections.defaultdict(set)
 
         with config.storage.transaction(read_only=True) as store:
-            all_settings.update(store.get('defaults', {}).keys())
+            all_settings.update(store.get("defaults", {}).keys())
 
-            active_experiments = list(store.get('active-experiments', ()))
+            active_experiments = list(store.get("active-experiments", ()))
 
             for experiment in active_experiments:
                 experiment_config = store[
-                    'experiments/{slug}'.format(slug=experiment)
+                    "experiments/{slug}".format(slug=experiment)
                 ]
 
-                for branch in experiment_config['branches']:
-                    all_settings.update(branch['settings'].keys())
+                for branch in experiment_config["branches"]:
+                    all_settings.update(branch["settings"].keys())
 
-                    for setting in branch['settings'].keys():
+                    for setting in branch["settings"].keys():
                         experimental_settings[setting].add(experiment)
 
         for setting in sorted(all_settings):
@@ -383,11 +384,13 @@ class SettingsUnderActiveExperiments(BaseCommand):
             relevant_experiments.sort()
 
             if relevant_experiments:
-                print("{setting}: {experiments}".format(
-                    setting=setting,
-                    experiments=", ".join(relevant_experiments),
-                ))
+                print(
+                    "{setting}: {experiments}".format(
+                        setting=setting,
+                        experiments=", ".join(relevant_experiments),
+                    )
+                )
             else:
-                print("{setting}: NOT UNDER EXPERIMENT".format(
-                    setting=setting,
-                ))
+                print(
+                    "{setting}: NOT UNDER EXPERIMENT".format(setting=setting)
+                )

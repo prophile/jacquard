@@ -22,10 +22,8 @@ class NotEnoughBucketsException(ValueError):
     def _format_conflict(conflict):
         # A bit of a layering violation, but this is only for UX purposes, and
         # does not stand part of the API contract.
-        rollout_match = re.match('^rollout:(.+)$', conflict)
+        rollout_match = re.match("^rollout:(.+)$", conflict)
         if rollout_match is not None:
-            return "rollout on key \"{key}\"".format(
-                key=rollout_match.group(1),
-            )
+            return 'rollout on key "{key}"'.format(key=rollout_match.group(1))
 
         return conflict

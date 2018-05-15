@@ -18,18 +18,16 @@ from jacquard.config import load_config
 from jacquard.service import get_wsgi_app
 from jacquard.constants import DEFAULT_CONFIG_FILE_PATH
 
-LOG_LEVEL = os.environ.get('JACQUARD_LOG_LEVEL', 'info').lower()
+LOG_LEVEL = os.environ.get("JACQUARD_LOG_LEVEL", "info").lower()
 KNOWN_LOG_LEVELS = {
-    'debug': logging.DEBUG,
-    'info': logging.INFO,
-    'errors': logging.ERROR,
+    "debug": logging.DEBUG, "info": logging.INFO, "errors": logging.ERROR
 }
 
 check_keys((LOG_LEVEL,), KNOWN_LOG_LEVELS, RuntimeError)
 
 logging.basicConfig(level=KNOWN_LOG_LEVELS[LOG_LEVEL])
 
-wsgi_logger = logging.getLogger('jacquard.wsgi')
+wsgi_logger = logging.getLogger("jacquard.wsgi")
 wsgi_logger.warning("Logging warnings in Jacquard")
 wsgi_logger.info("Logging informational messages in Jacquard")
 wsgi_logger.debug("Emitting debug messages from Jacquard")

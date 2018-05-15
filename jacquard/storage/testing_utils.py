@@ -7,26 +7,27 @@ import hypothesis
 import hypothesis.strategies
 
 arbitrary_json = hypothesis.strategies.recursive(
-    hypothesis.strategies.floats(allow_nan=False, allow_infinity=False) |
-    hypothesis.strategies.booleans() |
-    hypothesis.strategies.text() |
-    hypothesis.strategies.none(),
+    hypothesis.strategies.floats(allow_nan=False, allow_infinity=False)
+    | hypothesis.strategies.booleans()
+    | hypothesis.strategies.text()
+    | hypothesis.strategies.none(),
     lambda children: (
-        hypothesis.strategies.lists(children, average_size=2) |
-        hypothesis.strategies.dictionaries(
-            hypothesis.strategies.text(),
-            children,
-            average_size=1,
+        hypothesis.strategies.lists(children, average_size=2)
+        | hypothesis.strategies.dictionaries(
+            hypothesis.strategies.text(), children, average_size=1
         )
     ),
     max_leaves=10,
-).filter(lambda x: x is not None)
+).filter(
+    lambda x: x is not None
+)
 arbitrary_key = hypothesis.strategies.text(
     alphabet=hypothesis.strategies.characters(
-        blacklist_categories=('whitespace',),
-        blacklist_characters='*:\0',
-    ),
-).filter(lambda x: x.encode('utf-8', errors='ignore').decode('utf-8') == x)
+        blacklist_categories=("whitespace",), blacklist_characters="*:\0"
+    )
+).filter(
+    lambda x: x.encode("utf-8", errors="ignore").decode("utf-8") == x
+)
 
 
 class StorageGauntlet(object):
@@ -63,11 +64,11 @@ class StorageGauntlet(object):
         with self.storage.transaction(read_only=True) as store:
             assert store[key] == value
 
-    @hypothesis.given(data=hypothesis.strategies.dictionaries(
-        arbitrary_key,
-        arbitrary_json,
-        average_size=2,
-    ))
+    @hypothesis.given(
+        data=hypothesis.strategies.dictionaries(
+            arbitrary_key, arbitrary_json, average_size=2
+        )
+    )
     def test_enumerate_keys(self, data):
         with self.storage.transaction() as store:
             store.update(data)
@@ -75,9 +76,7 @@ class StorageGauntlet(object):
             assert set(store.keys()) == set(data.keys())
 
     @hypothesis.given(
-        key=arbitrary_key,
-        value1=arbitrary_json,
-        value2=arbitrary_json,
+        key=arbitrary_key, value1=arbitrary_json, value2=arbitrary_json
     )
     def test_last_write_wins(self, key, value1, value2):
         with self.storage.transaction() as store:

@@ -15,7 +15,7 @@ import collections
 from jacquard.directory.base import Directory
 from jacquard.directory.utils import open_directory
 
-INDEXED_KEY_RE = re.compile(r'^([^\[]+)\[([0-9]+)]$')
+INDEXED_KEY_RE = re.compile(r"^([^\[]+)\[([0-9]+)]$")
 
 
 class UnionDirectory(Directory):
@@ -61,7 +61,7 @@ class UnionDirectory(Directory):
 
         for subdirectory_index in range(maximum_index + 1):
             sub_configuration = sub_configurations[subdirectory_index]
-            engine = sub_configuration.pop('engine')
+            engine = sub_configuration.pop("engine")
             yield open_directory(config, engine, sub_configuration)
 
     @classmethod

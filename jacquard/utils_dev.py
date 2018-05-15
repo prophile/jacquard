@@ -40,14 +40,14 @@ def _shrink_number(data, is_valid):
 def _shrink_date(date, is_valid):
     # Instead try to zero out components
     simplifiable_components = [
-        ('microsecond', 0),
-        ('month', 1),
-        ('day', 1),
-        ('hour', 0),
-        ('minute', 0),
-        ('second', 0),
-        ('year', 2000),
-        ('tzinfo', None),
+        ("microsecond", 0),
+        ("month", 1),
+        ("day", 1),
+        ("hour", 0),
+        ("minute", 0),
+        ("second", 0),
+        ("year", 2000),
+        ("tzinfo", None),
     ]
 
     for component, simplest_value in simplifiable_components:
@@ -72,14 +72,13 @@ def _shrink_string(data, is_valid):
         if is_valid(str(date_value)):
             # This is shrinkable as a date, do so
             shrunk, reduce_further = _shrink_date(
-                date_value,
-                lambda x: is_valid(str(x)),
+                date_value, lambda x: is_valid(str(x))
             )
             return str(shrunk), reduce_further
 
     # Try the empty string
-    if is_valid(''):
-        return '', False
+    if is_valid(""):
+        return "", False
     while is_valid(data[1:]):
         data = data[1:]
     while is_valid(data[:-1]):
@@ -88,10 +87,10 @@ def _shrink_string(data, is_valid):
     # Try to turn as much of the string as possible into 'a'
     did_modify = False
     for n in range(len(data)):
-        if data[n] == 'a':
+        if data[n] == "a":
             continue
 
-        modified_string = data[:n] + 'a' + data[n + 1:]
+        modified_string = data[:n] + "a" + data[n + 1:]
 
         if is_valid(modified_string):
             data = modified_string
@@ -116,6 +115,7 @@ def _shrink_list(data, is_valid):
     any_shrunk = False
     output_elements = []
     for index, element in enumerate(data):
+
         def is_valid_child(substitution):
             data_copy = list(data)
             data_copy[index] = substitution
@@ -146,11 +146,13 @@ def _shrink_dict(data, is_valid):
 
     for key in keys:
         # See if we can drop this key
-        if is_valid({
-            dict_key: dict_value
-            for dict_key, dict_value in data.items()
-            if dict_key != key
-        }):
+        if is_valid(
+            {
+                dict_key: dict_value
+                for dict_key, dict_value in data.items()
+                if dict_key != key
+            }
+        ):
             del data[key]
             any_changes = True
         else:
@@ -178,10 +180,7 @@ def _shrink_dict(data, is_valid):
                 copied_data[key] = substitution
                 return is_valid(copied_data)
 
-            shrunk_value = shrink(
-                data[key],
-                is_valid_substitution,
-            )
+            shrunk_value = shrink(data[key], is_valid_substitution)
 
             if shrunk_value != data[key]:
                 any_changes = True

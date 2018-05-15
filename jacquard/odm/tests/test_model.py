@@ -9,7 +9,7 @@ class Example(Model):
 
 
 def test_builtin_model_key():
-    assert Example.storage_key(1) == 'examples/1'
+    assert Example.storage_key(1) == "examples/1"
 
 
 def test_add():
@@ -19,7 +19,7 @@ def test_add():
     session.add(ex1)
     session.flush()
 
-    assert data == {'examples/1': {}}
+    assert data == {"examples/1": {}}
 
 
 def test_add_is_idempotent():
@@ -30,7 +30,7 @@ def test_add_is_idempotent():
     session.add(ex1)
     session.flush()
 
-    assert data == {'examples/1': {}}
+    assert data == {"examples/1": {}}
 
 
 def test_add_with_field():
@@ -40,7 +40,7 @@ def test_add_with_field():
     session.add(ex1)
     session.flush()
 
-    assert data == {'examples/1': {'name': "Paul"}}
+    assert data == {"examples/1": {"name": "Paul"}}
 
 
 def test_modify_with_field():
@@ -53,11 +53,11 @@ def test_modify_with_field():
     ex1.name = "Paula"
     session.flush()
 
-    assert data == {'examples/1': {'name': "Paula"}}
+    assert data == {"examples/1": {"name": "Paula"}}
 
 
 def test_get():
-    data = {'examples/1': {'name': "Paula"}}
+    data = {"examples/1": {"name": "Paula"}}
     session = Session(data)
 
     ex1 = session.get(Example, 1)
@@ -65,7 +65,7 @@ def test_get():
 
 
 def test_get_twice_returns_same_instance():
-    data = {'examples/1': {'name': "Paula"}}
+    data = {"examples/1": {"name": "Paula"}}
     session = Session(data)
 
     ex1 = session.get(Example, 1)
@@ -74,7 +74,7 @@ def test_get_twice_returns_same_instance():
 
 
 def test_get_missing_entity_raises_keyerror():
-    data = {'examples/1': {'name': "Paula"}}
+    data = {"examples/1": {"name": "Paula"}}
     session = Session(data)
 
     with pytest.raises(KeyError):
@@ -82,18 +82,18 @@ def test_get_missing_entity_raises_keyerror():
 
 
 def test_get_then_edit_entity():
-    data = {'examples/1': {'name': "Paula"}}
+    data = {"examples/1": {"name": "Paula"}}
     session = Session(data)
 
     ex1 = session.get(Example, 1)
     ex1.name = "Paul"
     session.flush()
 
-    assert data == {'examples/1': {'name': "Paul"}}
+    assert data == {"examples/1": {"name": "Paul"}}
 
 
 def test_get_then_remove_entity():
-    data = {'examples/1': {'name': "Paula"}}
+    data = {"examples/1": {"name": "Paula"}}
     session = Session(data)
 
     ex1 = session.get(Example, 1)
@@ -104,7 +104,7 @@ def test_get_then_remove_entity():
 
 
 def test_remove_is_idempotent():
-    data = {'examples/1': {'name': "Paula"}}
+    data = {"examples/1": {"name": "Paula"}}
     session = Session(data)
 
     ex1 = session.get(Example, 1)
@@ -144,7 +144,7 @@ def test_error_when_instantiating_with_duplicate_id():
 
 
 def test_error_when_removing_from_different_instance():
-    session1 = Session({'examples/1': {}})
+    session1 = Session({"examples/1": {}})
     session2 = Session({})
 
     ex1 = session1.get(Example, 1)

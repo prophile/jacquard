@@ -13,7 +13,7 @@ import redis
 from jacquard.storage.base import StorageEngine
 from jacquard.storage.exceptions import Retry
 
-LOGGER = logging.getLogger('jacquard.storage.cloned_redis')
+LOGGER = logging.getLogger("jacquard.storage.cloned_redis")
 
 
 _REDIS_POOL = {}  # type: typing.Dict[str, _RedisDataPool]
@@ -21,6 +21,7 @@ _REDIS_POOL_LOCK = threading.Lock()
 
 
 class _RedisDataPool(object):
+
     def __init__(self, connection_string):
         self.connection_string = connection_string
         self.connection = redis.StrictRedis.from_url(connection_string)
@@ -29,7 +30,7 @@ class _RedisDataPool(object):
 
         pubsub_thread = threading.Thread(
             name="Redis-PubSub:{connection_string}".format(
-                connection_string=self.connection_string,
+                connection_string=self.connection_string
             ),
             target=self.pubsub_thread,
             daemon=True,
@@ -44,22 +45,20 @@ class _RedisDataPool(object):
 
     def sync_update(self):
         with self.lock:
-            self.state_key = self.connection.get(b'jacquard-store:state-key')
+            self.state_key = self.connection.get(b"jacquard-store:state-key")
             LOGGER.debug("Got state key: %s", self.state_key)
             self.load_state()
 
     def load_state(self):
         if self.state_key:
             raw_data = self.connection.get(
-                b'jacquard-store:state:%s' % self.state_key,
+                b"jacquard-store:state:%s" % self.state_key
             )
 
             if raw_data is None:
                 warnings.warn(
                     "Mysteriously found no data associated with state key: "
-                    "{state_key}".format(
-                        state_key=self.state_key,
-                    ),
+                    "{state_key}".format(state_key=self.state_key)
                 )
                 self.current_data = {}
             else:
@@ -73,7 +72,7 @@ class _RedisDataPool(object):
         while True:
             try:
                 subscriber = self.connection.pubsub()
-                subscriber.subscribe('jacquard-store:state-key')
+                subscriber.subscribe("jacquard-store:state-key")
                 LOGGER.debug(
                     "Subscribed to state changes for %s",
                     self.connection_string,
@@ -85,7 +84,7 @@ class _RedisDataPool(object):
                 LOGGER.debug("Resync finished.")
 
                 LOGGER.info(
-                    "Connected to Redis pub/sub and synchronised state",
+                    "Connected to Redis pub/sub and synchronised state"
                 )
 
                 if not released_semaphore:
@@ -101,7 +100,7 @@ class _RedisDataPool(object):
                     if message is None:
                         # Poll for resync
                         current_state = self.connection.get(
-                            b'jacquard-store:state-key',
+                            b"jacquard-store:state-key"
                         )
 
                         if current_state != self.state_key:
@@ -117,42 +116,38 @@ class _RedisDataPool(object):
                         continue
 
                     if (
-                        message['type'] == 'subscribe' and
-                        message['channel'] == b'jacquard-store:state-key'
+                        message["type"] == "subscribe"
+                        and message["channel"] == b"jacquard-store:state-key"
                     ):
                         # This is the expected 'subscription' message which we
                         # receive when the connection is first opened; we can
                         # safely ignore these.
                         continue
 
-                    if message['type'] != 'message':
+                    if message["type"] != "message":
                         raise RuntimeError(
                             "Received unexpected Redis pub/sub message "
                             "of type '{message_type}' "
                             "(full data: {data!r})".format(
-                                message_type=message['type'],
-                                data=message,
-                            ),
+                                message_type=message["type"], data=message
+                            )
                         )
 
-                    if message['channel'] != b'jacquard-store:state-key':
+                    if message["channel"] != b"jacquard-store:state-key":
                         raise RuntimeError(
                             "Unexpectedly received Redis pub/sub message "
                             "for channel '{channel}' (should only be received "
                             "on 'jacquard-store:state-key')".format(
-                                channel=message['channel'],
-                            ),
+                                channel=message["channel"]
+                            )
                         )
 
                     with self.lock:
-                        new_key = message['data']
+                        new_key = message["data"]
                         if new_key == self.state_key:
                             continue
 
-                        LOGGER.debug(
-                            "Received state delta push: %s",
-                            new_key,
-                        )
+                        LOGGER.debug("Received state delta push: %s", new_key)
                         self.state_key = new_key
                         self.load_state()
             except redis.exceptions.ConnectionError:
@@ -232,8 +227,8 @@ class ClonedRedisStore(StorageEngine, threading.local):
         connection = redis.StrictRedis.from_url(self.connection_string)
 
         # Validate that the state key has not changed
-        connection.watch(b'jacquard-store:state-key')
-        cur_state_key = connection.get(b'jacquard-store:state-key')
+        connection.watch(b"jacquard-store:state-key")
+        cur_state_key = connection.get(b"jacquard-store:state-key")
 
         if cur_state_key != self.state_key:
             LOGGER.info(
@@ -247,7 +242,7 @@ class ClonedRedisStore(StorageEngine, threading.local):
             del self.state_key
             raise Retry()
 
-        new_state_key = str(uuid.uuid4()).encode('ascii')
+        new_state_key = str(uuid.uuid4()).encode("ascii")
 
         # Write back new state
         self.transaction_data.update(updates)
@@ -260,16 +255,16 @@ class ClonedRedisStore(StorageEngine, threading.local):
 
         raw_data = self._encode_redis_data(self.transaction_data)
 
-        connection.set(b'jacquard-store:state:%s' % new_state_key, raw_data)
+        connection.set(b"jacquard-store:state:%s" % new_state_key, raw_data)
 
         # Update the current state pointer and notify
         pipeline = connection.pipeline(transaction=True)
-        pipeline.set(b'jacquard-store:state-key', new_state_key)
-        pipeline.publish('jacquard-store:state-key', new_state_key)
+        pipeline.set(b"jacquard-store:state-key", new_state_key)
+        pipeline.publish("jacquard-store:state-key", new_state_key)
 
         if cur_state_key:
             # Expire the old state in half an hour.
-            pipeline.expire(b'jacquard-store:state:%s' % cur_state_key, 1800)
+            pipeline.expire(b"jacquard-store:state:%s" % cur_state_key, 1800)
 
         try:
             pipeline.execute()
@@ -281,9 +276,7 @@ class ClonedRedisStore(StorageEngine, threading.local):
         self.pool.set_state(new_state_key, self.transaction_data)
 
         LOGGER.debug(
-            "Committed state delta: %s -> %s",
-            self.state_key,
-            new_state_key,
+            "Committed state delta: %s -> %s", self.state_key, new_state_key
         )
 
         del self.transaction_data

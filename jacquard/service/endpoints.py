@@ -16,14 +16,14 @@ class Root(Endpoint):
     Essentially a directory of the main endpoints available.
     """
 
-    url = '/'
+    url = "/"
 
     def handle(self):
         """Dispatch request."""
         return {
-            'users': self.reverse('user', user=':user'),
-            'experiments': self.reverse('experiments-overview'),
-            'defaults': self.reverse('defaults'),
+            "users": self.reverse("user", user=":user"),
+            "experiments": self.reverse("experiments-overview"),
+            "defaults": self.reverse("defaults"),
         }
 
 
@@ -35,17 +35,15 @@ class User(Endpoint):
     given user ID.
     """
 
-    url = '/users/<user>'
+    url = "/users/<user>"
 
     def handle(self, user):
         """Dispatch request."""
         settings = get_settings(
-            user,
-            self.config.storage,
-            self.config.directory,
+            user, self.config.storage, self.config.directory
         )
 
-        return {**settings, 'user': user}
+        return {**settings, "user": user}
 
 
 class ExperimentsOverview(Endpoint):
@@ -55,23 +53,22 @@ class ExperimentsOverview(Endpoint):
     Gives basic details on all experiments in the system, regardless of state.
     """
 
-    url = '/experiments'
+    url = "/experiments"
 
     def handle(self):
         """Dispatch request."""
         with self.config.storage.transaction(read_only=True) as store:
-            active_experiments = store.get('active-experiments', ())
+            active_experiments = store.get("active-experiments", ())
             experiments = list(Experiment.enumerate(store))
 
         return [
             {
-                'id': experiment.id,
-                'url': self.reverse('experiment', experiment=experiment.id),
-                'state':
-                    'active'
-                    if experiment.id in active_experiments
-                    else 'inactive',
-                'name': experiment.name,
+                "id": experiment.id,
+                "url": self.reverse("experiment", experiment=experiment.id),
+                "state": "active"
+                if experiment.id in active_experiments
+                else "inactive",
+                "name": experiment.name,
             }
             for experiment in experiments
         ]
@@ -80,24 +77,23 @@ class ExperimentsOverview(Endpoint):
 class ExperimentDetail(Endpoint):
     """Full experiment details."""
 
-    url = '/experiments/<experiment>'
+    url = "/experiments/<experiment>"
 
     def handle(self, experiment):
         """Dispatch request."""
         with self.config.storage.transaction(read_only=True) as store:
             experiment_config = Experiment.from_store(store, experiment)
 
-            branches = [x['id'] for x in experiment_config.branches]
+            branches = [x["id"] for x in experiment_config.branches]
 
         return {
-            'id': experiment_config.id,
-            'name': experiment_config.name,
-            'launched': str(experiment_config.launched),
-            'concluded': str(experiment_config.concluded),
-            'branches': branches,
-            'partition': self.reverse(
-                'experiment-partition',
-                experiment=experiment,
+            "id": experiment_config.id,
+            "name": experiment_config.name,
+            "launched": str(experiment_config.launched),
+            "concluded": str(experiment_config.concluded),
+            "branches": branches,
+            "partition": self.reverse(
+                "experiment-partition", experiment=experiment
             ),
         }
 
@@ -105,14 +101,14 @@ class ExperimentDetail(Endpoint):
 class ExperimentPartition(Endpoint):
     """Grouping of users by branch in a given experiment."""
 
-    url = '/experiments/<experiment>/partition'
+    url = "/experiments/<experiment>/partition"
 
     def handle(self, experiment):
         """Dispatch request."""
-        if self.request.method != 'POST':
+        if self.request.method != "POST":
             raise MethodNotAllowed()
 
-        user_ids = self.request.form.getlist('u')
+        user_ids = self.request.form.getlist("u")
 
         with self.config.storage.transaction(read_only=True) as store:
             session = Session(store)
@@ -125,14 +121,14 @@ class ExperimentPartition(Endpoint):
             ]
 
             branch_ids = [
-                branch['id'] for branch in experiment_config.branches
+                branch["id"] for branch in experiment_config.branches
             ]
             branches = {x: [] for x in branch_ids}
 
             relevant_settings = set()
 
             for branch_config in experiment_config.branches:
-                relevant_settings.update(branch_config['settings'].keys())
+                relevant_settings.update(branch_config["settings"].keys())
 
             for user_id in user_ids:
                 user_entry = self.config.directory.lookup(user_id)
@@ -141,8 +137,7 @@ class ExperimentPartition(Endpoint):
                     continue
 
                 user_overrides = store.get(
-                    'overrides/{user_id}'.format(user_id=user_id),
-                    {},
+                    "overrides/{user_id}".format(user_id=user_id), {}
                 )
 
                 if any(x in relevant_settings for x in user_overrides.keys()):
@@ -154,7 +149,7 @@ class ExperimentPartition(Endpoint):
                     if bucket.covers([experiment_config.id, branch_id]):
                         members.append(user_id)
 
-        return {'branches': branches}
+        return {"branches": branches}
 
 
 class Defaults(Endpoint):
@@ -164,9 +159,9 @@ class Defaults(Endpoint):
     Potentially useful for archival.
     """
 
-    url = '/defaults'
+    url = "/defaults"
 
     def handle(self):
         """Dispatch request."""
         with self.config.storage.transaction(read_only=True) as store:
-            return store.get('defaults', {})
+            return store.get("defaults", {})

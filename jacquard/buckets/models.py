@@ -7,12 +7,13 @@ from jacquard.buckets.entry import Entry, decode_entry, encode_entry
 class Bucket(Model):
     """A single partition of user space, with associated settings."""
 
-    entries = ListField(null=False, field=EncodeDecodeField(
-        encode=encode_entry,
-        decode=decode_entry,
+    entries = ListField(
         null=False,
-        default=[],
-    ), default=())
+        field=EncodeDecodeField(
+            encode=encode_entry, decode=decode_entry, null=False, default=[]
+        ),
+        default=(),
+    )
 
     @classmethod
     def transitional_upgrade_raw_data(cls, data):
@@ -20,7 +21,7 @@ class Bucket(Model):
         if isinstance(data, list):
             # Data is in the old "just entries" format, forward-convert it to
             # the ODM format.
-            return {'entries': data}
+            return {"entries": data}
         return data
 
     def get_settings(self, user_entry):
@@ -29,8 +30,8 @@ class Bucket(Model):
 
         for entry in self.entries:
             if (
-                not entry.constraints or
-                entry.constraints.matches_user(user_entry)
+                not entry.constraints
+                or entry.constraints.matches_user(user_entry)
             ):
                 settings.update(entry.settings)
 
@@ -44,8 +45,7 @@ class Bucket(Model):
         apply under.
         """
         return {
-            x.constraints: frozenset(x.settings.keys())
-            for x in self.entries
+            x.constraints: frozenset(x.settings.keys()) for x in self.entries
         }
 
     def needs_constraints(self):
@@ -54,25 +54,16 @@ class Bucket(Model):
 
     def add(self, key, settings, constraints):
         """Add a new, keyed entry."""
-        self.entries = self.entries + (Entry(
-            key=key,
-            settings=settings,
-            constraints=constraints,
-        ),)
+        self.entries = self.entries + (
+            Entry(key=key, settings=settings, constraints=constraints),
+        )
         self.mark_dirty()
 
     def remove(self, key):
         """Remove any matching, keyed entry."""
-        self.entries = [
-            x
-            for x in self.entries
-            if x.key != key
-        ]
+        self.entries = [x for x in self.entries if x.key != key]
         self.mark_dirty()
 
     def covers(self, key):
         """Whether a given key is covered under this bucket."""
-        return any(
-            x.key == key
-            for x in self.entries
-        )
+        return any(x.key == key for x in self.entries)

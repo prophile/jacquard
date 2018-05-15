@@ -14,10 +14,10 @@ except ImportError:
 
 @pytest.mark.skipif(fakeredis is None, reason="fakeredis is not installed")
 class RedisGauntletTest(StorageGauntlet, unittest.TestCase):
+
     def open_storage(self):
         fakeredis.FakeStrictRedis().flushall()
         with unittest.mock.patch(
-            'redis.StrictRedis',
-            fakeredis.FakeStrictRedis,
+            "redis.StrictRedis", fakeredis.FakeStrictRedis
         ):
-            return RedisStore('')
+            return RedisStore("")

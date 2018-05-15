@@ -17,7 +17,7 @@ def get_settings(user_id, storage, directory=None):
     with storage.transaction(read_only=True) as store:
         session = Session(store)
 
-        defaults = store.get('defaults', {})
+        defaults = store.get("defaults", {})
         bucket_id = user_bucket(user_id)
         bucket = session.get(Bucket, bucket_id, default=EMPTY)
 
@@ -29,8 +29,7 @@ def get_settings(user_id, storage, directory=None):
         bucket_settings = bucket.get_settings(user_entry)
 
         overrides = store.get(
-            'overrides/{user_id}'.format(user_id=user_id),
-            {},
+            "overrides/{user_id}".format(user_id=user_id), {}
         )
 
     return {**defaults, **bucket_settings, **overrides}

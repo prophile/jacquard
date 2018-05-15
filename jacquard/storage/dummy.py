@@ -18,17 +18,14 @@ class DummyStore(StorageEngine):
         tests!
         """
         if data is not None:
-            self.data = {
-                key: json.dumps(value)
-                for key, value in data.items()
-            }
+            self.data = {key: json.dumps(value) for key, value in data.items()}
         else:
             self.data = {}
         self.lock = threading.Lock()
 
     def __getitem__(self, key):
         """Direct item access. This is for test usage."""
-        return json.loads(self.data.get(key, 'null'))
+        return json.loads(self.data.get(key, "null"))
 
     def begin(self):
         """Begin transaction."""

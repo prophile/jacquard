@@ -20,9 +20,9 @@ class Config(collections.abc.Mapping):
 
     def __init__(self, config_file):
         """Internal constructor."""
-        self.storage_engine = config_file.get('storage', 'engine')
-        self.storage_url = config_file.get('storage', 'url', fallback='')
-        self.directory_settings = config_file['directory']
+        self.storage_engine = config_file.get("storage", "engine")
+        self.storage_url = config_file.get("storage", "url", fallback="")
+        self.directory_settings = config_file["directory"]
         self.config_file = config_file
 
         self._load_path()
@@ -30,7 +30,7 @@ class Config(collections.abc.Mapping):
         self._thread_local = threading.local()
 
     def _load_path(self):
-        for path in self.get('paths', {}).values():
+        for path in self.get("paths", {}).values():
             sys.path.append(path.strip())
 
     def __getitem__(self, key):
@@ -65,7 +65,7 @@ class Config(collections.abc.Mapping):
         Note that this is lazily initialised.
         """
         # Lazily initialise storage
-        if not hasattr(self, '_storage'):
+        if not hasattr(self, "_storage"):
             self._storage = self._open_storage()
         return self._storage
 
@@ -73,13 +73,9 @@ class Config(collections.abc.Mapping):
         kwargs = {
             key: value
             for key, value in self.directory_settings.items()
-            if key != 'engine'
+            if key != "engine"
         }
-        return open_directory(
-            self,
-            self.directory_settings['engine'],
-            kwargs,
-        )
+        return open_directory(self, self.directory_settings["engine"], kwargs)
 
     @property
     def directory(self):
@@ -89,7 +85,7 @@ class Config(collections.abc.Mapping):
         Note that this is actually thread-local, so users need not worry
         about thread synchronisation of connections.
         """
-        return self._thread_local_property('directory', self._open_directory)
+        return self._thread_local_property("directory", self._open_directory)
 
 
 def load_config(source):
@@ -99,10 +95,10 @@ def load_config(source):
     `source` may be given either as a file-like or path-like object. In the
     former case it should be opened for reading in text/unicode mode.
     """
-    if hasattr(source, 'read'):
+    if hasattr(source, "read"):
         return _load_config_from_fp(source)
     else:
-        with pathlib.Path(source).open('r') as f:
+        with pathlib.Path(source).open("r") as f:
             return _load_config_from_fp(f)
 
 

@@ -6,10 +6,10 @@ from jacquard.buckets.constants import NUM_BUCKETS
 from jacquard.buckets.exceptions import NotEnoughBucketsException
 
 __all__ = (
-    'user_bucket',
-    'NUM_BUCKETS',
-    'Bucket',
-    'release',
-    'close',
-    'NotEnoughBucketsException',
+    "user_bucket",
+    "NUM_BUCKETS",
+    "Bucket",
+    "release",
+    "close",
+    "NotEnoughBucketsException",
 )

@@ -135,15 +135,11 @@ class StorageEngine(metaclass=abc.ABCMeta):
             self.rollback()
             raise
 
-        if (
-            not transaction_map.changes and
-            not transaction_map.deletions
-        ):
+        if not transaction_map.changes and not transaction_map.deletions:
             # Don't bother running a commit if nothing actually changed
             self.rollback()
         elif (
-            transaction_map.changes or
-            transaction_map.deletions
+            transaction_map.changes or transaction_map.deletions
         ) and read_only:
             self.rollback()
             raise RuntimeError(
@@ -151,14 +147,11 @@ class StorageEngine(metaclass=abc.ABCMeta):
                     keys=", ".join(
                         repr(x)
                         for x in (
-                            set(transaction_map.changes.keys()) |
-                            set(transaction_map.deletions)
+                            set(transaction_map.changes.keys())
+                            | set(transaction_map.deletions)
                         )
-                    ),
+                    )
                 )
             )
         else:
-            self.commit(
-                transaction_map.changes,
-                transaction_map.deletions,
-            )
+            self.commit(transaction_map.changes, transaction_map.deletions)

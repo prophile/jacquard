@@ -10,5 +10,5 @@ def open_directory(config, engine, kwargs):
     Looks up the directory through the `jacquard.directory_engines` entry
     point group and instantiates the given class with `**kwargs`.
     """
-    cls = plug('directory_engines', engine, config=config)()
+    cls = plug("directory_engines", engine, config=config)()
     return cls.from_configuration(config, kwargs)

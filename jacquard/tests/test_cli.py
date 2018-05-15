@@ -13,7 +13,7 @@ def test_smoke_cli_help():
     try:
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
-            main(['--help'])
+            main(["--help"])
     except SystemExit:
         pass
 
@@ -33,34 +33,36 @@ def test_help_message_when_given_no_subcommand():
 
 def test_run_basic_command():
     config = unittest.mock.Mock()
-    config.storage = DummyStore('', data={
-        'foo': 'bar',
-    })
+    config.storage = DummyStore("", data={"foo": "bar"})
 
     output = io.StringIO()
     with contextlib.redirect_stdout(output):
-        main(['storage-dump'], config=config)
+        main(["storage-dump"], config=config)
 
-    assert output.getvalue().strip() == textwrap.dedent("""
+    assert (
+        output.getvalue().strip()
+        == textwrap.dedent(
+            """
         foo
         ===
         'bar'
 
         """
-    ).strip()
+        ).strip()
+    )
 
 
 def test_run_write_command():
     config = unittest.mock.Mock()
-    config.storage = DummyStore('', data={})
+    config.storage = DummyStore("", data={})
 
     output = io.StringIO()
     with contextlib.redirect_stdout(output):
-        main(['set-default', 'foo', '"bar"'], config=config)
+        main(["set-default", "foo", '"bar"'], config=config)
 
-    assert output.getvalue() == ''
+    assert output.getvalue() == ""
 
-    assert config.storage.data == {'defaults': '{"foo": "bar"}'}
+    assert config.storage.data == {"defaults": '{"foo": "bar"}'}
 
 
 def test_erroring_command():
@@ -71,19 +73,16 @@ def test_erroring_command():
     mock_parser = unittest.mock.Mock()
     mock_options = unittest.mock.Mock()
     mock_options.func = unittest.mock.Mock(
-        side_effect=CommandError(ERROR_MESSAGE),
+        side_effect=CommandError(ERROR_MESSAGE)
     )
-    mock_parser.parse_args = unittest.mock.Mock(
-        return_value=mock_options,
-    )
+    mock_parser.parse_args = unittest.mock.Mock(return_value=mock_options)
 
     stderr = io.StringIO()
     with contextlib.redirect_stderr(stderr), pytest.raises(SystemExit):
         with unittest.mock.patch(
-            'jacquard.cli.argument_parser',
-            return_value=mock_parser,
+            "jacquard.cli.argument_parser", return_value=mock_parser
         ):
-            main(['command'], config=config)
+            main(["command"], config=config)
 
     assert stderr.getvalue() == ERROR_MESSAGE + "\n"
 
@@ -100,10 +99,12 @@ def test_jacquard_help_without_args_gives_dash_dash_help():
     stdout_reference = io.StringIO()
     stdout_actual = io.StringIO()
 
-    with contextlib.redirect_stdout(stdout_reference), pytest.raises(SystemExit):
-        main(['--help'], config=config)
+    with contextlib.redirect_stdout(stdout_reference), pytest.raises(
+        SystemExit
+    ):
+        main(["--help"], config=config)
     with contextlib.redirect_stdout(stdout_actual), pytest.raises(SystemExit):
-        main(['help'], config=config)
+        main(["help"], config=config)
 
     assert stdout_reference.getvalue() == stdout_actual.getvalue()
 
@@ -114,9 +115,11 @@ def test_jacquard_help_with_args_is_subcommand_help():
     stdout_reference = io.StringIO()
     stdout_actual = io.StringIO()
 
-    with contextlib.redirect_stdout(stdout_reference), pytest.raises(SystemExit):
-        main(['launch', '--help'], config=config)
+    with contextlib.redirect_stdout(stdout_reference), pytest.raises(
+        SystemExit
+    ):
+        main(["launch", "--help"], config=config)
     with contextlib.redirect_stdout(stdout_actual), pytest.raises(SystemExit):
-        main(['help', 'launch'], config=config)
+        main(["help", "launch"], config=config)
 
     assert stdout_reference.getvalue() == stdout_actual.getvalue()

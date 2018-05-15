@@ -7,8 +7,7 @@ import dateutil.tz
 from jacquard.utils import check_keys
 
 ConstraintContext = collections.namedtuple(
-    'ConstraintContext',
-    ('era_start_date',),
+    "ConstraintContext", ("era_start_date",)
 )
 
 
@@ -69,7 +68,7 @@ class Constraints(object):
         self.include_named = named
         self.era = era
 
-        if era not in (None, 'old', 'new'):
+        if era not in (None, "old", "new"):
             raise ValueError("Invalid era: {era}".format(era=era))
 
         self.required_tags = tuple(required_tags)
@@ -81,11 +80,11 @@ class Constraints(object):
     def __bool__(self):
         """Whether these constraints are non-universal."""
         if (
-            self.era or
-            self.required_tags or
-            self.excluded_tags or
-            self.joined_after or
-            self.joined_before
+            self.era
+            or self.required_tags
+            or self.excluded_tags
+            or self.joined_after
+            or self.joined_before
         ):
             return True
 
@@ -100,15 +99,18 @@ class Constraints(object):
     @classmethod
     def from_json(cls, description):
         """Generate constraints from a JSON description."""
-        check_keys(description.keys(), (
-            'anonymous',
-            'named',
-            'era',
-            'required_tags',
-            'excluded_tags',
-            'joined_before',
-            'joined_after',
-        ))
+        check_keys(
+            description.keys(),
+            (
+                "anonymous",
+                "named",
+                "era",
+                "required_tags",
+                "excluded_tags",
+                "joined_before",
+                "joined_after",
+            ),
+        )
 
         def get_maybe_date(key):
             try:
@@ -119,13 +121,13 @@ class Constraints(object):
             return dateutil.parser.parse(string_date)
 
         return cls(
-            anonymous=description.get('anonymous', True),
-            named=description.get('named', True),
-            era=description.get('era'),
-            required_tags=description.get('required_tags', ()),
-            excluded_tags=description.get('excluded_tags', ()),
-            joined_before=get_maybe_date('joined_before'),
-            joined_after=get_maybe_date('joined_after'),
+            anonymous=description.get("anonymous", True),
+            named=description.get("named", True),
+            era=description.get("era"),
+            required_tags=description.get("required_tags", ()),
+            excluded_tags=description.get("excluded_tags", ()),
+            joined_before=get_maybe_date("joined_before"),
+            joined_after=get_maybe_date("joined_after"),
         )
 
     def to_json(self):
@@ -135,24 +137,23 @@ class Constraints(object):
         A pseudo-inverse of `.from_json`.
         """
         description = {
-            'anonymous': self.include_anonymous,
-            'named': self.include_named,
+            "anonymous": self.include_anonymous, "named": self.include_named
         }
 
         if self.era is not None:
-            description['era'] = self.era
+            description["era"] = self.era
 
         if self.required_tags:
-            description['required_tags'] = self.required_tags
+            description["required_tags"] = self.required_tags
 
         if self.excluded_tags:
-            description['excluded_tags'] = self.excluded_tags
+            description["excluded_tags"] = self.excluded_tags
 
         if self.joined_after:
-            description['joined_after'] = str(self.joined_after)
+            description["joined_after"] = str(self.joined_after)
 
         if self.joined_before:
-            description['joined_before'] = str(self.joined_before)
+            description["joined_before"] = str(self.joined_before)
 
         return description
 
@@ -167,10 +168,10 @@ class Constraints(object):
         if self.joined_after:
             joined_after_dates.append(self.joined_after)
 
-        if self.era == 'new':
+        if self.era == "new":
             joined_after_dates.append(context.era_start_date)
 
-        if self.era == 'old':
+        if self.era == "old":
             joined_before_dates.append(context.era_start_date)
 
         if joined_before_dates:
@@ -228,8 +229,8 @@ class Constraints(object):
             return False
 
         if (
-            set(self.required_tags) & set(other_constraints.excluded_tags) or
-            set(self.excluded_tags) & set(other_constraints.required_tags)
+            set(self.required_tags) & set(other_constraints.excluded_tags)
+            or set(self.excluded_tags) & set(other_constraints.required_tags)
         ):
             return True
 

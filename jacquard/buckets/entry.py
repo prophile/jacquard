@@ -4,10 +4,7 @@ import collections
 
 from jacquard.constraints import Constraints
 
-Entry = collections.namedtuple(
-    'Entry',
-    ('key', 'settings', 'constraints'),
-)
+Entry = collections.namedtuple("Entry", ("key", "settings", "constraints"))
 
 
 def decode_entry(json):
@@ -22,8 +19,4 @@ def decode_entry(json):
 
 def encode_entry(entry):
     """Convert from an entry to a JSON-representation."""
-    return [
-        entry.key,
-        entry.settings,
-        entry.constraints.to_json(),
-    ]
+    return [entry.key, entry.settings, entry.constraints.to_json()]

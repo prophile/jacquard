@@ -25,7 +25,7 @@ class _DuplicateStorageConfig(object):
 
         Copies the storage but otherwise passes through.
         """
-        self.storage = DummyStore('')
+        self.storage = DummyStore("")
         print("Copying all data to a local version")
         copy_data(config.storage, self.storage)
         self.config = config
@@ -52,26 +52,16 @@ class Bugpoint(BaseCommand):
         target = parser.add_mutually_exclusive_group(required=True)
 
         target.add_argument(
-            '--command',
-            type=str,
-            help="command to run",
-            nargs='*',
+            "--command", type=str, help="command to run", nargs="*"
         )
-        target.add_argument(
-            '--url',
-            type=str,
-            help="url to fetch",
-        )
+        target.add_argument("--url", type=str, help="url to fetch")
 
     def handle(self, config, options):
         """Run command."""
         replacement_config = _DuplicateStorageConfig(config)
 
         target = self._get_run_target(replacement_config, options)
-        target_failure_mode = functools.partial(
-            self._failure_mode,
-            target,
-        )
+        target_failure_mode = functools.partial(self._failure_mode, target)
 
         reference_failure_mode = target_failure_mode()
 
@@ -81,6 +71,7 @@ class Bugpoint(BaseCommand):
         print("Failure mode: ", reference_failure_mode)
 
         with self._backed_up_storage(replacement_config.storage):
+
             def predicate():
                 """Determine if the config maintains the original failure."""
                 return target_failure_mode() == reference_failure_mode
@@ -88,9 +79,7 @@ class Bugpoint(BaseCommand):
             # Sequence 1: Simplify by dropping keys
             print("Dropping keys")
             self._progressively_simplify(
-                replacement_config.storage,
-                self._try_dropping_key,
-                predicate,
+                replacement_config.storage, self._try_dropping_key, predicate
             )
 
             # Sequence 2: Progressively simplify all remaining keys
@@ -208,18 +197,20 @@ class Bugpoint(BaseCommand):
         5xx status codes turning them into ValueErrors.
         """
         if options.command:
+
             def target():
                 out_stream = io.StringIO()
 
                 with contextlib.ExitStack() as context:
                     context.enter_context(
-                        contextlib.redirect_stdout(out_stream),
+                        contextlib.redirect_stdout(out_stream)
                     )
                     context.enter_context(
-                        contextlib.redirect_stderr(out_stream),
+                        contextlib.redirect_stderr(out_stream)
                     )
 
                     run_command(options.command, config)
+
         elif options.url:
             app = get_wsgi_app(config)
             test_client = Client(app, BaseResponse)
@@ -229,10 +220,11 @@ class Bugpoint(BaseCommand):
 
                 status_class = str(result.status_code)[0]
 
-                if status_class in ('4', '5'):
-                    raise ValueError("Status: {code}".format(
-                        code=result.status_code,
-                    ))
+                if status_class in ("4", "5"):
+                    raise ValueError(
+                        "Status: {code}".format(code=result.status_code)
+                    )
+
         else:
             raise AssertionError("No target type")
 
@@ -245,7 +237,7 @@ class Bugpoint(BaseCommand):
 
         A convenience context manager.
         """
-        backup = DummyStore('')
+        backup = DummyStore("")
         copy_data(storage, backup)
 
         try:

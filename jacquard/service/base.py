@@ -66,9 +66,7 @@ class Endpoint(metaclass=abc.ABCMeta):
     def build_rule(self, name):
         """Build `Rule` instance which represents this unbound endpoint."""
         return werkzeug.routing.Rule(
-            self.url,
-            defaults=self.defaults,
-            endpoint=self,
+            self.url, defaults=self.defaults, endpoint=self
         )
 
     def bind(self, request, reverse):
@@ -91,7 +89,7 @@ class Endpoint(metaclass=abc.ABCMeta):
         except AttributeError:
             raise AttributeError(
                 "Unbound endpoint: `request` is only available on bound "
-                "endpoints",
+                "endpoints"
             )
 
     def reverse(self, name, **kwargs):
@@ -101,6 +99,6 @@ class Endpoint(metaclass=abc.ABCMeta):
         except AttributeError:
             raise AttributeError(
                 "Unbound endpoint: `reverse` is only available on bound "
-                "endpoints",
+                "endpoints"
             )
         return reverse(name, **kwargs)
