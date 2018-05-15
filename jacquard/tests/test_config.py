@@ -6,7 +6,6 @@ import textwrap
 from jacquard.config import load_config
 from jacquard.directory.dummy import DummyDirectory
 
-
 CONFIG_FILE = """
 [storage]
 engine = dummy
