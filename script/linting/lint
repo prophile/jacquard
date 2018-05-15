@@ -1,2 +1,4 @@
 #!/bin/sh
+set -e
+black --line-length 79 --check jacquard
 exec flake8 jacquard
