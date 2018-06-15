@@ -234,4 +234,18 @@ class Constraints(object):
         ):
             return True
 
+        if (
+            self.joined_after is not None and
+            other_constraints.joined_before is not None and
+            self.joined_after >= other_constraints.joined_before
+        ):
+            return True
+
+        if (
+            self.joined_before is not None and
+            other_constraints.joined_after is not None and
+            self.joined_before < other_constraints.joined_after
+        ):
+            return True
+
         return False
