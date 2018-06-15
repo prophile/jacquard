@@ -117,7 +117,14 @@ class Constraints(object):
             except KeyError:
                 return None
 
-            return dateutil.parser.parse(string_date)
+            parsed_date = dateutil.parser.parse(string_date)
+
+            if parsed_date.tzinfo is None:
+                raise ValueError(
+                    "Constraint dates must explicitly include timezones.",
+                )
+
+            return parsed_date
 
         return cls(
             anonymous=description.get('anonymous', True),

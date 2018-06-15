@@ -42,6 +42,11 @@ def is_disjoint(c1, c2):
     )
 
 
+def test_constraints_require_timezones():
+    with pytest.raises(ValueError):
+        Constraints.from_json({'joined_before': '2018-05-05 10:00'})
+
+
 def test_constraints_from_empty_dict_raises_no_errors():
     Constraints.from_json({})
 
