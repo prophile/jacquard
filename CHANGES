@@ -1,3 +1,20 @@
+0.6.2  2018-06-15
+
+Minor features:
+
+* Disjointness proving by dates is now implemented. This means can launch two
+  50:50 experiments on the same settings if their joined_before/joined_after/
+  era constraints mean that they apply to disjoint groups of people.
+
+Bugfixes:
+
+* A potentially possible case of an ImportError relating to constraints and
+  `dateutil` is now fixed.
+* Rather than silently accepting bad data and then 500ing on requests,
+  Jacquard will now validate that all dates specified in an experiment
+  definition are not naïve (= timezone aware).
+
+
 0.6.1  2018-05-14
 
 Bugfixes:
