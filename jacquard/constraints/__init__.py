@@ -3,6 +3,7 @@
 import collections
 
 import dateutil.tz
+import dateutil.parser
 
 from jacquard.utils import check_keys
 
