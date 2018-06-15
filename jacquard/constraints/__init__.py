@@ -219,18 +219,27 @@ class Constraints(object):
         return True
 
     def is_provably_disjoint_from_constraints(self, other_constraints):
-        """
-        Test whether constraints are provably disjoint.
-
-        Currently only constraints on anonymity and tags are supported, era,
-        and ``joined_before``/``joined_after`` constraints are not supported.
-        """
+        """Test whether constraints are provably disjoint."""
         if self.include_anonymous and other_constraints.include_anonymous:
             return False
 
         if (
             set(self.required_tags) & set(other_constraints.excluded_tags) or
             set(self.excluded_tags) & set(other_constraints.required_tags)
+        ):
+            return True
+
+        if (
+            self.joined_after is not None and
+            other_constraints.joined_before is not None and
+            self.joined_after >= other_constraints.joined_before
+        ):
+            return True
+
+        if (
+            self.joined_before is not None and
+            other_constraints.joined_after is not None and
+            self.joined_before < other_constraints.joined_after
         ):
             return True
 
