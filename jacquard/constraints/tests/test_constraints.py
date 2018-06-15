@@ -189,3 +189,59 @@ def test_not_disjoint_if_allow_anonymous():
 def test_constraints_explode_with_vim_and_vigour_if_given_a_dodgy_era():
     with pytest.raises(ValueError):
         Constraints(era='bees')
+
+
+def test_not_disjoint_when_only_one_is_date_bounded():
+    assert is_disjoint(
+        {'joined_after': '2018-05-01 00:00+0000', 'anonymous': False},
+        {'anonymous': False},
+    ) is False
+
+
+def test_not_disjoint_when_dates_are_both_bounded_on_same_side():
+    assert is_disjoint(
+        {'joined_after': '2018-05-01 00:00+0000', 'anonymous': False},
+        {'joined_after': '2018-05-02 00:00+0000', 'anonymous': False},
+    ) is False
+
+
+def test_not_disjoint_when_one_sided_in_different_directions_and_overlapping():
+    assert is_disjoint(
+        {'joined_after': '2018-05-01 00:00+0000', 'anonymous': False},
+        {'joined_before': '2018-05-02 00:00+0000', 'anonymous': False},
+    ) is False
+
+
+def test_disjoint_when_one_sided_in_different_directions_and_not_overlapping():
+    assert is_disjoint(
+        {'joined_after': '2018-05-02 00:00+0000', 'anonymous': False},
+        {'joined_before': '2018-05-01 00:00+0000', 'anonymous': False},
+    ) is True
+
+
+def test_disjoint_when_one_sided_in_different_directions_and_not_overlapping_on_the_margin():
+    assert is_disjoint(
+        {'joined_after': '2018-05-01 00:00+0000', 'anonymous': False},
+        {'joined_before': '2018-05-01 00:00+0000', 'anonymous': False},
+    ) is True
+
+
+def test_not_disjoint_when_doubly_bounded_and_overlapping():
+    assert is_disjoint(
+        {'joined_after': '2018-05-01 00:00+0000', 'joined_before': '2018-05-03 00:00+0000', 'anonymous': False},
+        {'joined_after': '2018-05-02 00:00+0000', 'joined_before': '2018-05-04 00:00+0000', 'anonymous': False},
+    ) is False
+
+
+def test_not_disjoint_when_doubly_bounded_and_one_contains_the_other_wholly():
+    assert is_disjoint(
+        {'joined_after': '2018-05-01 00:00+0000', 'joined_before': '2018-05-04 00:00+0000', 'anonymous': False},
+        {'joined_after': '2018-05-02 00:00+0000', 'joined_before': '2018-05-03 00:00+0000', 'anonymous': False},
+    ) is False
+
+
+def test_disjoint_when_doubly_bounded_and_actually_non_overlapping():
+    assert is_disjoint(
+        {'joined_after': '2018-05-01 00:00+0000', 'joined_before': '2018-05-02 00:00+0000', 'anonymous': False},
+        {'joined_after': '2018-05-03 00:00+0000', 'joined_before': '2018-05-04 00:00+0000', 'anonymous': False},
+    ) is True
