@@ -79,13 +79,13 @@ Jacquard uses `flake8` for linting. You can install the requirements using:
 
 .. code:: bash
 
-    pip install scripts/linting/requirements.txt
+    pip install -r script/linting/requirements.txt
 
 and run the linter with:
 
 .. code:: bash
 
-    ./scripts/linting/lint
+    ./script/linting/lint
 
 Documenting
 ^^^^^^^^^^^
