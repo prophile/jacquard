@@ -98,6 +98,10 @@ def test_missing_paths_get_404():
     assert get_status("/missing")[0] == "404 NOT FOUND"
 
 
+def test_get_missing_experiment_returns_404():
+    assert get_status("/experiments/bar")[0] == "404 NOT FOUND"
+
+
 def test_get_on_experiment_partition_gets_405():
     assert get_status("/experiments/foo/partition")[0] == "405 METHOD NOT ALLOWED"
 

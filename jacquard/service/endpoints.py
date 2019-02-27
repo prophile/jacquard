@@ -1,6 +1,6 @@
 """Built-in, core HTTP endpoints."""
 
-from werkzeug.exceptions import MethodNotAllowed
+from werkzeug.exceptions import MethodNotAllowed, NotFound
 
 from jacquard.odm import EMPTY, Session
 from jacquard.users import get_settings
@@ -80,7 +80,14 @@ class ExperimentDetail(Endpoint):
     def handle(self, experiment):
         """Dispatch request."""
         with self.config.storage.transaction(read_only=True) as store:
-            experiment_config = Experiment.from_store(store, experiment)
+            try:
+                experiment_config = Experiment.from_store(store, experiment)
+            except LookupError:
+                raise NotFound(
+                    "No experiment with ID {experiment_id!r}".format(
+                        experiment_id=experiment
+                    )
+                )
 
             branches = [x["id"] for x in experiment_config.branches]
 
