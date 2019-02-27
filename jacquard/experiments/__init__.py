@@ -7,6 +7,4 @@ of the rest of the codebase duplicating code which should belong here.
 
 from jacquard.experiments.experiment import Experiment
 
-__all__ = (
-    'Experiment',
-)
+__all__ = ("Experiment",)

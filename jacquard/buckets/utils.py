@@ -18,9 +18,9 @@ def user_bucket(user_id):
     user_id = str(user_id)
 
     hasher = hashlib.sha256()
-    hasher.update(user_id.encode('utf-8'))
+    hasher.update(user_id.encode("utf-8"))
 
-    key = int.from_bytes(hasher.digest(), byteorder='big')
+    key = int.from_bytes(hasher.digest(), byteorder="big")
 
     # Marked noqa because the zealous pep3101 checker thinks `key` is a string
     return key % NUM_BUCKETS  # noqa
@@ -41,10 +41,7 @@ def release(store, name, constraints, branches):
     session = Session(store)
 
     # Branches is a list of (name, n_buckets, settings) tuples
-    all_buckets = [
-        session.get(Bucket, x, default=CREATE)
-        for x in range(NUM_BUCKETS)
-    ]
+    all_buckets = [session.get(Bucket, x, default=CREATE) for x in range(NUM_BUCKETS)]
 
     edited_settings = set.union(*[set(x[2].keys()) for x in branches])
 
@@ -93,8 +90,9 @@ def is_valid_bucket(bucket, new_settings, new_constraints):
     for constraints, settings in existing.items():
 
         settings_disjoint = frozenset.isdisjoint(settings, new_settings)
-        constraints_disjoint = \
-            constraints.is_provably_disjoint_from_constraints(new_constraints)
+        constraints_disjoint = constraints.is_provably_disjoint_from_constraints(
+            new_constraints
+        )
 
         if not (constraints_disjoint or settings_disjoint):
             return False
@@ -115,10 +113,7 @@ def close(store, name, constraints, branches):
     """
     session = Session(store)
 
-    keys = [
-        [name, x[0]]
-        for x in branches
-    ]
+    keys = [[name, x[0]] for x in branches]
 
     for idx in range(NUM_BUCKETS):
         bucket = session.get(Bucket, idx, default=None)

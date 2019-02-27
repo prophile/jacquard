@@ -20,29 +20,18 @@ def get_error(passed_keys, known_keys):
 )
 def test_accepts_with_all_known_keys(keys, included):
     known_keys = keys
-    used_keys = [
-        key
-        for key in keys
-        if included.draw(hypothesis.strategies.booleans())
-    ]
+    used_keys = [key for key in keys if included.draw(hypothesis.strategies.booleans())]
     check_keys(used_keys, known_keys)
 
 
 @hypothesis.given(
     passed_keys=hypothesis.strategies.lists(
-        hypothesis.strategies.text(),
-        min_size=2,
-        unique=True,
+        hypothesis.strategies.text(), min_size=2, unique=True
     ),
-    known_keys=hypothesis.strategies.sets(
-        hypothesis.strategies.text(),
-    )
+    known_keys=hypothesis.strategies.sets(hypothesis.strategies.text()),
 )
 def test_rejects_with_multiple_unknown_keys(passed_keys, known_keys):
-    hypothesis.assume(not any(
-        x in known_keys
-        for x in passed_keys
-    ))
+    hypothesis.assume(not any(x in known_keys for x in passed_keys))
 
     error_message = get_error(passed_keys, known_keys)
 
@@ -65,15 +54,10 @@ def test_offers_correction_for_minor_error(actual_key, extra_character):
 @hypothesis.given(
     actual_key=hypothesis.strategies.text(),
     extra_character=hypothesis.strategies.characters(),
-    other_keys=hypothesis.strategies.sets(
-        hypothesis.strategies.text(),
-        min_size=3,
-    ),
+    other_keys=hypothesis.strategies.sets(hypothesis.strategies.text(), min_size=3),
 )
 def test_offers_correction_for_minor_error_with_many_possible_keys(
-    actual_key,
-    extra_character,
-    other_keys,
+    actual_key, extra_character, other_keys
 ):
     incorrect_key = actual_key + extra_character
     hypothesis.assume(incorrect_key not in other_keys)
@@ -90,15 +74,18 @@ def test_primitive_types_are_non_recursive():
     assert not is_recursive(4)
     assert not is_recursive("string")
 
+
 def test_dicts_can_be_detected_as_non_recursive():
-    assert not is_recursive({'foo': {'bar': 'bazz'}})
+    assert not is_recursive({"foo": {"bar": "bazz"}})
+
 
 def test_recursive_structures_are_detected():
-    elements = ['foo', 'bar']
+    elements = ["foo", "bar"]
     elements.append(elements)
     assert is_recursive(elements)
 
+
 def test_deep_recursive_structures_are_detected():
-    elements = ['foo', 'bar']
-    elements.append({'bazz': {'quux': elements}})
+    elements = ["foo", "bar"]
+    elements.append({"bazz": {"quux": elements}})
     assert is_recursive(elements)

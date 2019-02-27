@@ -10,19 +10,16 @@ class ShowDirectoryEntry(BaseCommand):
 
     def add_arguments(self, parser):
         """Add command-line arguments."""
-        parser.add_argument(
-            'user_id',
-            help="user ID to show",
-        )
+        parser.add_argument("user_id", help="user ID to show")
 
     def handle(self, config, options):
         """Run command."""
         entry = config.directory.lookup(options.user_id)
 
         if entry is None:
-            raise CommandError("No directory entry for ID: {0!r}".format(
-                options.user_id,
-            ))
+            raise CommandError(
+                "No directory entry for ID: {0!r}".format(options.user_id)
+            )
 
         print("User ID:", entry.id)
         print("Join date:", entry.join_date)

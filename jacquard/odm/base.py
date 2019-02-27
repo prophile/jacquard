@@ -47,7 +47,7 @@ class ModelMeta(type):
 class Model(object, metaclass=ModelMeta):
     """Object type, mapped into document store."""
 
-    __slots__ = ('pk', '_fields', 'session')
+    __slots__ = ("pk", "_fields", "session")
 
     def __init__(self, pk, **fields):
         """
@@ -91,10 +91,7 @@ class Model(object, metaclass=ModelMeta):
     @classmethod
     def storage_key(cls, pk):
         """Key within the document store for a particular pk."""
-        return '{storage_name}/{pk}'.format(
-            storage_name=cls.storage_name,
-            pk=pk,
-        )
+        return "{storage_name}/{pk}".format(storage_name=cls.storage_name, pk=pk)
 
     def __repr__(self):  # noqa: D400
         """Python reproducer. Handy for debugging!"""
@@ -102,11 +99,11 @@ class Model(object, metaclass=ModelMeta):
         return "{class_name}(pk={pk!r}, {args})".format(
             class_name=cls.__name__,
             pk=self.pk,
-            args=', '.join(
-                '{field}={value!r}'.format(
+            args=", ".join(
+                "{field}={value!r}".format(
                     field=field_name,
                     value=getattr(cls, field_name).transform_from_storage(
-                        field_raw_value,
+                        field_raw_value
                     ),
                 )
                 for field_name, field_raw_value in self._fields.items()

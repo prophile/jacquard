@@ -14,4 +14,4 @@ The system is pluggable by adding new entry points into the
 """
 from jacquard.directory.utils import open_directory
 
-__all__ = ('open_directory',)
+__all__ = ("open_directory",)

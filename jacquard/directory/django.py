@@ -19,7 +19,7 @@ import sqlalchemy.sql
 
 from jacquard.directory.base import Directory, UserEntry
 
-LOGGER = logging.getLogger('jacquard.directory.django')
+LOGGER = logging.getLogger("jacquard.directory.django")
 
 
 class DjangoDirectory(Directory):
@@ -51,13 +51,9 @@ class DjangoDirectory(Directory):
         tags = []
 
         if row.is_superuser:
-            tags.append('superuser')
+            tags.append("superuser")
 
-        return UserEntry(
-            id=row.id,
-            join_date=row.date_joined,
-            tags=tuple(tags),
-        )
+        return UserEntry(id=row.id, join_date=row.date_joined, tags=tuple(tags))
 
     @functools.lru_cache(maxsize=1024)
     def lookup(self, user_id):
@@ -76,10 +72,7 @@ class DjangoDirectory(Directory):
             return None
 
         LOGGER.debug("Lookup user %s", user_id)
-        result = self.engine.execute(
-            sqlalchemy.sql.text(query),
-            user=user_id,
-        )
+        result = self.engine.execute(sqlalchemy.sql.text(query), user=user_id)
 
         try:
             row = next(iter(result))

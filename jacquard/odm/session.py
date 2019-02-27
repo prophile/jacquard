@@ -44,9 +44,7 @@ class Session(object):
         `__setitem__` and `__delitem__`.
         """
         self.__init__(
-            get=store.__getitem__,
-            put=store.__setitem__,
-            delete=store.__delitem__,
+            get=store.__getitem__, put=store.__setitem__, delete=store.__delitem__
         )
         self.store = store
 
@@ -64,9 +62,9 @@ class Session(object):
             return
 
         if previous_instance is not None:
-            raise RuntimeError("Multiple instances for pk: {pk!r}".format(
-                pk=instance.pk,
-            ))
+            raise RuntimeError(
+                "Multiple instances for pk: {pk!r}".format(pk=instance.pk)
+            )
 
         model_instances[instance.pk] = instance
         instance.session = self

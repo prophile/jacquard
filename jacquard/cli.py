@@ -15,10 +15,7 @@ from jacquard.plugin import plug_all
 from jacquard.commands import CommandError
 from jacquard.constants import DEFAULT_CONFIG_FILE_PATH
 
-SUBCOMMAND_GROUPS = (
-    ('list', "show lists of various topics"),
-    ('show', "show items"),
-)
+SUBCOMMAND_GROUPS = (("list", "show lists of various topics"), ("show", "show items"))
 
 
 def _add_subparsers_from_plugins(subparsers, plugin_group):
@@ -26,13 +23,13 @@ def _add_subparsers_from_plugins(subparsers, plugin_group):
         command_class = plugin()
         command = command_class()
 
-        command_help = getattr(command, 'help', name)
-        is_plumbing = getattr(command, 'plumbing', False)
+        command_help = getattr(command, "help", name)
+        is_plumbing = getattr(command, "plumbing", False)
 
         if is_plumbing:
-            kwargs = {'description': command_help}
+            kwargs = {"description": command_help}
         else:
-            kwargs = {'description': command_help, 'help': command_help}
+            kwargs = {"description": command_help, "help": command_help}
 
         subparser = subparsers.add_parser(name, **kwargs)
 
@@ -42,82 +39,67 @@ def _add_subparsers_from_plugins(subparsers, plugin_group):
 
 def _add_help_command(parser, subparsers):
     subparser = subparsers.add_parser(
-        'help',
-        description="show this help",
-        help="show this help",
+        "help", description="show this help", help="show this help"
     )
 
     def _help(config, options):
-        help_subcommand = list(options.command) + ['--help']
+        help_subcommand = list(options.command) + ["--help"]
         parser.parse_args(help_subcommand)
 
     subparser.set_defaults(func=_help)
-    subparser.add_argument(
-        'command',
-        nargs='*',
-        help='command to ask about',
-    )
+    subparser.add_argument("command", nargs="*", help="command to ask about")
 
 
 @functools.lru_cache()
 def _build_argument_parser(cwd=None):
     parser = argparse.ArgumentParser(description="Split testing server")
     parser.add_argument(
-        '-v',
-        '--verbose',
+        "-v",
+        "--verbose",
         help="enable verbose output",
-        action='store_const',
-        dest='log_level',
+        action="store_const",
+        dest="log_level",
         const=logging.INFO,
         default=logging.ERROR,
     )
     parser.add_argument(
-        '--debug',
+        "--debug",
         help="enable debug output (implies -v)",
-        action='store_const',
-        dest='log_level',
+        action="store_const",
+        dest="log_level",
         const=logging.DEBUG,
     )
     parser.add_argument(
-        '-c',
-        '--config',
+        "-c",
+        "--config",
         help="config file",
         type=pathlib.Path,
         default=DEFAULT_CONFIG_FILE_PATH,
     )
     parser.add_argument(
-        '-V',
-        '--version',
+        "-V",
+        "--version",
         help="show version and exit",
-        action='version',
-        version=str(pkg_resources.working_set.by_key['jacquard-split']),
+        action="version",
+        version=str(pkg_resources.working_set.by_key["jacquard-split"]),
     )
     parser.set_defaults(func=None)
 
-    subparsers = parser.add_subparsers(metavar='command', title='subcommands')
+    subparsers = parser.add_subparsers(metavar="command", title="subcommands")
 
     # Top-level plugins
-    _add_subparsers_from_plugins(
-        subparsers=subparsers,
-        plugin_group='commands',
-    )
+    _add_subparsers_from_plugins(subparsers=subparsers, plugin_group="commands")
 
     # Subcommand plugins
     for subcommand, subcommand_help in SUBCOMMAND_GROUPS:
-        subcommand_parser = subparsers.add_parser(
-            subcommand,
-            help=subcommand_help,
-        )
+        subcommand_parser = subparsers.add_parser(subcommand, help=subcommand_help)
         subsubcommands = subcommand_parser.add_subparsers(
-            metavar="subject",
-            title="subjects",
+            metavar="subject", title="subjects"
         )
 
         _add_subparsers_from_plugins(
             subparsers=subsubcommands,
-            plugin_group='commands.{subcommand}'.format(
-                subcommand=subcommand,
-            ),
+            plugin_group="commands.{subcommand}".format(subcommand=subcommand),
         )
 
     _add_help_command(parser, subparsers)
@@ -138,10 +120,7 @@ def argument_parser():
     return _build_argument_parser(os.getcwd())
 
 
-def _configure_process_and_load_config_from_options(
-    options,
-    override_config=None,
-):
+def _configure_process_and_load_config_from_options(options, override_config=None):
     logging.basicConfig(level=options.log_level)
 
     if options.func is None:
@@ -149,7 +128,7 @@ def _configure_process_and_load_config_from_options(
         # `print_help` we explicitly use exactly the same mechanism as
         # --help, which ensures that the exit code, and any extra I/O ops
         # such as buffer flushes, are identical.
-        argument_parser().parse_args(['--help'])
+        argument_parser().parse_args(["--help"])
         # --help exits the process; something extremely weird has happened if
         # we reached this point in execution.
         raise AssertionError("parse_args(--help) returned")
@@ -160,9 +139,7 @@ def _configure_process_and_load_config_from_options(
     try:
         return load_config(options.config)
     except FileNotFoundError:
-        print("Could not read config file '{path}'".format(
-            path=options.config,
-        ))
+        print("Could not read config file '{path}'".format(path=options.config))
         sys.exit(1)
 
 
@@ -181,8 +158,7 @@ def main(args=sys.argv[1:], config=None):
     options = parser.parse_args(args)
 
     config = _configure_process_and_load_config_from_options(
-        options=options,
-        override_config=config,
+        options=options, override_config=config
     )
 
     # Run subcommand

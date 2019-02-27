@@ -11,7 +11,7 @@ from jacquard.storage.exceptions import Retry
 
 def retrying(fn):
     """Decorator: reissues the function if it raises Retry."""
-    logger = logging.getLogger('jacquard.storage.retrying')
+    logger = logging.getLogger("jacquard.storage.retrying")
 
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
@@ -19,7 +19,7 @@ def retrying(fn):
             try:
                 return fn(*args, **kwargs)
             except Retry:
-                callable_name = getattr(fn, '__name__', 'anonymous function')
+                callable_name = getattr(fn, "__name__", "anonymous function")
                 logger.debug("Retry issued from %s, reissuing", callable_name)
 
     return wrapper
@@ -58,15 +58,9 @@ class TransactionMap(collections.abc.MutableMapping):
         """Get all (decoded) keys from storage engine."""
         if self._store_keys is None:
             self._store_keys = list(self.store.keys())
-        current_keys = {
-            x
-            for x in self._store_keys
-            if x not in self.deletions
-        }
+        current_keys = {x for x in self._store_keys if x not in self.deletions}
         current_keys.update(self.changes.keys())
-        return sorted(
-            self.store.decode_key(x) for x in current_keys
-        )
+        return sorted(self.store.decode_key(x) for x in current_keys)
 
     def __len__(self):
         """Number of keys."""
@@ -93,7 +87,7 @@ class TransactionMap(collections.abc.MutableMapping):
 
         # UTF-8 decoding
         if isinstance(result, bytes):
-            result = result.decode('utf-8')
+            result = result.decode("utf-8")
 
         result = json.loads(result)
 
@@ -131,5 +125,5 @@ def open_engine(config, engine, url):
     pluggable by adding `StorageEngine` subclasses to the entry points
     group `jacquard.storage_engines`.
     """
-    cls = plug('storage_engines', engine, config=config)()
+    cls = plug("storage_engines", engine, config=config)()
     return cls(url)

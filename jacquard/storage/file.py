@@ -18,25 +18,27 @@ class FileStore(StorageEngine, threading.local):
         does not already exist.
         """
         self.db = sqlite3.connect(
-            connection_string,
-            isolation_level=None,  # Explicit BEGIN
-            uri=True,
+            connection_string, isolation_level=None, uri=True  # Explicit BEGIN
         )
-        self.db.execute("""
+        self.db.execute(
+            """
             CREATE TABLE IF NOT EXISTS "configuration" (
                 "key" TEXT NOT NULL PRIMARY KEY,
                 "value" TEXT NOT NULL
             );
-        """)
+        """
+        )
 
     def begin(self):
         """Begin transaction."""
-        self.db.execute('BEGIN')
+        self.db.execute("BEGIN")
         self._transaction_keys = [
             row[0]
-            for row in self.db.execute("""
+            for row in self.db.execute(
+                """
                 SELECT "key" FROM "configuration"
-            """)
+            """
+            )
         ]
 
     def commit(self, changes, deletions):
@@ -48,22 +50,31 @@ class FileStore(StorageEngine, threading.local):
             if key not in self._transaction_keys
         ]
         if insertions:
-            self.db.executemany("""
+            self.db.executemany(
+                """
                 INSERT INTO "configuration"("key", "value") VALUES (?, ?)
-            """, insertions)
+            """,
+                insertions,
+            )
 
         # Updates
         for key, value in changes.items():
             if key in self._transaction_keys:
-                self.db.execute("""
+                self.db.execute(
+                    """
                     UPDATE "configuration" SET "value" = ? WHERE "key" = ?
-                """, (value, key))
+                """,
+                    (value, key),
+                )
 
         # Deletions
         for deletion in deletions:
-            self.db.execute("""
+            self.db.execute(
+                """
                 DELETE FROM "configuration" WHERE "key" = ?
-            """, (deletion,))
+            """,
+                (deletion,),
+            )
 
         self.db.commit()
         del self._transaction_keys
@@ -75,16 +86,19 @@ class FileStore(StorageEngine, threading.local):
 
     def get(self, key):
         """Get value."""
-        rows = list(self.db.execute("""
+        rows = list(
+            self.db.execute(
+                """
             SELECT "value" FROM "configuration" WHERE "key" = ?
-        """, (key,)))
+        """,
+                (key,),
+            )
+        )
 
         if len(rows) == 0:
             return None
         elif len(rows) > 1:
-            raise RuntimeError("Duplicate config for key {key!r}".format(
-                key=key,
-            ))
+            raise RuntimeError("Duplicate config for key {key!r}".format(key=key))
         else:
             return rows[0][0]
 

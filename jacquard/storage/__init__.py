@@ -29,10 +29,5 @@ from jacquard.storage.utils import open_engine, retrying, copy_data
 from jacquard.storage.exceptions import Retry
 
 __all__ = (
-    'open_engine',
-    'retrying',
-    'Retry',
-    'DummyStore',
-    'copy_data',
-    'StorageEngine',
+    "open_engine", "retrying", "Retry", "DummyStore", "copy_data", "StorageEngine"
 )

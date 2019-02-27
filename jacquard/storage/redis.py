@@ -8,7 +8,7 @@ import redis
 from jacquard.storage.base import StorageEngine
 from jacquard.storage.exceptions import Retry
 
-LOGGER = logging.getLogger('jacquard.storage.redis')
+LOGGER = logging.getLogger("jacquard.storage.redis")
 
 
 class RedisStore(StorageEngine, threading.local):
@@ -31,7 +31,7 @@ class RedisStore(StorageEngine, threading.local):
         of `redis.StrictRedis.from_url`.
         """
         self.redis = redis.StrictRedis.from_url(connection_string)
-        self.prefix = 'jacquard:'
+        self.prefix = "jacquard:"
         self.omit_watch = False
 
     def begin(self):
@@ -73,21 +73,18 @@ class RedisStore(StorageEngine, threading.local):
     def keys(self):
         """All keys."""
         return [
-            x.decode('utf-8')
-            for x in self.redis.keys('{prefix}*'.format(prefix=self.prefix))
+            x.decode("utf-8")
+            for x in self.redis.keys("{prefix}*".format(prefix=self.prefix))
         ]
 
     def encode_key(self, key):
         """Encode key."""
-        if ':' in key:
+        if ":" in key:
             raise ValueError("Invalid key {key!r}".format(key=key))
-        return '{prefix}{key}'.format(
-            prefix=self.prefix,
-            key=key.replace('/', ':'),
-        )
+        return "{prefix}{key}".format(prefix=self.prefix, key=key.replace("/", ":"))
 
     def decode_key(self, key):
         """Decode key."""
         if not key.startswith(self.prefix):
             raise ValueError()
-        return key[len(self.prefix):].replace(':', '/')
+        return key[len(self.prefix):].replace(":", "/")

@@ -21,7 +21,7 @@ class StorageDump(BaseCommand):
         with config.storage.transaction(read_only=True) as store:
             for key, value in store.items():
                 print(key)
-                print('=' * len(key))
+                print("=" * len(key))
                 pprint.pprint(value)
                 print()
 
@@ -38,11 +38,11 @@ class StorageImport(BaseCommand):
 
     def add_arguments(self, parser):
         """Add argparse arguments."""
-        parser.add_argument('engine', help="storage engine to load from")
-        parser.add_argument('url', help="storage URL to load from")
+        parser.add_argument("engine", help="storage engine to load from")
+        parser.add_argument("url", help="storage URL to load from")
         parser.add_argument(
-            '--flush',
-            action='store_true',
+            "--flush",
+            action="store_true",
             help="flush out the previous data in storage",
         )
 
@@ -65,11 +65,11 @@ class StorageExport(BaseCommand):
 
     def add_arguments(self, parser):
         """Add argparse arguments."""
-        parser.add_argument('engine', help="storage engine to save to")
-        parser.add_argument('url', help="storage URL to save to")
+        parser.add_argument("engine", help="storage engine to save to")
+        parser.add_argument("url", help="storage URL to save to")
         parser.add_argument(
-            '--flush',
-            action='store_true',
+            "--flush",
+            action="store_true",
             help="erase storage destination before writing",
         )
 
@@ -97,8 +97,8 @@ class StorageFlush(BaseCommand):
     def add_arguments(self, parser):
         """Add argparse arguments."""
         parser.add_argument(
-            '--force',
-            action='store_true',
+            "--force",
+            action="store_true",
             help=(
                 "force Jacquard to actually do this despite its being "
                 "obviously a bad idea"
@@ -111,7 +111,7 @@ class StorageFlush(BaseCommand):
         if not option.force:
             raise CommandError(
                 "This command would erase the database. If you are really "
-                "sure this is something you want to do, add --force.",
+                "sure this is something you want to do, add --force."
             )
 
         with config.storage.transaction() as store:

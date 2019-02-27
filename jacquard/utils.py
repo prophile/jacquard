@@ -49,9 +49,9 @@ def check_keys(passed_keys, known_keys, exception=ValueError):
         return
 
     if len(unknown_keys) > 1:
-        raise exception("Unknown keys: {keys}".format(
-            keys=", ".join(sorted(unknown_keys)),
-        ))
+        raise exception(
+            "Unknown keys: {keys}".format(keys=", ".join(sorted(unknown_keys)))
+        )
 
     (unknown_key,) = unknown_keys
 
@@ -69,9 +69,8 @@ def check_keys(passed_keys, known_keys, exception=ValueError):
         (close_match,) = close_matches
         raise exception(
             "Unknown key: {key} (did you mean {suggestion}?)".format(
-                key=unknown_key,
-                suggestion=close_match,
-            ),
+                key=unknown_key, suggestion=close_match
+            )
         )
 
     raise exception(
@@ -79,5 +78,5 @@ def check_keys(passed_keys, known_keys, exception=ValueError):
             key=unknown_key,
             suggestions_heading=close_matches_string,
             suggestions=", ".join(close_matches),
-        ),
+        )
     )

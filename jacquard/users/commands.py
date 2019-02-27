@@ -22,30 +22,23 @@ class SetDefault(BaseCommand):
 
     def add_arguments(self, parser):
         """Add argparse arguments."""
-        parser.add_argument('setting', help="setting key")
+        parser.add_argument("setting", help="setting key")
         mutex_group = parser.add_mutually_exclusive_group(required=True)
+        mutex_group.add_argument("value", help="value to set", nargs="?")
         mutex_group.add_argument(
-            'value',
-            help="value to set",
-            nargs='?',
-        )
-        mutex_group.add_argument(
-            '-d',
-            '--delete',
-            help="clear the associated value",
-            action='store_true',
+            "-d", "--delete", help="clear the associated value", action="store_true"
         )
         parser.add_argument(
-            '--add',
+            "--add",
             help="skip any keys which already exist in the database",
-            action='store_true',
+            action="store_true",
         )
 
     @retrying
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction() as store:
-            defaults = dict(store.get('defaults', {}))
+            defaults = dict(store.get("defaults", {}))
 
             any_changes = False
 
@@ -58,16 +51,16 @@ class SetDefault(BaseCommand):
                 try:
                     value = yaml.safe_load(options.value)
                 except ValueError:
-                    raise CommandError("Could not decode {value!r}".format(
-                        value=options.value,
-                    ))
+                    raise CommandError(
+                        "Could not decode {value!r}".format(value=options.value)
+                    )
 
                 if not options.add or options.setting not in defaults:
                     defaults[options.setting] = value
                     any_changes = True
 
             if any_changes:
-                store['defaults'] = defaults
+                store["defaults"] = defaults
 
 
 class Override(BaseCommand):
@@ -84,26 +77,19 @@ class Override(BaseCommand):
 
     def add_arguments(self, parser):
         """Add argparse arguments."""
-        parser.add_argument('user', help="user to override for")
-        parser.add_argument('setting', help="setting key")
+        parser.add_argument("user", help="user to override for")
+        parser.add_argument("setting", help="setting key")
         mutex_group = parser.add_mutually_exclusive_group(required=False)
+        mutex_group.add_argument("value", help="value to set", nargs="?")
         mutex_group.add_argument(
-            'value',
-            help="value to set",
-            nargs='?',
-        )
-        mutex_group.add_argument(
-            '-d',
-            '--delete',
-            help="clear the associated value",
-            action='store_true',
+            "-d", "--delete", help="clear the associated value", action="store_true"
         )
 
     @retrying
     def handle(self, config, options):
         """Run command."""
         with config.storage.transaction() as store:
-            key = 'overrides/{user_id}'.format(user_id=options.user)
+            key = "overrides/{user_id}".format(user_id=options.user)
 
             overrides = dict(store.get(key, {}))
 
@@ -121,9 +107,9 @@ class Override(BaseCommand):
                 try:
                     value = yaml.safe_load(options.value)
                 except ValueError:
-                    raise CommandError("Could not decode {value!r}".format(
-                        value=options.value,
-                    ))
+                    raise CommandError(
+                        "Could not decode {value!r}".format(value=options.value)
+                    )
 
                 overrides[options.setting] = value
                 store[key] = overrides
@@ -141,24 +127,20 @@ class OverrideClear(BaseCommand):
         """Add argparse arguments."""
         mutex_group = parser.add_mutually_exclusive_group(required=True)
         mutex_group.add_argument(
-            'user',
-            help="user ID to wipe overrides for",
-            nargs='?',
+            "user", help="user ID to wipe overrides for", nargs="?"
         )
         mutex_group.add_argument(
-            '-s',
-            '--setting',
-            help="setting to wipe overrides for",
+            "-s", "--setting", help="setting to wipe overrides for"
         )
 
     def _clear_overrides_for_user(self, store, user):
-        key = 'overrides/{user_id}'.format(user_id=user)
+        key = "overrides/{user_id}".format(user_id=user)
 
         with contextlib.suppress(KeyError):
             del store[key]
 
     def _clear_overrides_for_setting(self, store, setting):
-        prefix = 'overrides/'
+        prefix = "overrides/"
 
         for key in store:
             if not key.startswith(prefix):
@@ -200,22 +182,14 @@ class Show(BaseCommand):
 
     def add_arguments(self, parser):
         """Add argparse arguments."""
-        parser.add_argument(
-            'user',
-            help="user to show settings for",
-            nargs='?',
-        )
+        parser.add_argument("user", help="user to show settings for", nargs="?")
 
     def handle(self, config, options):
         """Run command."""
         if options.user:
-            settings = get_settings(
-                options.user,
-                config.storage,
-                config.directory,
-            )
+            settings = get_settings(options.user, config.storage, config.directory)
         else:
             with config.storage.transaction(read_only=True) as store:
-                settings = store.get('defaults', {})
+                settings = store.get("defaults", {})
 
         yaml.dump(settings, sys.stdout, default_flow_style=False)
