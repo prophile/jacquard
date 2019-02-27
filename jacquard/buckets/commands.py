@@ -54,7 +54,10 @@ class Rollout(BaseCommand):
         rollout_key = "rollout:{setting}".format(setting=options.setting)
 
         constraints = Constraints(
-            required_tags=options.with_tag, excluded_tags=options.without_tag
+            required_tags=options.with_tag,
+            excluded_tags=options.without_tag,
+            named=True,
+            anonymous=False,
         )
 
         value = yaml.safe_load(options.value)
