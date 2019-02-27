@@ -27,6 +27,10 @@
 - command: list experiments --active
   expect: |
     hello: Hello!
+
+- command: conclude hello nonexistant
+  expect_error: "Experiment 'hello' has no branch 'nonexistant'"
+
 - command: conclude hello test
 - command: show defaults
   expect: |

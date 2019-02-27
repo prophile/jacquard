@@ -160,7 +160,15 @@ class Conclude(BaseCommand):
                 defaults = store.get("defaults", {})
 
                 # Find branch matching ID
-                defaults.update(experiment.branch(options.branch)["settings"])
+                try:
+                    branch_configuration = experiment.branch(options.branch)
+                except LookupError:
+                    raise CommandError(
+                        "Experiment '{experiment_id}' has no branch '{branch_name}'".format(
+                            experiment_id=options.experiment, branch_name=options.branch
+                        )
+                    )
+                defaults.update(branch_configuration["settings"])
 
                 store["defaults"] = defaults
 
