@@ -1,6 +1,6 @@
 """Built-in, core HTTP endpoints."""
 
-from werkzeug.exceptions import MethodNotAllowed, NotFound
+from werkzeug.exceptions import NotFound, MethodNotAllowed
 
 from jacquard.odm import EMPTY, Session
 from jacquard.users import get_settings
@@ -116,7 +116,14 @@ class ExperimentPartition(Endpoint):
         with self.config.storage.transaction(read_only=True) as store:
             session = Session(store)
 
-            experiment_config = Experiment.from_store(store, experiment)
+            try:
+                experiment_config = Experiment.from_store(store, experiment)
+            except LookupError:
+                raise NotFound(
+                    "No experiment with ID {experiment_id!r}".format(
+                        experiment_id=experiment
+                    )
+                )
 
             buckets = [
                 session.get(Bucket, idx, default=EMPTY) for idx in range(NUM_BUCKETS)

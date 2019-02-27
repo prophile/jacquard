@@ -110,3 +110,10 @@ def test_experiment_partition():
     params = MultiDict([("u", "1"), ("u", "2"), ("u", "3"), ("u", "4")])
     result = post("/experiments/foo/partition", params)
     assert set(result["branches"].keys()) == {"bar"}
+
+
+def test_experiment_partition_on_missing_experiment_gets_404():
+    params = MultiDict([("u", "1"), ("u", "2"), ("u", "3"), ("u", "4")])
+    client = get_test_client()
+    _, status, _ = client.post("/experiments/bar/partition", data=params)
+    assert status == "404 NOT FOUND"
