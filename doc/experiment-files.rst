@@ -38,15 +38,6 @@ constraints
 Constraints
 -----------
 
-anonymous
-  Whether users who are not in the directory can be part of this test. If
-  so, this overrides all other constraints. True by default, but if you are
-  specifying constraints there is a strong possibility you'll want to make
-  this false.
-
-named
-  Whether users who *are* in the directory can be part of this test.
-
 era
   Whether this applies to users who join before or after the start of the test,
   or (by default) both. Use the strings "new" or "old".

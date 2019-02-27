@@ -1,5 +1,6 @@
 """User constraints predicates."""
 
+import warnings
 import collections
 
 import dateutil.tz
@@ -25,14 +26,6 @@ class Constraints(object):
 
     This can filter by:
 
-    anonymous
-      Whether anonymous users can be considered under these constraints. A
-      strong note of caution: if anonymous users are included, they are
-      included *without regard to any other constraint*.
-
-    named
-      Whether named users can be considered under these constraints.
-
     era
       The era, 'old' or 'new' relative to the experiment start date, for users
       included in these constraints.
@@ -47,8 +40,6 @@ class Constraints(object):
 
     def __init__(
         self,
-        anonymous=True,
-        named=True,
         era=None,
         required_tags=(),
         excluded_tags=(),
@@ -63,8 +54,6 @@ class Constraints(object):
 
         Generally prefer `.from_json`.
         """
-        self.include_anonymous = anonymous
-        self.include_named = named
         self.era = era
 
         if era not in (None, "old", "new"):
@@ -87,12 +76,6 @@ class Constraints(object):
         ):
             return True
 
-        if not self.include_named:
-            return True
-
-        if not self.include_anonymous:
-            return True
-
         return False
 
     @classmethod
@@ -111,6 +94,12 @@ class Constraints(object):
             ),
         )
 
+        if "anonymous" in description:
+            warnings.warn("The `anonymous` flag no longer has any effect.")
+
+        if "named" in description:
+            warnings.warn("The `named` flag no longer has any effect.")
+
         def get_maybe_date(key):
             try:
                 string_date = description[key]
@@ -125,8 +114,6 @@ class Constraints(object):
             return parsed_date
 
         return cls(
-            anonymous=description.get("anonymous", True),
-            named=description.get("named", True),
             era=description.get("era"),
             required_tags=description.get("required_tags", ()),
             excluded_tags=description.get("excluded_tags", ()),
@@ -140,7 +127,7 @@ class Constraints(object):
 
         A pseudo-inverse of `.from_json`.
         """
-        description = {"anonymous": self.include_anonymous, "named": self.include_named}
+        description = {}
 
         if self.era is not None:
             description["era"] = self.era
@@ -187,8 +174,6 @@ class Constraints(object):
             joined_after = None
 
         return type(self)(
-            anonymous=self.include_anonymous,
-            named=self.include_named,
             joined_before=joined_before,
             joined_after=joined_after,
             required_tags=self.required_tags,
@@ -201,9 +186,7 @@ class Constraints(object):
             return self.specialise(context).matches_user(user)
 
         if user is None:
-            return self.include_anonymous
-
-        if not self.include_named:
+            # Anonymous users unconditionally fail constraints
             return False
 
         if self.joined_before and user.join_date > self.joined_before:
@@ -222,9 +205,6 @@ class Constraints(object):
 
     def is_provably_disjoint_from_constraints(self, other_constraints):
         """Test whether constraints are provably disjoint."""
-        if self.include_anonymous and other_constraints.include_anonymous:
-            return False
-
         if (
             set(self.required_tags) & set(other_constraints.excluded_tags)
             or set(self.excluded_tags) & set(other_constraints.required_tags)

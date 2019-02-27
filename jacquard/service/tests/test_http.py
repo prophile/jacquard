@@ -21,7 +21,7 @@ def get_test_client():
             "active-experiments": ["foo"],
             "experiments/foo": {
                 "id": "foo",
-                "constraints": {"excluded_tags": ["excluded"], "anonymous": False},
+                "constraints": {"excluded_tags": ["excluded"]},
                 "branches": [{"id": "bar", "settings": {"pony": "horse"}}],
             },
         },

@@ -231,11 +231,11 @@ def test_overlapping_settings_allowed_if_disjoint_constraints():
         data={
             "experiments/foo": {
                 "branches": [{"id": "foo", "settings": BRANCH_SETTINGS}],
-                "constraints": {"required_tags": ["baz"], "anonymous": False},
+                "constraints": {"required_tags": ["baz"]},
             },
             "experiments/bar": {
                 "branches": [{"id": "bar", "settings": BRANCH_SETTINGS}],
-                "constraints": {"excluded_tags": ["baz"], "anonymous": False},
+                "constraints": {"excluded_tags": ["baz"]},
             },
         },
     )
