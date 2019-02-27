@@ -1,0 +1,5 @@
+- command: load-experiment test-data/experiment-naive-date.yaml
+  expect_error: "Constraint dates must explicitly include timezones."
+
+- command: list experiments
+  expect: ""

@@ -1,0 +1,11 @@
+id: hello
+name: Hello!
+constraints:
+  joined_after: "2017-01-01 14:00:00"
+branches:
+  - id: control
+    settings:
+      cta: blue
+  - id: test
+    settings:
+      cta: red
