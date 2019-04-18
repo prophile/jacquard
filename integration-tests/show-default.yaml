@@ -1,7 +1,7 @@
 - command: set-default foo bar
 - get: /users/1
   expect_yaml:
-    {"foo": "bar", "user": "1"}
+    {"foo": "bar", "user": "1", "__bucket__": 15}
 
 - command: show defaults
   expect_yaml:
@@ -10,4 +10,4 @@
 - command: set-default -d foo
 - get: /users/2
   expect_yaml:
-    {"user": "2"}
+    {"user": "2", "__bucket__": 261}

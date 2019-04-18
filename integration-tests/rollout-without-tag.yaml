@@ -3,6 +3,8 @@
 - command: show user 1
   expect_yaml:
     test_key: value_test
+    __bucket__: 15
 - command: show user 2
   expect_yaml:
     test_key: value_default
+    __bucket__: 261

@@ -6,6 +6,8 @@
 - command: show user 30
   expect_yaml:
     bazz: quux
+    __bucket__: 124
 - command: storage-flush --force
 - command: show user 30
-  expect_yaml: {}
+  expect_yaml:
+    __bucket__: 124

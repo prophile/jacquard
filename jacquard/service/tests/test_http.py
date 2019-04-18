@@ -70,11 +70,11 @@ def test_root():
 
 
 def test_user_lookup():
-    assert get("/users/1") == {"user": "1", "pony": "gravity"}
+    assert get("/users/1") == {"user": "1", "pony": "gravity", "__bucket__": 15}
 
 
 def test_user_lookup_with_non_numeric_id():
-    assert get("/users/bees") == {"user": "bees", "pony": "gravity"}
+    assert get("/users/bees") == {"user": "bees", "pony": "gravity", "__bucket__": 150}
 
 
 def test_experiments_list():

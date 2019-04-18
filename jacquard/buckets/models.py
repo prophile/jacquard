@@ -26,7 +26,7 @@ class Bucket(Model):
 
     def get_settings(self, user_entry):
         """Look up settings by user entry."""
-        settings = {}
+        settings = {"__bucket__": self.pk}
 
         for entry in self.entries:
             if not entry.constraints or entry.constraints.matches_user(user_entry):

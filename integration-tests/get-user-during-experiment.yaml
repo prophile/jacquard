@@ -4,3 +4,4 @@
   expect_yaml_keys:
     - cta
     - user
+    - __bucket__
