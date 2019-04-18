@@ -1,0 +1,4 @@
+#!/bin/bash
+set -ex
+isort -rc $1
+exec black $1
