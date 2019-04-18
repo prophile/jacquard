@@ -146,7 +146,7 @@ def test_constraints_explode_with_vim_and_vigour_if_given_a_dodgy_era():
 
 
 def test_not_disjoint_when_only_one_is_date_bounded():
-    assert is_disjoint({"joined_after": "2018-05-01 00:00+0000"}) is False
+    assert is_disjoint({"joined_after": "2018-05-01 00:00+0000"}, {}) is False
 
 
 def test_not_disjoint_when_dates_are_both_bounded_on_same_side():
