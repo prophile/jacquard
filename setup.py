@@ -40,7 +40,7 @@ with open('README.rst', 'r', encoding='utf-8') as f:
 
 setup(
     name='jacquard-split',
-    version='0.6.2',
+    version='0.7.0',
     url='https://github.com/prophile/jacquard',
     description="Split testing server",
     long_description=long_description,
