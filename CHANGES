@@ -1,3 +1,34 @@
+0.7.0  2019-05-03
+
+Major features:
+
+* "anonymous users" effectively abolished. Since users without any permanent
+  record of their existence are useless to test on since one cannot take
+  statistics on them, they are now just excluded entirely from the buckets
+  (and therefore experiments) mechanism. There is no more `anonymous`
+  constraint. This also means that rollouts by tag will no longer unexpectedly
+  show an experience to logged-out users.
+* Bucket numbers are reported in user settings exports, under the key
+  `__bucket__`. This is for the purposes of tracking buckets for analytics.
+
+Minor features:
+
+* We now verify that all timezones loaded in are timezone-aware. Previously it
+  was possible to load a timezone-naïve date from a config file which then
+  caused comparisons to error.
+* The error message when using `jacquard conclude` with a branch missing from
+  the test has been significantly improved.
+* Codebase now automatically formatted with `black`.
+* Linting is now much better documented. Patch by Pete Owlett.
+* A number of testing libraries are now pinned for robustness. Patch by Pete
+  Owlett.
+
+Bugfixes:
+
+* Error handling improved around the partitioning endpoint: hitting it with a
+  missing experiment no longer causes a 500.
+
+
 0.6.2  2018-06-15
 
 Minor features:
